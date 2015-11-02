@@ -18,9 +18,11 @@ package io.vertx.example.web.proxy.dashboard;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.example.util.Runner;
+import io.vertx.example.web.proxy.SimpleREST;
 import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
 import io.vertx.ext.dropwizard.MetricsService;
 import io.vertx.ext.web.Router;
@@ -43,7 +45,9 @@ public class Dashboard extends AbstractVerticle {
 
     // Convenience method so you can run it in your IDE
     public static void main(String[] args) {
-        Runner.runExample(Dashboard.class, new VertxOptions(DROPWIZARD_OPTIONS).setClustered(true));
+        System.out.println("Dashboard accepting requests: "+ Dashboard.PORT);
+
+        Runner.runExample(Dashboard.class, new VertxOptions(DROPWIZARD_OPTIONS).setClustered(false));
     }
 
     @Override
@@ -69,6 +73,11 @@ public class Dashboard extends AbstractVerticle {
         HttpServer httpServer = vertx.createHttpServer();
         httpServer.requestHandler(router::accept).listen(PORT);
 
+        EventBus eb = vertx.eventBus();
+
+        eb.consumer("news.uk.sport", message -> {
+            System.out.println("I have received a message: " + message.body());
+        });
 /*
         //register metrics consumer
         vertx.eventBus().consumer("metrics", System.out::println);

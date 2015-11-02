@@ -5,6 +5,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientRequest;
@@ -71,8 +72,9 @@ public class ProxyServer extends AbstractVerticle {
 
         // Send a metrics events every second
         vertx.setPeriodic(1000, t -> {
-            metricsService.getMetricsSnapshot(httpServer);;
+            metricsService.getMetricsSnapshot(httpServer);
             vertx.eventBus().publish("metrics", metricsService.getMetricsSnapshot(httpServer));
+            vertx.eventBus().publish("news.uk.sport", "hi sports");
         });
 
         //request handling
