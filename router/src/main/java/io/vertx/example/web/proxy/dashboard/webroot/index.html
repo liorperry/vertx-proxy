@@ -49,11 +49,12 @@
             eb.onopen = function() {
               eb.registerHandler("metrics", function(err, res) {
                 var x = (new Date()).getTime(); // current time
-                var sent = res.body["messages.sent"];
+                var metrics = JSON.parse(res.body);
+                var sent = metrics.requests;
                 if (sent != null) {
-                  sentSeries.addPoint([x, sent.oneSecondRate], false, true);
+                  sentSeries.addPoint([x, sent.oneMinuteRate], false, true);
                   // Add the value to the `value` placeholder (ease testing)
-                  $("#value").html(sent.oneSecondRate);
+                  $("#value").html(sent.oneMinuteRate);
                 }
                 that.redraw();
               });

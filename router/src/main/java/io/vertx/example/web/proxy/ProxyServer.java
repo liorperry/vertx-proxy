@@ -1,21 +1,24 @@
 package io.vertx.example.web.proxy;
 
+import com.codahale.metrics.health.HealthCheckRegistry;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.example.util.Runner;
+import io.vertx.example.web.proxy.events.EventBus;
+import io.vertx.example.web.proxy.events.RedisEventBus;
 import io.vertx.example.web.proxy.filter.Filter;
 import io.vertx.example.web.proxy.filter.Filter.FilterBuilder;
 import io.vertx.example.web.proxy.filter.ProductFilter;
 import io.vertx.example.web.proxy.filter.ServiceFilter;
+import io.vertx.example.web.proxy.healthcheck.RestServiceHealthCheck;
 import io.vertx.example.web.proxy.repository.RedisRepository;
 import io.vertx.example.web.proxy.repository.Repository;
 import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
@@ -39,11 +42,14 @@ public class ProxyServer extends AbstractVerticle {
 
     private Filter filter;
     private Repository repository;
+    private EventBus bus;
 
     @Override
     public void init(io.vertx.core.Vertx vertx, Context context) {
         super.init(vertx, context);
         repository = new RedisRepository();
+        bus = new RedisEventBus();
+
         //build chain of filters
         filter = FilterBuilder.filterBuilder(repository)
                 .add(new ServiceFilter())
@@ -51,8 +57,17 @@ public class ProxyServer extends AbstractVerticle {
                 .build();
     }
 
+    private void setUpHealthchecks() {
+        final HealthCheckRegistry healthChecks = new HealthCheckRegistry();
+        healthChecks.register("servicesRestCheck", new RestServiceHealthCheck("proxy"));
+        //run periodic health checks
+        vertx.setPeriodic(2000, t -> healthChecks.runHealthChecks());
+    }
+
     @Override
     public void start() throws Exception {
+        setUpHealthchecks();
+
         // If a config file is set, read the host and port.
         HttpClient client = vertx.createHttpClient(new HttpClientOptions());
         HttpServer httpServer = vertx.createHttpServer();
@@ -72,9 +87,9 @@ public class ProxyServer extends AbstractVerticle {
 
         // Send a metrics events every second
         vertx.setPeriodic(1000, t -> {
-            metricsService.getMetricsSnapshot(httpServer);
-            vertx.eventBus().publish("metrics", metricsService.getMetricsSnapshot(httpServer));
-            vertx.eventBus().publish("news.uk.sport", "hi sports");
+            String value = metricsService.getMetricsSnapshot(httpServer).encodePrettily();
+            System.out.println("metrics " + value);
+            bus.publish("metrics", value);
         });
 
         //request handling

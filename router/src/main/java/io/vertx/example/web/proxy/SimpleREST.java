@@ -5,16 +5,15 @@ import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.example.util.Runner;
+import io.vertx.example.web.proxy.healthcheck.RestServiceHealthCheck;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
+import com.codahale.metrics.health.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author <a href="http://tfox.org">Tim Fox</a>
- */
 public class SimpleREST extends AbstractVerticle {
 
     public static final int PORT = 8282;
@@ -28,6 +27,7 @@ public class SimpleREST extends AbstractVerticle {
 
     @Override
     public void start() {
+        setUpHealthchecks();
 
         setUpInitialData();
 
@@ -43,6 +43,13 @@ public class SimpleREST extends AbstractVerticle {
         router.get("/serviceB").handler(this::handleListProducts);
 
         vertx.createHttpServer().requestHandler(router::accept).listen(PORT);
+    }
+
+    private void setUpHealthchecks() {
+        final HealthCheckRegistry healthChecks = new HealthCheckRegistry();
+        healthChecks.register("servicesRestCheck", new RestServiceHealthCheck("service"));
+        //run periodic health checks
+        vertx.setPeriodic(3000, t -> healthChecks.runHealthChecks());
     }
 
     private void handleGetProduct(RoutingContext routingContext) {
