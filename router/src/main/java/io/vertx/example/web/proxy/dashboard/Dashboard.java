@@ -17,9 +17,11 @@
 package io.vertx.example.web.proxy.dashboard;
 
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.example.util.Runner;
+import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
 import io.vertx.ext.dropwizard.MetricsService;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.StaticHandler;
@@ -34,42 +36,54 @@ import java.util.Random;
  */
 public class Dashboard extends AbstractVerticle {
 
-  public static final int PORT = 8181;
+    public static final int PORT = 8181;
 
-  // Convenience method so you can run it in your IDE
-  public static void main(String[] args) {
-    Runner.runExample(Dashboard.class);
-  }
+    public static final VertxOptions DROPWIZARD_OPTIONS = new VertxOptions().
+            setMetricsOptions(new DropwizardMetricsOptions().setEnabled(true));
 
-  @Override
-  public void start() {
+    // Convenience method so you can run it in your IDE
+    public static void main(String[] args) {
+        Runner.runExample(Dashboard.class, new VertxOptions(DROPWIZARD_OPTIONS).setClustered(true));
+    }
 
-    MetricsService service = MetricsService.create(vertx);
+    @Override
+    public void start() {
 
-    Router router = Router.router(vertx);
+        MetricsService service = MetricsService.create(vertx);
 
-    // Allow outbound traffic to the news-feed address
+        Router router = Router.router(vertx);
 
-    BridgeOptions options = new BridgeOptions().
-        addOutboundPermitted(
-            new PermittedOptions().
-                setAddress("metrics")
-        );
+        // Allow outbound traffic to the news-feed address
 
-    router.route("/eventbus/*").handler(SockJSHandler.create(vertx).bridge(options));
+        BridgeOptions options = new BridgeOptions().
+                addOutboundPermitted(
+                        new PermittedOptions().
+                                setAddress("metrics")
+                );
 
-    // Serve the static resources
-    router.route().handler(StaticHandler.create());
+        router.route("/eventbus/*").handler(SockJSHandler.create(vertx).bridge(options));
 
-    HttpServer httpServer = vertx.createHttpServer();
-    httpServer.requestHandler(router::accept).listen(PORT);
+        // Serve the static resources
+        router.route().handler(StaticHandler.create());
 
-    // Send a metrics events every second
-    vertx.setPeriodic(1000, t -> {
-      JsonObject metrics = service.getMetricsSnapshot(vertx.eventBus());
-      vertx.eventBus().publish("metrics", metrics);
-    });
+        HttpServer httpServer = vertx.createHttpServer();
+        httpServer.requestHandler(router::accept).listen(PORT);
 
+/*
+        //register metrics consumer
+        vertx.eventBus().consumer("metrics", System.out::println);
+*/
+
+/*
+        // Send a metrics events every second
+        vertx.setPeriodic(5000, t -> {
+            JsonObject metrics = service.getMetricsSnapshot(vertx.eventBus());
+            vertx.eventBus().publish("metrics", metrics.toString());
+        });
+
+*/
+
+/*
     // Send some messages
     Random random = new Random();
     vertx.eventBus().consumer("whatever", msg -> {
@@ -78,6 +92,7 @@ public class Dashboard extends AbstractVerticle {
       });
     });
     vertx.eventBus().send("whatever", "hello");
-  }
+*/
+    }
 
 }

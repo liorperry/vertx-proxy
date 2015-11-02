@@ -3,10 +3,13 @@ package io.vertx.example.web.proxy;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
+import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientRequest;
+import io.vertx.core.http.HttpServer;
+import io.vertx.core.json.JsonObject;
 import io.vertx.example.util.Runner;
 import io.vertx.example.web.proxy.filter.Filter;
 import io.vertx.example.web.proxy.filter.Filter.FilterBuilder;
@@ -15,6 +18,9 @@ import io.vertx.example.web.proxy.filter.ServiceFilter;
 import io.vertx.example.web.proxy.repository.RedisRepository;
 import io.vertx.example.web.proxy.repository.Repository;
 import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
+import io.vertx.ext.dropwizard.Match;
+import io.vertx.ext.dropwizard.MatchType;
+import io.vertx.ext.dropwizard.MetricsService;
 
 
 public class ProxyServer extends AbstractVerticle {
@@ -48,7 +54,29 @@ public class ProxyServer extends AbstractVerticle {
     public void start() throws Exception {
         // If a config file is set, read the host and port.
         HttpClient client = vertx.createHttpClient(new HttpClientOptions());
-        vertx.createHttpServer().requestHandler(req -> {
+        HttpServer httpServer = vertx.createHttpServer();
+
+        // DropwizardMetricsOptions service matching
+        Vertx vertx = Vertx.vertx(new VertxOptions().setMetricsOptions(
+                new DropwizardMetricsOptions().
+                        setEnabled(true).
+                        addMonitoredHttpServerUri(
+                                new Match().setValue("/")).
+                        addMonitoredHttpServerUri(
+                                new Match().setValue("/.*").setType(MatchType.REGEX))
+        ));
+
+        // set up server metrics
+        MetricsService metricsService = MetricsService.create(vertx);
+
+        // Send a metrics events every second
+        vertx.setPeriodic(1000, t -> {
+            metricsService.getMetricsSnapshot(httpServer);;
+            vertx.eventBus().publish("metrics", metricsService.getMetricsSnapshot(httpServer));
+        });
+
+        //request handling
+        httpServer.requestHandler(req -> {
             System.out.println("Proxying request: " + req.uri());
             if (!filter.filter(req)) {
                 req.response().setChunked(true);
