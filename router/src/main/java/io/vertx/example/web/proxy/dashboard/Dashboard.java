@@ -1,19 +1,3 @@
-/*
- * Copyright 2014 Red Hat, Inc.
- *
- *  All rights reserved. This program and the accompanying materials
- *  are made available under the terms of the Eclipse Public License v1.0
- *  and Apache License v2.0 which accompanies this distribution.
- *
- *  The Eclipse Public License is available at
- *  http://www.eclipse.org/legal/epl-v10.html
- *
- *  The Apache License v2.0 is available at
- *  http://www.opensource.org/licenses/apache2.0.php
- *
- *  You may elect to redistribute this code under either of these licenses.
- */
-
 package io.vertx.example.web.proxy.dashboard;
 
 import io.vertx.core.AbstractVerticle;
@@ -34,9 +18,6 @@ import io.vertx.ext.web.handler.sockjs.SockJSHandler;
 import javax.swing.text.html.Option;
 import java.util.Optional;
 
-/**
- * @author <a href="http://tfox.org">Tim Fox</a>
- */
 public class Dashboard extends AbstractVerticle {
 
     public static final int PORT = 8181;
@@ -53,9 +34,6 @@ public class Dashboard extends AbstractVerticle {
     @Override
     public void start() {
         EventBus bus = new RedisEventBus();
-
-        MetricsService service = MetricsService.create(vertx);
-
         Router router = Router.router(vertx);
 
         // Allow outbound traffic to the news-feed address
@@ -77,7 +55,6 @@ public class Dashboard extends AbstractVerticle {
         // Send a metrics events every 5 second
         vertx.setPeriodic(5000, t -> {
             Optional metrics = bus.subscribe("metrics");
-            System.out.println("metrics " + metrics);
             if(metrics.isPresent()) {
                 vertx.eventBus().publish("metrics", metrics.get());
             }

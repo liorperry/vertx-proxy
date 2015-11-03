@@ -88,7 +88,6 @@ public class ProxyServer extends AbstractVerticle {
         // Send a metrics events every second
         vertx.setPeriodic(1000, t -> {
             String value = metricsService.getMetricsSnapshot(httpServer).encodePrettily();
-            System.out.println("metrics " + value);
             bus.publish("metrics", value);
         });
 
