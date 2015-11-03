@@ -2,10 +2,7 @@ package io.vertx.example.web.proxy;
 
 import com.codahale.metrics.health.HealthCheckRegistry;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Context;
-import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
+import io.vertx.core.*;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientRequest;
@@ -65,7 +62,7 @@ public class ProxyServer extends AbstractVerticle {
     }
 
     @Override
-    public void start() throws Exception {
+    public void start(Future<Void> fut) throws Exception {
         setUpHealthchecks();
 
         // If a config file is set, read the host and port.
@@ -127,7 +124,13 @@ public class ProxyServer extends AbstractVerticle {
                 });
                 req.endHandler((v) -> c_req.end());
             }
-        }).listen(PORT);
+        }).listen(PORT, result -> {
+            if (result.succeeded()) {
+                fut.complete();
+            } else {
+                fut.fail(result.cause());
+            }
+        });
     }
 
 }

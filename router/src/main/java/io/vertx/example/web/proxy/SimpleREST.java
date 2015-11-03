@@ -1,6 +1,7 @@
 package io.vertx.example.web.proxy;
 
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -26,7 +27,7 @@ public class SimpleREST extends AbstractVerticle {
     private Map<String, JsonObject> products = new HashMap<>();
 
     @Override
-    public void start() {
+    public void start(Future<Void> fut) {
         setUpHealthchecks();
 
         setUpInitialData();
@@ -42,7 +43,13 @@ public class SimpleREST extends AbstractVerticle {
         router.put("/serviceB/:productID").handler(this::handleAddProduct);
         router.get("/serviceB").handler(this::handleListProducts);
 
-        vertx.createHttpServer().requestHandler(router::accept).listen(PORT);
+        vertx.createHttpServer().requestHandler(router::accept).listen(PORT, result -> {
+            if (result.succeeded()) {
+                fut.complete();
+            } else {
+                fut.fail(result.cause());
+            }
+        });
     }
 
     private void setUpHealthchecks() {
