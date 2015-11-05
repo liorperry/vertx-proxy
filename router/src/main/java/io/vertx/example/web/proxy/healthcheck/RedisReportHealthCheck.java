@@ -3,20 +3,30 @@ package io.vertx.example.web.proxy.healthcheck;
 import com.codahale.metrics.health.HealthCheck;
 import redis.clients.jedis.Jedis;
 
-public abstract class RedisReportHealthCheck extends HealthCheck{
-    public static final String DOMAIN = "health-checks";
-    private final Jedis jedis;
-    private String key ;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
-    public RedisReportHealthCheck(String name, Jedis client) {
+public abstract class RedisReportHealthCheck extends HealthCheck {
+    public static final String DOMAIN = "services";
+    private final Jedis jedis;
+    private ServiceDescriptor descriptor;
+
+    public RedisReportHealthCheck(ServiceDescriptor serviceDescriptor, Jedis client) {
         this.jedis = client;
-        this.key = DOMAIN + "." + name;
+        this.descriptor = serviceDescriptor;
     }
 
     protected Result report(Result result) {
-        jedis.set(key, Boolean.toString(result.isHealthy()));
-        jedis.expire(key, 5);
+        String key = DOMAIN + "." + descriptor.getServiceName();
+        if (result.isHealthy()) {
+            jedis.sadd(key, buildResult(result));
+            jedis.expire(key, 5);
+        }
         return result;
+    }
+
+    private String buildResult(Result result) {
+        return descriptor.getHost() + ":" + descriptor.getPort();
     }
 
 }

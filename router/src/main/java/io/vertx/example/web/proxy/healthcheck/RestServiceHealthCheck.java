@@ -4,8 +4,8 @@ import redis.clients.jedis.Jedis;
 
 public class RestServiceHealthCheck extends RedisReportHealthCheck {
 
-    public RestServiceHealthCheck(String serviceName, Jedis client) {
-        super(serviceName, client);
+    public RestServiceHealthCheck(ServiceDescriptor serviceDescriptor, Jedis client) {
+        super(serviceDescriptor, client);
     }
 
     @Override

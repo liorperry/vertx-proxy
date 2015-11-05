@@ -11,6 +11,7 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import com.codahale.metrics.health.*;
+import redis.clients.jedis.Jedis;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +55,7 @@ public class SimpleREST extends AbstractVerticle {
 
     private void setUpHealthchecks() {
         final HealthCheckRegistry healthChecks = new HealthCheckRegistry();
-        healthChecks.register("servicesRestCheck", new RestServiceHealthCheck("service"));
+        healthChecks.register("servicesRestCheck", new RestServiceHealthCheck("service",new Jedis()));
         //run periodic health checks
         vertx.setPeriodic(3000, t -> healthChecks.runHealthChecks());
     }
