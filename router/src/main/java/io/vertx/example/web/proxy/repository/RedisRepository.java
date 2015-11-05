@@ -17,9 +17,9 @@ public class RedisRepository implements Repository {
 
     private Jedis jedis;
 
-    public RedisRepository() {
+    public RedisRepository(Jedis client) {
         // Create the redis client
-        jedis = new Jedis("localhost");
+        jedis = client;
     }
 
     @Override

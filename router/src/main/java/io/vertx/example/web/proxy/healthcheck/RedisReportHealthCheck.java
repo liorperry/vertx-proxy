@@ -8,8 +8,8 @@ public abstract class RedisReportHealthCheck extends HealthCheck{
     private final Jedis jedis;
     private String key ;
 
-    public RedisReportHealthCheck(String name) {
-        this.jedis = new Jedis("localhost");
+    public RedisReportHealthCheck(String name, Jedis client) {
+        this.jedis = client;
         this.key = DOMAIN + "." + name;
     }
 

@@ -7,7 +7,7 @@ import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpServer;
-import io.vertx.core.json.JsonObject;
+
 import io.vertx.example.util.Runner;
 import io.vertx.example.web.proxy.events.EventBus;
 import io.vertx.example.web.proxy.events.RedisEventBus;
@@ -22,6 +22,7 @@ import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
 import io.vertx.ext.dropwizard.Match;
 import io.vertx.ext.dropwizard.MatchType;
 import io.vertx.ext.dropwizard.MetricsService;
+import redis.clients.jedis.Jedis;
 
 
 public class ProxyServer extends AbstractVerticle {
@@ -37,6 +38,7 @@ public class ProxyServer extends AbstractVerticle {
         Runner.runExample(ProxyServer.class,options);
     }
 
+    private Jedis client;
     private Filter filter;
     private Repository repository;
     private EventBus bus;
@@ -44,7 +46,8 @@ public class ProxyServer extends AbstractVerticle {
     @Override
     public void init(io.vertx.core.Vertx vertx, Context context) {
         super.init(vertx, context);
-        repository = new RedisRepository();
+        client = new Jedis();
+        repository = new RedisRepository(client);
         bus = new RedisEventBus();
 
         //build chain of filters
@@ -54,16 +57,16 @@ public class ProxyServer extends AbstractVerticle {
                 .build();
     }
 
-    private void setUpHealthchecks() {
+    private void setUpHealthCheck() {
         final HealthCheckRegistry healthChecks = new HealthCheckRegistry();
-        healthChecks.register("servicesRestCheck", new RestServiceHealthCheck("proxy"));
+        healthChecks.register("servicesRestCheck", new RestServiceHealthCheck("proxy",client));
         //run periodic health checks
         vertx.setPeriodic(2000, t -> healthChecks.runHealthChecks());
     }
 
     @Override
     public void start(Future<Void> fut) throws Exception {
-        setUpHealthchecks();
+        setUpHealthCheck();
 
         // If a config file is set, read the host and port.
         HttpClient client = vertx.createHttpClient(new HttpClientOptions());

@@ -1,9 +1,11 @@
 package io.vertx.example.web.proxy.healthcheck;
 
+import redis.clients.jedis.Jedis;
+
 public class RestServiceHealthCheck extends RedisReportHealthCheck {
 
-    public RestServiceHealthCheck(String serviceName) {
-        super(serviceName);
+    public RestServiceHealthCheck(String serviceName, Jedis client) {
+        super(serviceName, client);
     }
 
     @Override
