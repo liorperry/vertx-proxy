@@ -1,35 +1,39 @@
 package io.vertx.example.web.proxy;
 
+import com.codahale.metrics.health.HealthCheckRegistry;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.example.util.Runner;
-import io.vertx.example.web.proxy.healthcheck.RestServiceHealthCheck;
+import io.vertx.example.web.proxy.healthcheck.ReportHealthCheck;
+import io.vertx.example.web.proxy.healthcheck.Reporter;
+import io.vertx.example.web.proxy.healthcheck.ServiceDescriptor;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
-import com.codahale.metrics.health.*;
-import redis.clients.jedis.Jedis;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.vertx.example.web.proxy.VertxInitUtils.HTTP_PORT;
+
 public class SimpleREST extends AbstractVerticle {
 
-    public static final int PORT = 8282;
 
-    // Convenience method so you can run it in your IDE
-    public static void main(String[] args) {
-        Runner.runExample(SimpleREST.class);
+    public static final String REST = "REST";
+    private ServiceDescriptor descriptor;
+    private Reporter reporter;
+
+    public SimpleREST(Reporter reporter) {
+        this.reporter = reporter;
     }
 
     private Map<String, JsonObject> products = new HashMap<>();
 
     @Override
     public void start(Future<Void> fut) {
-        setUpHealthchecks();
+        setUpHealthCheck();
 
         setUpInitialData();
 
@@ -44,7 +48,7 @@ public class SimpleREST extends AbstractVerticle {
         router.put("/serviceB/:productID").handler(this::handleAddProduct);
         router.get("/serviceB").handler(this::handleListProducts);
 
-        vertx.createHttpServer().requestHandler(router::accept).listen(PORT, result -> {
+        vertx.createHttpServer().requestHandler(router::accept).listen(descriptor.getPort(), result -> {
             if (result.succeeded()) {
                 fut.complete();
             } else {
@@ -53,14 +57,17 @@ public class SimpleREST extends AbstractVerticle {
         });
     }
 
-    private void setUpHealthchecks() {
+    private void setUpHealthCheck() {
         final HealthCheckRegistry healthChecks = new HealthCheckRegistry();
-        healthChecks.register("servicesRestCheck", new RestServiceHealthCheck("service",new Jedis()));
+        descriptor = ServiceDescriptor.create(ProxyServer.class,
+                getVertx().getOrCreateContext().config().getInteger(HTTP_PORT));
+        healthChecks.register("servicesRestCheck", ReportHealthCheck.build(REST,descriptor, reporter));
         //run periodic health checks
-        vertx.setPeriodic(3000, t -> healthChecks.runHealthChecks());
+        vertx.setPeriodic(2000, t -> healthChecks.runHealthChecks());
     }
 
     private void handleGetProduct(RoutingContext routingContext) {
+        System.out.println("Rest:"+routingContext.request().uri());
         String productID = routingContext.request().getParam("productID");
         HttpServerResponse response = routingContext.response();
         if (productID == null) {
@@ -76,6 +83,7 @@ public class SimpleREST extends AbstractVerticle {
     }
 
     private void handleAddProduct(RoutingContext routingContext) {
+        System.out.println("Rest:"+routingContext.request().uri());
         String productID = routingContext.request().getParam("productID");
         HttpServerResponse response = routingContext.response();
         if (productID == null) {
@@ -92,6 +100,7 @@ public class SimpleREST extends AbstractVerticle {
     }
 
     private void handleListProducts(RoutingContext routingContext) {
+        System.out.println("Rest:"+routingContext.request().uri());
         JsonArray arr = new JsonArray();
         products.forEach((k, v) -> arr.add(v));
         routingContext.response().putHeader("content-type", "application/json").end(arr.encodePrettily());

@@ -1,10 +1,12 @@
 package io.vertx.example.unit.test;
 
-import io.netty.handler.codec.http.HttpResponseStatus;
+import com.codahale.metrics.health.HealthCheck;
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
-import io.vertx.core.http.HttpServer;
+import io.vertx.core.json.JsonObject;
 import io.vertx.example.web.proxy.SimpleREST;
+import io.vertx.example.web.proxy.VertxInitUtils;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -16,13 +18,16 @@ import org.junit.runner.RunWith;
 @RunWith(VertxUnitRunner.class)
 public class SimpleRestTest {
 
+    public static final int REST_PORT = 8082;
+    public static final String LOCALHOST = "localhost";
     Vertx vertx;
 
     @Before
     public void setUp(TestContext context) {
         vertx = Vertx.vertx();
-        vertx.deployVerticle(SimpleREST.class.getName(),
-                context.asyncAssertSuccess());
+        vertx.deployVerticle(new SimpleREST((result, domain, descriptor) -> HealthCheck.Result.healthy()),
+                new DeploymentOptions().setConfig(
+                        new JsonObject().put(VertxInitUtils.HTTP_PORT, REST_PORT)), context.asyncAssertSuccess());
     }
 
     @After
@@ -40,7 +45,7 @@ public class SimpleRestTest {
         HttpClient client = vertx.createHttpClient();
         Async async = context.async();
         // Send a request and get a response
-        client.getNow(SimpleREST.PORT, "localhost", "/serviceA", resp -> {
+        client.getNow(REST_PORT, LOCALHOST, "/serviceA", resp -> {
             resp.bodyHandler(body -> {
                 System.out.println("/serviceA" + ":" + resp.statusCode() + " [" + body.toString() + "]");
                 context.assertTrue(body.toString().contains("prod7340"));
@@ -57,7 +62,7 @@ public class SimpleRestTest {
         HttpClient client = vertx.createHttpClient();
         Async async = context.async();
         // Send a request and get a response
-        client.getNow(SimpleREST.PORT, "localhost", "/serviceB", resp -> {
+        client.getNow(REST_PORT, LOCALHOST, "/serviceB", resp -> {
             resp.bodyHandler(body -> {
                 System.out.println("/serviceB" + ":" + resp.statusCode() + " [" + body.toString() + "]");
                 context.assertTrue(body.toString().contains("prod7340"));
@@ -73,7 +78,7 @@ public class SimpleRestTest {
     public void testServiceAProd7340(TestContext context) {
         HttpClient client = vertx.createHttpClient();
         Async async = context.async();
-        client.getNow(SimpleREST.PORT, "localhost", "/serviceA/prod7340", resp -> {
+        client.getNow(REST_PORT, LOCALHOST, "/serviceA/prod7340", resp -> {
             resp.bodyHandler(body -> {
                 System.out.println("/serviceA/prod7340" + ":" + resp.statusCode() + " [" + body.toString() + "]");
                 context.assertTrue(body.toString().contains("prod7340"));

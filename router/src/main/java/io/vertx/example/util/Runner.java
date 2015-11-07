@@ -3,6 +3,7 @@ package io.vertx.example.util;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.example.web.proxy.ProxyServer;
 import io.vertx.example.web.proxy.dashboard.Dashboard;
 
 import java.io.File;
@@ -44,6 +45,10 @@ public class Runner {
 
   public static void runJSExampleClustered(String scriptName) {
     runScriptExample(WEB_EXAMPLES_JS_DIR, scriptName, new VertxOptions().setClustered(true));
+  }
+
+  public static void runExample(Class clazz, VertxOptions options, DeploymentOptions deploymentOptions) {
+    runExample(WEB_EXAMPLES_JAVA_DIR, clazz, options, deploymentOptions);
   }
 
   static class JSAuthRunner {

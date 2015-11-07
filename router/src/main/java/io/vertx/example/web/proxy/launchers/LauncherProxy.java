@@ -2,24 +2,17 @@ package io.vertx.example.web.proxy.launchers;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
-import io.vertx.core.VertxOptions;
 import io.vertx.example.util.Runner;
 import io.vertx.example.web.proxy.ProxyServer;
-import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
 
-/**
- * Created by lior on 28/10/2015.
- */
+import java.io.IOException;
+
+import static io.vertx.example.web.proxy.VertxInitUtils.*;
+
 public class LauncherProxy extends AbstractVerticle {
 
-    public static void main(String[] args) {
-        System.out.println("Proxy accepting requests: " + ProxyServer.PORT);
-
-        VertxOptions options = new VertxOptions()
-                .setMetricsOptions(new DropwizardMetricsOptions().setEnabled(true))
-                .setClustered(false);
-        //run
-        Runner.runExample(ProxyServer.class, options);
+    public static void main(String[] args) throws IOException {
+        Runner.runExample(LauncherProxy.class, initOptions(), initDeploymentOptions());
     }
 
     @Override

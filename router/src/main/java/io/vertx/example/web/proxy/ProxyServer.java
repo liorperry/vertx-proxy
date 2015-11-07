@@ -7,49 +7,50 @@ import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpServer;
-
-import io.vertx.example.util.Runner;
 import io.vertx.example.web.proxy.events.EventBus;
 import io.vertx.example.web.proxy.events.RedisEventBus;
 import io.vertx.example.web.proxy.filter.Filter;
 import io.vertx.example.web.proxy.filter.Filter.FilterBuilder;
 import io.vertx.example.web.proxy.filter.ProductFilter;
 import io.vertx.example.web.proxy.filter.ServiceFilter;
-import io.vertx.example.web.proxy.healthcheck.RestServiceHealthCheck;
-import io.vertx.example.web.proxy.repository.RedisRepository;
+import io.vertx.example.web.proxy.healthcheck.ReportHealthCheck;
+import io.vertx.example.web.proxy.healthcheck.Reporter;
+import io.vertx.example.web.proxy.healthcheck.ServiceDescriptor;
+import io.vertx.example.web.proxy.locator.ServiceLocator;
 import io.vertx.example.web.proxy.repository.Repository;
 import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
 import io.vertx.ext.dropwizard.Match;
 import io.vertx.ext.dropwizard.MatchType;
 import io.vertx.ext.dropwizard.MetricsService;
-import redis.clients.jedis.Jedis;
+
+import static io.vertx.example.web.proxy.VertxInitUtils.HTTP_PORT;
+import static io.vertx.example.web.proxy.locator.ServiceLocator.getHost;
+import static io.vertx.example.web.proxy.locator.ServiceLocator.getPort;
 
 
 public class ProxyServer extends AbstractVerticle {
 
-    public static final int PORT = 8080;
+    public static final String PROXY = "PROXY";
 
-    // Convenience method so you can run it in your IDE
-    public static void main(String[] args) {
-        VertxOptions options = new VertxOptions()
-                .setMetricsOptions(new DropwizardMetricsOptions().setEnabled(true))
-                .setClustered(false);
-        //run
-        Runner.runExample(ProxyServer.class,options);
-    }
-
-    private Jedis client;
     private Filter filter;
     private Repository repository;
     private EventBus bus;
+    private ServiceDescriptor descriptor;
+    private Reporter reporter;
+    private ServiceLocator locator;
+
+    public ProxyServer(Filter filter,Repository repository,Reporter reporter,ServiceLocator locator ) {
+        this.filter = filter;
+        this.repository = repository;
+        this.reporter = reporter;
+        this.locator = locator;
+    }
 
     @Override
     public void init(io.vertx.core.Vertx vertx, Context context) {
         super.init(vertx, context);
-        client = new Jedis();
-        repository = new RedisRepository(client);
-        bus = new RedisEventBus();
 
+        bus = new RedisEventBus();
         //build chain of filters
         filter = FilterBuilder.filterBuilder(repository)
                 .add(new ServiceFilter())
@@ -59,7 +60,8 @@ public class ProxyServer extends AbstractVerticle {
 
     private void setUpHealthCheck() {
         final HealthCheckRegistry healthChecks = new HealthCheckRegistry();
-        healthChecks.register("servicesRestCheck", new RestServiceHealthCheck("proxy",client));
+        descriptor = ServiceDescriptor.create(ProxyServer.class, getVertx().getOrCreateContext().config().getInteger(HTTP_PORT));
+        healthChecks.register("servicesProxyCheck", ReportHealthCheck.build(PROXY,descriptor, reporter));
         //run periodic health checks
         vertx.setPeriodic(2000, t -> healthChecks.runHealthChecks());
     }
@@ -86,10 +88,12 @@ public class ProxyServer extends AbstractVerticle {
         MetricsService metricsService = MetricsService.create(vertx);
 
         // Send a metrics events every second
-        vertx.setPeriodic(1000, t -> {
-            String value = metricsService.getMetricsSnapshot(httpServer).encodePrettily();
-            bus.publish("metrics", value);
-        });
+        if (getVertx().getOrCreateContext().config().getBoolean("enable.metrics.publish")) {
+            vertx.setPeriodic(1000, t -> {
+                String value = metricsService.getMetricsSnapshot(httpServer).encodePrettily();
+                bus.publish("metrics", value);
+            });
+        }
 
         //request handling
         httpServer.requestHandler(req -> {
@@ -105,10 +109,9 @@ public class ProxyServer extends AbstractVerticle {
                 req.endHandler((v) -> req.response().end());
 
             } else {
-                //send message stratistics
-                vertx.eventBus().send("whatever", req.uri());
-
-                HttpClientRequest c_req = client.request(req.method(), SimpleREST.PORT, "localhost", req.uri(), c_res -> {
+                String address = locator.getService(req.uri()).get();
+                System.out.println("ServiceLocator:"+req.uri()+"->"+getHost(address)+":"+getPort(address));
+                HttpClientRequest c_req = client.request(req.method(), getPort(address), getHost(address), req.uri(), c_res -> {
                     System.out.println("Proxying response: " + c_res.statusCode());
                     req.response().setChunked(true);
                     req.response().setStatusCode(c_res.statusCode());
@@ -127,7 +130,7 @@ public class ProxyServer extends AbstractVerticle {
                 });
                 req.endHandler((v) -> c_req.end());
             }
-        }).listen(PORT, result -> {
+        }).listen(descriptor.getPort(), result -> {
             if (result.succeeded()) {
                 fut.complete();
             } else {
