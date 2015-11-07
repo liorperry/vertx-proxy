@@ -1,6 +1,5 @@
 package io.vertx.example.web.proxy;
 
-import com.codahale.metrics.health.HealthCheckRegistry;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.*;
 import io.vertx.core.http.HttpClient;
@@ -13,10 +12,10 @@ import io.vertx.example.web.proxy.filter.Filter;
 import io.vertx.example.web.proxy.filter.Filter.FilterBuilder;
 import io.vertx.example.web.proxy.filter.ProductFilter;
 import io.vertx.example.web.proxy.filter.ServiceFilter;
-import io.vertx.example.web.proxy.healthcheck.ReportHealthCheck;
 import io.vertx.example.web.proxy.healthcheck.Reporter;
-import io.vertx.example.web.proxy.healthcheck.ServiceDescriptor;
+import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 import io.vertx.example.web.proxy.locator.ServiceLocator;
+import io.vertx.example.web.proxy.locator.ServiceRegistry;
 import io.vertx.example.web.proxy.repository.Repository;
 import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
 import io.vertx.ext.dropwizard.Match;
@@ -35,9 +34,10 @@ public class ProxyServer extends AbstractVerticle {
     private Filter filter;
     private Repository repository;
     private EventBus bus;
-    private ServiceDescriptor descriptor;
     private Reporter reporter;
     private ServiceLocator locator;
+    private ServiceRegistry serviceRegistry;
+    private int port;
 
     public ProxyServer(Filter filter,Repository repository,Reporter reporter,ServiceLocator locator ) {
         this.filter = filter;
@@ -49,7 +49,7 @@ public class ProxyServer extends AbstractVerticle {
     @Override
     public void init(io.vertx.core.Vertx vertx, Context context) {
         super.init(vertx, context);
-
+        serviceRegistry = new ServiceRegistry();
         bus = new RedisEventBus();
         //build chain of filters
         filter = FilterBuilder.filterBuilder(repository)
@@ -58,17 +58,12 @@ public class ProxyServer extends AbstractVerticle {
                 .build();
     }
 
-    private void setUpHealthCheck() {
-        final HealthCheckRegistry healthChecks = new HealthCheckRegistry();
-        descriptor = ServiceDescriptor.create(ProxyServer.class, getVertx().getOrCreateContext().config().getInteger(HTTP_PORT));
-        healthChecks.register("servicesProxyCheck", ReportHealthCheck.build(PROXY,descriptor, reporter));
-        //run periodic health checks
-        vertx.setPeriodic(2000, t -> healthChecks.runHealthChecks());
-    }
-
     @Override
     public void start(Future<Void> fut) throws Exception {
-        setUpHealthCheck();
+        port = vertx.getOrCreateContext().config().getInteger(HTTP_PORT);
+        serviceRegistry.register(ServiceDescriptor.create("manage", port));
+        //set services health checks
+        Reporter.setUpHealthCheck(getVertx(),PROXY,serviceRegistry,reporter);
 
         // If a config file is set, read the host and port.
         HttpClient client = vertx.createHttpClient(new HttpClientOptions());
@@ -130,7 +125,7 @@ public class ProxyServer extends AbstractVerticle {
                 });
                 req.endHandler((v) -> c_req.end());
             }
-        }).listen(descriptor.getPort(), result -> {
+        }).listen(this.port, result -> {
             if (result.succeeded()) {
                 fut.complete();
             } else {

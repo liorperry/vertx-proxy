@@ -1,36 +1,60 @@
 package io.vertx.example.web.proxy;
 
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Future;
+import io.vertx.core.Vertx;
 import redis.clients.jedis.Jedis;
 import redis.embedded.RedisServer;
+import redis.embedded.exceptions.EmbeddedRedisException;
 
 import java.io.IOException;
 
-/**
- * Created by lior on 28/10/2015.
- */
-public class RedisStarted  {
+public class RedisStarted extends AbstractVerticle {
     public static final String SERVICES = "services";
     public static final String PRODUCTS = "products";
+    private static RedisServer redisServer;
+
     private final Jedis jedis;
 
-    public RedisStarted() {
-        jedis = new Jedis("localhost");
+    public RedisStarted(Jedis client) {
+        jedis = client;
     }
 
     public static void main(String[] args) throws Exception {
-        new RedisStarted().start();
+        Vertx vertx = Vertx.vertx();
+        vertx.deployVerticle(new RedisStarted(new Jedis()));
     }
 
-    public void start() throws Exception {
-        launchRedis();
+    public void start(Future<Void> fut) {
+        try {
+            launchRedis();
+            fut.complete();
+        } catch (IOException e) {
+            fut.fail(e);
+        }
+    }
+
+    @Override
+    public void stop(Future<Void> stopFuture) throws Exception {
+        super.stop(stopFuture);
+        try {
+            redisServer.stop();
+            stopFuture.complete();
+        } catch (EmbeddedRedisException e) {
+            stopFuture.fail(e);
+        }
     }
 
     private void launchRedis() throws IOException {
-        RedisServer redisServer = new RedisServer(6379);
-        redisServer.start();
+        startRedis();
         populate();
-        System.out.println("Starting redis:6379");
 
+    }
+
+    public static void startRedis() throws IOException {
+        redisServer = new RedisServer(6379);
+        redisServer.start();
+        System.out.println("Starting redis:6379");
     }
 
     private void populate() {

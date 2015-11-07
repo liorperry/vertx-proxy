@@ -1,10 +1,13 @@
 package io.vertx.example.util;
 
+import com.codahale.metrics.health.HealthCheckRegistry;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.example.web.proxy.ProxyServer;
-import io.vertx.example.web.proxy.dashboard.Dashboard;
+import io.vertx.example.web.proxy.healthcheck.ReportHealthCheck;
+import io.vertx.example.web.proxy.healthcheck.Reporter;
+import io.vertx.example.web.proxy.locator.ServiceDescriptor;
+import io.vertx.example.web.proxy.locator.ServiceRegistry;
 
 import java.io.File;
 import java.io.IOException;

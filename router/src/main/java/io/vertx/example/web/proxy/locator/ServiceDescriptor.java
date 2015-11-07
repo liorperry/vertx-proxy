@@ -1,12 +1,12 @@
-package io.vertx.example.web.proxy.healthcheck;
-
-import io.vertx.example.web.proxy.ProxyServer;
+package io.vertx.example.web.proxy.locator;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
+import java.util.UUID;
 
 public class ServiceDescriptor {
     private String serviceName;
+    private UUID uuid;
     private String host;
     private int port;
 
@@ -14,6 +14,7 @@ public class ServiceDescriptor {
         this.serviceName = serviceName;
         this.host = host;
         this.port = port;
+        this.uuid = UUID.randomUUID();
     }
 
     public String getServiceName() {
@@ -28,13 +29,21 @@ public class ServiceDescriptor {
         return port;
     }
 
-    public static ServiceDescriptor create(Class<ProxyServer> clazz, int port)  {
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public static ServiceDescriptor create(String serviceName,String hostAddress, int port)  {
+        return new ServiceDescriptor(serviceName, hostAddress,port);
+    }
+
+    public static ServiceDescriptor create(String serviceName, int port)  {
         String hostAddress = "127.0.0.1";
         try {
             hostAddress = Inet4Address.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        return new ServiceDescriptor(clazz.getSimpleName(), hostAddress,port);
+        return create(serviceName,hostAddress,port);
     }
 }

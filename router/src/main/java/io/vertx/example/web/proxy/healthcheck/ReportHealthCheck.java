@@ -1,6 +1,7 @@
 package io.vertx.example.web.proxy.healthcheck;
 
 import com.codahale.metrics.health.HealthCheck;
+import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 
 public abstract class ReportHealthCheck extends HealthCheck {
     private ServiceDescriptor descriptor;

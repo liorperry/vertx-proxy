@@ -8,9 +8,6 @@ import java.util.Optional;
 
 import static io.vertx.example.web.proxy.filter.FilterUtils.*;
 
-/**
- * Created by INTERNET on 29/10/2015.
- */
 public class RedisRepository implements Repository {
     public static final String SERVICES = "services";
     public static final String PRODUCTS = "products";

@@ -1,5 +1,6 @@
 package io.vertx.example.web.proxy.locator;
 
+import com.google.common.collect.Sets;
 import io.vertx.example.web.proxy.filter.FilterUtils;
 import redis.clients.jedis.Jedis;
 
@@ -24,8 +25,10 @@ public class RedisServiceLocator implements ServiceLocator{
             return Optional.empty();
         }
         //update keys in pool - if absent
-        Set<String> keys = client.keys(domain + "." + service + "*");
-        pool.addServices(service.get(), keys);
+        Set<String> keys = client.keys(domain + "." + service.get() + "*");
+        //get values according to keys from redis
+        String[] values = keys.stream().map(s -> client.get(s)).toArray(String[]::new );
+        pool.addServices(service.get(), Sets.newHashSet(values));
         //get next (circular loop) round robin
         return pool.get(service.get());
     }

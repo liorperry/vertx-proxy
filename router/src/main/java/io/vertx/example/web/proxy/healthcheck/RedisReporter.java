@@ -1,6 +1,7 @@
 package io.vertx.example.web.proxy.healthcheck;
 
 import com.codahale.metrics.health.HealthCheck;
+import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 import redis.clients.jedis.Jedis;
 
 import static io.vertx.example.web.proxy.healthcheck.ReportHealthCheck.buildResult;
@@ -8,19 +9,22 @@ import static io.vertx.example.web.proxy.healthcheck.ReportHealthCheck.buildResu
 public class RedisReporter implements Reporter{
 
     private Jedis jedis;
+    private int expirationTime = 5;
 
-    public RedisReporter(Jedis jedis) {
+    public RedisReporter(Jedis jedis, int expirationTime) {
         this.jedis = jedis;
+        this.expirationTime = expirationTime;
     }
 
     public HealthCheck.Result report(HealthCheck.Result result,String domain,ServiceDescriptor descriptor) {
-        String key = domain + "." + descriptor.getServiceName();
+        String key = domain + "." + descriptor.getServiceName() + "@" +descriptor.getUuid();
         if (result.isHealthy()) {
-            jedis.sadd(key, buildResult(descriptor));
-            jedis.expire(key, 5);
+            jedis.set(key, buildResult(descriptor));
+            jedis.expire(key, expirationTime);
+            System.out.println("Reporting live ["+key+"] :"+buildResult(descriptor));
         } else {
             //remove service from health services pool
-            jedis.srem(key, buildResult(descriptor));
+            jedis.del(key, buildResult(descriptor));
         }
         return result;
     }

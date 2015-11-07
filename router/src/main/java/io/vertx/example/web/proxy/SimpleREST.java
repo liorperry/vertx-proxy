@@ -1,14 +1,13 @@
 package io.vertx.example.web.proxy;
 
-import com.codahale.metrics.health.HealthCheckRegistry;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.example.web.proxy.healthcheck.ReportHealthCheck;
 import io.vertx.example.web.proxy.healthcheck.Reporter;
-import io.vertx.example.web.proxy.healthcheck.ServiceDescriptor;
+import io.vertx.example.web.proxy.locator.ServiceDescriptor;
+import io.vertx.example.web.proxy.locator.ServiceRegistry;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -22,8 +21,9 @@ public class SimpleREST extends AbstractVerticle {
 
 
     public static final String REST = "REST";
-    private ServiceDescriptor descriptor;
+    private ServiceRegistry serviceRegistry;
     private Reporter reporter;
+    private int port;
 
     public SimpleREST(Reporter reporter) {
         this.reporter = reporter;
@@ -33,10 +33,16 @@ public class SimpleREST extends AbstractVerticle {
 
     @Override
     public void start(Future<Void> fut) {
-        setUpHealthCheck();
+        serviceRegistry = new ServiceRegistry();
+        port = vertx.getOrCreateContext().config().getInteger(HTTP_PORT);
+        //register services
+        serviceRegistry.register(ServiceDescriptor.create("serviceA", port));
+        serviceRegistry.register(ServiceDescriptor.create("serviceB", port));
+
+        //set services health checks
+        Reporter.setUpHealthCheck(getVertx(), REST, serviceRegistry, reporter);
 
         setUpInitialData();
-
         Router router = Router.router(vertx);
 
         router.route().handler(BodyHandler.create());
@@ -48,22 +54,13 @@ public class SimpleREST extends AbstractVerticle {
         router.put("/serviceB/:productID").handler(this::handleAddProduct);
         router.get("/serviceB").handler(this::handleListProducts);
 
-        vertx.createHttpServer().requestHandler(router::accept).listen(descriptor.getPort(), result -> {
+        vertx.createHttpServer().requestHandler(router::accept).listen(port, result -> {
             if (result.succeeded()) {
                 fut.complete();
             } else {
                 fut.fail(result.cause());
             }
         });
-    }
-
-    private void setUpHealthCheck() {
-        final HealthCheckRegistry healthChecks = new HealthCheckRegistry();
-        descriptor = ServiceDescriptor.create(ProxyServer.class,
-                getVertx().getOrCreateContext().config().getInteger(HTTP_PORT));
-        healthChecks.register("servicesRestCheck", ReportHealthCheck.build(REST,descriptor, reporter));
-        //run periodic health checks
-        vertx.setPeriodic(2000, t -> healthChecks.runHealthChecks());
     }
 
     private void handleGetProduct(RoutingContext routingContext) {
