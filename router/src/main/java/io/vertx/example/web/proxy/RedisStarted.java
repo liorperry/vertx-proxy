@@ -52,8 +52,10 @@ public class RedisStarted extends AbstractVerticle {
     }
 
     public static void startRedis() throws IOException {
+/*
         redisServer = new RedisServer(6379);
         redisServer.start();
+*/
         System.out.println("Starting redis:6379");
     }
 
@@ -64,6 +66,8 @@ public class RedisStarted extends AbstractVerticle {
         jedis.hset(SERVICES, "serviceA", "true");
         System.out.println(" >> hset services serviceB false");
         jedis.hset(SERVICES, "serviceB", "false");
+        System.out.println(" >> hset services whoAmI true");
+        jedis.hset(SERVICES, "whoAmI", "true");
 
         System.out.println(" Create products set");
         System.out.println(" >> hset products prod3568 false");

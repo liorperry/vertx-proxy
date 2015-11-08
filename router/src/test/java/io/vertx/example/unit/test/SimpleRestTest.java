@@ -58,6 +58,21 @@ public class SimpleRestTest {
     }
 
     @Test
+    public void testWhoAmI(TestContext context) {
+        HttpClient client = vertx.createHttpClient();
+        Async async = context.async();
+        // Send a request and get a response
+        client.getNow(REST_PORT, LOCALHOST, "/whoAmI", resp -> {
+            resp.bodyHandler(body -> {
+                System.out.println("/whoAmI" + ":" + resp.statusCode() + " [" + body.toString() + "]");
+                context.assertTrue(body.toString().contains(Integer.toString(REST_PORT)));
+                async.complete();
+                client.close();
+            });
+        });
+    }
+
+    @Test
     public void testServiceB(TestContext context) {
         HttpClient client = vertx.createHttpClient();
         Async async = context.async();

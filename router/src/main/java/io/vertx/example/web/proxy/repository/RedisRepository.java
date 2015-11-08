@@ -1,5 +1,7 @@
 package io.vertx.example.web.proxy.repository;
 
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import redis.clients.jedis.Jedis;
 
 import java.util.Collections;
@@ -42,12 +44,13 @@ public class RedisRepository implements Repository {
             return Optional.empty();
         }
 
-        String value = jedis.hget(SERVICES, service.get());
-        if(value==null) {
+//        String value = jedis.hget(SERVICES, service.get());
+        Map<String, String> map = jedis.hgetAll(SERVICES);
+        if(map==null || !map.containsKey(service.get())) {
             System.out.println(" Service "+service +" not found in keys set");
             return Optional.empty();
         }
-        return Optional.of(Boolean.valueOf(value));
+        return Optional.of(Boolean.valueOf(map.get(service.get())));
     }
 
     @Override
@@ -62,6 +65,13 @@ public class RedisRepository implements Repository {
             return Optional.empty();
         }
         return Optional.of(Boolean.valueOf(value));
+    }
+
+    @Override
+    public void close(Handler<AsyncResult<Void>> completionHandler) {
+        if(jedis.isConnected()) {
+            jedis.close();
+        }
     }
 
 }

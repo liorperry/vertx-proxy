@@ -32,12 +32,19 @@ public class SimpleREST extends AbstractVerticle {
     private Map<String, JsonObject> products = new HashMap<>();
 
     @Override
+    public void stop(Future<Void> stopFuture) throws Exception {
+        super.stop();
+        reporter.close(event -> {stopFuture.complete();});
+    }
+
+    @Override
     public void start(Future<Void> fut) {
         serviceRegistry = new ServiceRegistry();
         port = vertx.getOrCreateContext().config().getInteger(HTTP_PORT);
         //register services
         serviceRegistry.register(ServiceDescriptor.create("serviceA", port));
         serviceRegistry.register(ServiceDescriptor.create("serviceB", port));
+        serviceRegistry.register(ServiceDescriptor.create("whoAmI", port));
 
         //set services health checks
         Reporter.setUpHealthCheck(getVertx(), REST, serviceRegistry, reporter);
@@ -46,6 +53,7 @@ public class SimpleREST extends AbstractVerticle {
         Router router = Router.router(vertx);
 
         router.route().handler(BodyHandler.create());
+        router.get("/whoAmI").handler(this::whoAmIHandler);
         router.get("/serviceA/:productID").handler(this::handleGetProduct);
         router.put("/serviceA/:productID").handler(this::handleAddProduct);
         router.get("/serviceA").handler(this::handleListProducts);
@@ -61,6 +69,14 @@ public class SimpleREST extends AbstractVerticle {
                 fut.fail(result.cause());
             }
         });
+    }
+
+    private void whoAmIHandler(RoutingContext routingContext) {
+        System.out.println("Rest:"+routingContext.request().uri() + " : " + port  );
+        HttpServerResponse response = routingContext.response();
+        JsonObject entries = new JsonObject();
+        entries.put(routingContext.request().uri(),port);
+        response.putHeader("content-type", "application/json").end(entries.encodePrettily());
     }
 
     private void handleGetProduct(RoutingContext routingContext) {

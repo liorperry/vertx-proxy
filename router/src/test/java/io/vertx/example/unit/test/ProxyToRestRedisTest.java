@@ -52,7 +52,7 @@ public class ProxyToRestRedisTest {
         Jedis client = new Jedis("localhost");
 
         //deploy redis server
-        vertx.deployVerticle(new RedisStarted(client), context.asyncAssertSuccess());
+//        vertx.deployVerticle(new RedisStarted(client), context.asyncAssertSuccess());
         //deploy rest server
         vertx.deployVerticle(new SimpleREST(new RedisReporter(client,25 )),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST_PORT)),

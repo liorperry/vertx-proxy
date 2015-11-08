@@ -1,5 +1,8 @@
 package io.vertx.example.web.proxy.repository;
 
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -56,4 +59,6 @@ public class LocalCacheRepository implements Repository {
         return Optional.of(Boolean.valueOf(value));
     }
 
+    @Override
+    public void close(Handler<AsyncResult<Void>> completionHandler) {}
 }

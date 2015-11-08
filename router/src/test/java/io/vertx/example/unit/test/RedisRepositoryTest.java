@@ -22,6 +22,7 @@ public class RedisRepositoryTest {
     //SERVICES
     public static final String SERVICE_A_OPEN = "serviceA";
     public static final String SERVICE_B_BLOCKED = "serviceB";
+    public static final String WHO_AM_I = "whoAmI";
     //PRODUCTS
     public static final String PROD3568_BLOCKED = "prod3568";
     public static final String PROD7340_OPED = "prod7340";
@@ -41,8 +42,9 @@ public class RedisRepositoryTest {
     public void testRepositoryGetServices() throws Exception {
         RedisRepository repository = new RedisRepository(client);
         Map<String, String> services = repository.getServices();
-        assertEquals(services.size(),2);
+        assertEquals(services.size(),3);
         assertTrue(Boolean.valueOf(services.get(SERVICE_A_OPEN)));
+        assertTrue(Boolean.valueOf(services.get(WHO_AM_I)));
         assertTrue(!Boolean.valueOf(services.get(SERVICE_B_BLOCKED)));
 
         Optional<Boolean> service = repository.getService("/" + SERVICE_A_OPEN + "/" + PROD7340_OPED);

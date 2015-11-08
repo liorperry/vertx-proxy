@@ -1,6 +1,8 @@
 package io.vertx.example.web.proxy.healthcheck;
 
 import com.codahale.metrics.health.HealthCheck;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 import redis.clients.jedis.Jedis;
 
@@ -29,4 +31,10 @@ public class RedisReporter implements Reporter{
         return result;
     }
 
+    @Override
+    public void close(Handler<AsyncResult<Void>> completionHandler) {
+        if(jedis.isConnected()) {
+            jedis.close();
+        }
+    }
 }

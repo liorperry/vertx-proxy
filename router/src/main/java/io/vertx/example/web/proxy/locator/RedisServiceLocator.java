@@ -1,6 +1,8 @@
 package io.vertx.example.web.proxy.locator;
 
 import com.google.common.collect.Sets;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.example.web.proxy.filter.FilterUtils;
 import redis.clients.jedis.Jedis;
 
@@ -36,5 +38,12 @@ public class RedisServiceLocator implements ServiceLocator{
     @Override
     public String getDomain() {
         return domain;
+    }
+
+    @Override
+    public void close(Handler<AsyncResult<Void>> completionHandler) {
+        if(client.isConnected()) {
+            client.close();
+        }
     }
 }

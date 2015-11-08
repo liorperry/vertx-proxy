@@ -1,5 +1,6 @@
 package io.vertx.example.web.proxy.repository;
 
+import io.vertx.core.impl.Closeable;
 import io.vertx.example.web.proxy.filter.ParseUtils;
 
 import java.util.Map;
@@ -7,10 +8,7 @@ import java.util.Optional;
 
 import static io.vertx.example.web.proxy.filter.ParseUtils.*;
 
-/**
- * Created by INTERNET on 29/10/2015.
- */
-public interface Repository {
+public interface Repository extends Closeable {
 
     public Map<String, String> getServices();
 

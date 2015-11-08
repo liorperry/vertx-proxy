@@ -1,5 +1,7 @@
 package io.vertx.example.web.proxy.locator;
 
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.example.web.proxy.filter.FilterUtils;
 
 import java.util.Optional;
@@ -28,6 +30,11 @@ public class InMemServiceLocator implements ServiceLocator {
 
     public String getDomain() {
         return domain;
+    }
+
+    @Override
+    public void close(Handler<AsyncResult<Void>> completionHandler) {
+
     }
 }
 

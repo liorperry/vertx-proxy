@@ -1,8 +1,10 @@
 package io.vertx.example.web.proxy.locator;
 
+import io.vertx.core.impl.Closeable;
+
 import java.util.Optional;
 
-public interface ServiceLocator {
+public interface ServiceLocator extends Closeable {
 
     Optional<String> getService(String uri);
 

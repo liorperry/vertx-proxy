@@ -22,6 +22,7 @@ import io.vertx.ext.dropwizard.Match;
 import io.vertx.ext.dropwizard.MatchType;
 import io.vertx.ext.dropwizard.MetricsService;
 
+import static io.vertx.example.web.proxy.VertxInitUtils.ENABLE_METRICS_PUBLISH;
 import static io.vertx.example.web.proxy.VertxInitUtils.HTTP_PORT;
 import static io.vertx.example.web.proxy.locator.ServiceLocator.getHost;
 import static io.vertx.example.web.proxy.locator.ServiceLocator.getPort;
@@ -59,6 +60,14 @@ public class ProxyServer extends AbstractVerticle {
     }
 
     @Override
+    public void stop(Future<Void> stopFuture) throws Exception {
+        super.stop();
+        reporter.close(event -> {});
+        locator.close(event -> {});
+        repository.close(event -> {});
+    }
+
+    @Override
     public void start(Future<Void> fut) throws Exception {
         port = vertx.getOrCreateContext().config().getInteger(HTTP_PORT);
         serviceRegistry.register(ServiceDescriptor.create("manage", port));
@@ -83,7 +92,7 @@ public class ProxyServer extends AbstractVerticle {
         MetricsService metricsService = MetricsService.create(vertx);
 
         // Send a metrics events every second
-        if (getVertx().getOrCreateContext().config().getBoolean("enable.metrics.publish")) {
+        if (getVertx().getOrCreateContext().config().getBoolean(ENABLE_METRICS_PUBLISH)) {
             vertx.setPeriodic(1000, t -> {
                 String value = metricsService.getMetricsSnapshot(httpServer).encodePrettily();
                 bus.publish("metrics", value);
