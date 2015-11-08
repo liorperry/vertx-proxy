@@ -3,6 +3,7 @@ package io.vertx.example.unit.test;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
+import io.vertx.core.impl.ConcurrentHashSet;
 import io.vertx.core.json.JsonObject;
 import io.vertx.example.web.proxy.ProxyServer;
 import io.vertx.example.web.proxy.SimpleREST;
@@ -14,6 +15,9 @@ import io.vertx.example.web.proxy.repository.Repository;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import junit.framework.Assert;
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import static io.vertx.example.web.proxy.VertxInitUtils.ENABLE_METRICS_PUBLISH;
 import static io.vertx.example.web.proxy.VertxInitUtils.HTTP_PORT;
+import static junit.framework.Assert.*;
 
 @RunWith(VertxUnitRunner.class)
 public class MultiProxyToMultiRestRedisTest {
@@ -40,9 +45,11 @@ public class MultiProxyToMultiRestRedisTest {
 
     private static Vertx vertx;
     private static Repository repository;
+    private static Set<Integer> ports ;
 
     @BeforeClass
     public static void setUp(TestContext context) throws IOException, InterruptedException {
+        ports = new ConcurrentHashSet<>();
         //start verticals
         vertx = Vertx.vertx();
         //start redis client
@@ -74,8 +81,7 @@ public class MultiProxyToMultiRestRedisTest {
     }
 
     @Test
-    public void testServiceWhoAmI(TestContext context) throws InterruptedException {
-        Set<Integer> ports = new HashSet<>();
+    public void testServiceWhoAmIFirst(TestContext context) throws InterruptedException {
         Async async = context.async();
         // Send a request and get a response
         final String requestURI = "/" + WHO_AM_I;
@@ -87,11 +93,42 @@ public class MultiProxyToMultiRestRedisTest {
                 JsonObject entries1 = new JsonObject(body1.toString());
                 System.out.println(requestURI + ":" + entries1.encodePrettily());
                 ports.add(entries1.getInteger(requestURI));
-                context.assertEquals(ports.size(), 1);
+                if(ports.isEmpty()) {
+                    context.assertEquals(ports.size(), 1);
+                } else {
+                    context.assertEquals(ports.size(), 2);
+                }
                 async.complete();
             });
         });
 
     }
 
+    @Test
+    public void testServiceWhoAmISecond(TestContext context) throws InterruptedException {
+        Async async = context.async();
+        // Send a request and get a response
+        final String requestURI = "/" + WHO_AM_I;
+        HttpClient httpClient = vertx.createHttpClient();
+
+        //first request
+        httpClient.getNow(PROXY_PORT, LOCALHOST, requestURI, resp1 -> {
+            resp1.bodyHandler(body1 -> {
+                JsonObject entries1 = new JsonObject(body1.toString());
+                System.out.println(requestURI + ":" + entries1.encodePrettily());
+                ports.add(entries1.getInteger(requestURI));
+                if(ports.isEmpty()) {
+                    context.assertEquals(ports.size(), 1);
+                } else {
+                    context.assertEquals(ports.size(), 2);
+                }
+                async.complete();
+            });
+        });
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        assertEquals(ports.size(), 2);
+    }
 }
