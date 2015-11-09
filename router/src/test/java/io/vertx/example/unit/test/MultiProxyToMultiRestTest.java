@@ -27,7 +27,7 @@ import static io.vertx.example.web.proxy.VertxInitUtils.ENABLE_METRICS_PUBLISH;
 import static io.vertx.example.web.proxy.VertxInitUtils.HTTP_PORT;
 
 @RunWith(VertxUnitRunner.class)
-public class MultiProxyToMultiRestRedisTest {
+public class MultiProxyToMultiRestTest {
 
     public static final int PROXY_PORT = 8080;
     public static final int REST1_PORT = 8082;

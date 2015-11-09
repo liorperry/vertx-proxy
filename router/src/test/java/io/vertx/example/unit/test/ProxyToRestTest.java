@@ -59,7 +59,7 @@ public class ProxyToRestTest {
         vertx.deployVerticle(new ProxyServer(
                         Filter.FilterBuilder.filterBuilder(repository).build(),repository,
                         (result, domain, descriptor) -> HealthCheck.Result.healthy(),
-                        new InMemServiceLocator(SERVICE_A_OPEN,services)),
+                        new InMemServiceLocator(SERVICE_A_OPEN,services, )),
                 new DeploymentOptions().setConfig(new JsonObject()
                         .put(HTTP_PORT, PROXY_PORT)
                         .put(ENABLE_METRICS_PUBLISH, false)),

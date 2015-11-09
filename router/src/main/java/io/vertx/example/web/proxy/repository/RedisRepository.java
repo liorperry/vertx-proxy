@@ -68,6 +68,30 @@ public class RedisRepository implements Repository {
     }
 
     @Override
+    public boolean blockService(String serviceName) {
+        jedis.hset(SERVICES,serviceName,Boolean.FALSE.toString());
+        return true;
+    }
+
+    @Override
+    public boolean openService(String serviceName) {
+        jedis.hset(SERVICES,serviceName,Boolean.TRUE.toString());
+        return true;
+    }
+
+    @Override
+    public boolean blockProduct(String productName) {
+        jedis.hset(PRODUCTS, productName, Boolean.FALSE.toString());
+        return false;
+    }
+
+    @Override
+    public boolean openProduct(String productName) {
+        jedis.hset(PRODUCTS, productName, Boolean.TRUE.toString());
+        return false;
+    }
+
+    @Override
     public void close(Handler<AsyncResult<Void>> completionHandler) {
         if(jedis.isConnected()) {
             jedis.close();

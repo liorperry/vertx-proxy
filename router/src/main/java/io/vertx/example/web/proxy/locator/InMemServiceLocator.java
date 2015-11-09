@@ -4,15 +4,18 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.example.web.proxy.filter.FilterUtils;
 
+import java.rmi.registry.Registry;
 import java.util.Optional;
 import java.util.Set;
 
 public class InMemServiceLocator implements ServiceLocator {
     private String domain;
     private RoundRobinPool pool;
+    private Registry registry;
 
-    public InMemServiceLocator(String domain, Set<String> services) {
+    public InMemServiceLocator(String domain, Set<String> services, Registry registry) {
         this.domain = domain;
+        this.registry = registry;
         this.pool = new RoundRobinPool();
         //update keys in pool - if absent
         pool.addServices(domain, services);

@@ -17,7 +17,7 @@ public interface Reporter extends Closeable {
      * @param reporter
      * @return
      */
-    public static void setUpHealthCheck(Vertx vertx,String domain, ServiceRegistry registry,Reporter reporter) {
+    static void setUpHealthCheck(Vertx vertx,String domain, ServiceRegistry registry,Reporter reporter) {
         final HealthCheckRegistry healthChecks = new HealthCheckRegistry();
         for (ServiceDescriptor descriptor : registry.getServices()) {
             healthChecks.register(descriptor.getServiceName(), ReportHealthCheck.build(domain, descriptor, reporter));

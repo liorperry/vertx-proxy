@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static io.vertx.example.web.proxy.filter.FilterUtils.extractProduct;
 import static io.vertx.example.web.proxy.filter.FilterUtils.extractService;
+import static java.lang.Boolean.TRUE;
 
 public class LocalCacheRepository implements Repository {
 
@@ -57,6 +58,26 @@ public class LocalCacheRepository implements Repository {
             return Optional.empty();
         }
         return Optional.of(Boolean.valueOf(value));
+    }
+
+    @Override
+    public boolean blockProduct(String productName) {
+        return Boolean.parseBoolean(productsMap.put(productName,Boolean.FALSE.toString()));
+    }
+
+    @Override
+    public boolean openProduct(String productName) {
+        return Boolean.parseBoolean(productsMap.put(productName, TRUE.toString()));
+    }
+
+    @Override
+    public boolean blockService(String serviceName) {
+        return Boolean.parseBoolean(servicesMap.put(serviceName,Boolean.FALSE.toString()));
+    }
+
+    @Override
+    public boolean openService(String serviceName) {
+        return Boolean.parseBoolean(servicesMap.put(serviceName, TRUE.toString()));
     }
 
     @Override

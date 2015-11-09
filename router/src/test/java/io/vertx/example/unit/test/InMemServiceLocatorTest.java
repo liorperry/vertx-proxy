@@ -1,10 +1,7 @@
 package io.vertx.example.unit.test;
 
 import io.vertx.example.web.proxy.locator.InMemServiceLocator;
-import io.vertx.example.web.proxy.repository.LocalCacheRepository;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import junit.framework.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -22,7 +19,7 @@ public class InMemServiceLocatorTest {
     public void serviceLocatorSingleHostTest() {
         services = new HashSet<>();
         services.add("localhost:8080");
-        locator = new InMemServiceLocator("test",services);
+        locator = new InMemServiceLocator("test",services, );
         Optional<String> service = locator.getService("/test/prod123");
         assertTrue(service.isPresent());
         assertEquals(service.get(), "localhost:8080");
@@ -44,7 +41,7 @@ public class InMemServiceLocatorTest {
         services.add("localhost:8080");
         services.add("localhost1:8080");
         services.add("localhost2:8080");
-        locator = new InMemServiceLocator("test",services);
+        locator = new InMemServiceLocator("test",services, );
 
         Optional<String> service = Optional.empty();
         for (int i = 0; i < 90; i++) {
