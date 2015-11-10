@@ -1,4 +1,4 @@
-package io.vertx.example.unit.test;
+package io.vertx.example.unit.test.local;
 
 import com.codahale.metrics.health.HealthCheck;
 import io.vertx.core.DeploymentOptions;
@@ -10,9 +10,7 @@ import io.vertx.example.web.proxy.VertxInitUtils;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 @RunWith(VertxUnitRunner.class)
@@ -20,25 +18,21 @@ public class SimpleRestTest {
 
     public static final int REST_PORT = 8082;
     public static final String LOCALHOST = "localhost";
-    Vertx vertx;
+    static Vertx vertx;
 
-    @Before
-    public void setUp(TestContext context) {
+    @BeforeClass
+    public static void setUp(TestContext context) {
         vertx = Vertx.vertx();
         vertx.deployVerticle(new SimpleREST((result, domain, descriptor) -> HealthCheck.Result.healthy()),
                 new DeploymentOptions().setConfig(
                         new JsonObject().put(VertxInitUtils.HTTP_PORT, REST_PORT)), context.asyncAssertSuccess());
     }
 
-    @After
-    public void tearDown(TestContext context) {
+    @AfterClass
+    public static void tearDown(TestContext context) {
         vertx.close(context.asyncAssertSuccess());
     }
 
-    @After
-    public void after(TestContext context) {
-        vertx.close(context.asyncAssertSuccess());
-    }
 
     @Test
     public void testServiceA(TestContext context) {

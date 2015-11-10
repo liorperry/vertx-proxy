@@ -1,8 +1,8 @@
-package io.vertx.example.unit.test;
+package io.vertx.example.unit.test.redis;
 
 import io.vertx.core.Vertx;
 import io.vertx.example.web.proxy.RedisStarted;
-import io.vertx.example.web.proxy.repository.RedisRepository;
+import io.vertx.example.web.proxy.repository.RedisKeysRepository;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.AfterClass;
@@ -18,7 +18,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(VertxUnitRunner.class)
-public class RedisRepositoryTest {
+public class RedisKeysRepositoryTest {
     //SERVICES
     public static final String SERVICE_A_OPEN = "serviceA";
     public static final String SERVICE_B_BLOCKED = "serviceB";
@@ -40,7 +40,7 @@ public class RedisRepositoryTest {
 
     @Test
     public void testRepositoryGetServices() throws Exception {
-        RedisRepository repository = new RedisRepository(client);
+        RedisKeysRepository repository = new RedisKeysRepository(client);
         Map<String, String> services = repository.getServices();
         assertEquals(services.size(),3);
         assertTrue(Boolean.valueOf(services.get(SERVICE_A_OPEN)));
@@ -54,7 +54,7 @@ public class RedisRepositoryTest {
 
     @Test
     public void testRepositoryGetProducts() throws Exception {
-        RedisRepository repository = new RedisRepository(client);
+        RedisKeysRepository repository = new RedisKeysRepository(client);
         Map<String, String> products = repository.getProducts();
         assertEquals(products.size(),1);
         assertTrue(!Boolean.valueOf(products.get(PROD3568_BLOCKED)));

@@ -7,7 +7,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.example.web.proxy.healthcheck.Reporter;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
-import io.vertx.example.web.proxy.locator.ServiceRegistry;
+import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -21,7 +21,7 @@ public class SimpleREST extends AbstractVerticle {
 
 
     public static final String REST = "REST";
-    private ServiceRegistry serviceRegistry;
+    private VerticalServiceRegistry verticalServiceRegistry;
     private Reporter reporter;
     private int port;
 
@@ -34,20 +34,21 @@ public class SimpleREST extends AbstractVerticle {
     @Override
     public void stop(Future<Void> stopFuture) throws Exception {
         super.stop();
+        verticalServiceRegistry.close(event -> {});
         reporter.close(event -> {stopFuture.complete();});
     }
 
     @Override
     public void start(Future<Void> fut) {
-        serviceRegistry = new ServiceRegistry();
+        verticalServiceRegistry = new VerticalServiceRegistry();
         port = vertx.getOrCreateContext().config().getInteger(HTTP_PORT);
         //register services
-        serviceRegistry.register(ServiceDescriptor.create("serviceA", port));
-        serviceRegistry.register(ServiceDescriptor.create("serviceB", port));
-        serviceRegistry.register(ServiceDescriptor.create("whoAmI", port));
+        verticalServiceRegistry.register(ServiceDescriptor.create("serviceA", port));
+        verticalServiceRegistry.register(ServiceDescriptor.create("serviceB", port));
+        verticalServiceRegistry.register(ServiceDescriptor.create("whoAmI", port));
 
         //set services health checks
-        Reporter.setUpHealthCheck(getVertx(), REST, serviceRegistry, reporter);
+        Reporter.setUpHealthCheck(getVertx(), REST, verticalServiceRegistry, reporter);
 
         setUpInitialData();
         Router router = Router.router(vertx);

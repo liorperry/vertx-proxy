@@ -10,13 +10,13 @@ import java.util.Optional;
 
 import static io.vertx.example.web.proxy.filter.FilterUtils.*;
 
-public class RedisRepository implements Repository {
+public class RedisKeysRepository implements KeysRepository {
     public static final String SERVICES = "services";
     public static final String PRODUCTS = "products";
 
     private Jedis jedis;
 
-    public RedisRepository(Jedis client) {
+    public RedisKeysRepository(Jedis client) {
         // Create the redis client
         jedis = client;
     }

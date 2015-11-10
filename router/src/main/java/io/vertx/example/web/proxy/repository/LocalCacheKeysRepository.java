@@ -11,15 +11,26 @@ import static io.vertx.example.web.proxy.filter.FilterUtils.extractProduct;
 import static io.vertx.example.web.proxy.filter.FilterUtils.extractService;
 import static java.lang.Boolean.TRUE;
 
-public class LocalCacheRepository implements Repository {
+public class LocalCacheKeysRepository implements KeysRepository {
 
     private ConcurrentHashMap<String,String> servicesMap;
     private ConcurrentHashMap<String,String> productsMap;
 
-    public LocalCacheRepository() {
+    public LocalCacheKeysRepository() {
         servicesMap = new ConcurrentHashMap<>();
         productsMap = new ConcurrentHashMap<>();
     }
+
+    public LocalCacheKeysRepository(Map<String, String> servicesMap) {
+        this.servicesMap = new ConcurrentHashMap<>(servicesMap);
+        productsMap = new ConcurrentHashMap<>();
+    }
+
+    public LocalCacheKeysRepository(Map<String, String> servicesMap, Map<String, String> productsMap) {
+        this.servicesMap = new ConcurrentHashMap<>(servicesMap);
+        this.productsMap = new ConcurrentHashMap<>(productsMap);
+    }
+
 
     @Override
     public Map<String, String> getServices() {
@@ -62,7 +73,7 @@ public class LocalCacheRepository implements Repository {
 
     @Override
     public boolean blockProduct(String productName) {
-        return Boolean.parseBoolean(productsMap.put(productName,Boolean.FALSE.toString()));
+        return Boolean.parseBoolean(productsMap.put(productName, Boolean.FALSE.toString()));
     }
 
     @Override
@@ -81,5 +92,12 @@ public class LocalCacheRepository implements Repository {
     }
 
     @Override
-    public void close(Handler<AsyncResult<Void>> completionHandler) {}
+    public void close(Handler<AsyncResult<Void>> completionHandler) {
+        servicesMap.clear();
+        productsMap.clear();
+    }
+
+    public static LocalCacheKeysRepository create(Map<String, String> map) {
+        return new LocalCacheKeysRepository(map);
+    }
 }

@@ -1,4 +1,4 @@
-package io.vertx.example.unit.test;
+package io.vertx.example.unit.test.local;
 
 import io.vertx.example.web.proxy.locator.ServiceLocator;
 import io.vertx.ext.unit.junit.VertxUnitRunner;

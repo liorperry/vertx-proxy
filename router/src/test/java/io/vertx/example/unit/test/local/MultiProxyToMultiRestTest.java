@@ -1,17 +1,19 @@
-package io.vertx.example.unit.test;
+package io.vertx.example.unit.test.local;
 
+import com.codahale.metrics.health.HealthCheck;
+import io.netty.util.internal.ConcurrentSet;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.json.JsonObject;
 import io.vertx.example.web.proxy.ProxyServer;
-import io.vertx.example.web.proxy.RedisStarted;
 import io.vertx.example.web.proxy.SimpleREST;
-import io.vertx.example.web.proxy.filter.Filter;
-import io.vertx.example.web.proxy.healthcheck.RedisReporter;
-import io.vertx.example.web.proxy.locator.RedisServiceLocator;
-import io.vertx.example.web.proxy.repository.RedisRepository;
-import io.vertx.example.web.proxy.repository.Repository;
+import io.vertx.example.web.proxy.filter.ProductFilter;
+import io.vertx.example.web.proxy.filter.ServiceFilter;
+import io.vertx.example.web.proxy.healthcheck.InMemReporter;
+import io.vertx.example.web.proxy.locator.InMemServiceLocator;
+import io.vertx.example.web.proxy.repository.KeysRepository;
+import io.vertx.example.web.proxy.repository.LocalCacheKeysRepository;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -19,52 +21,69 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import redis.clients.jedis.Jedis;
 
 import java.io.IOException;
+import java.util.*;
 
 import static io.vertx.example.web.proxy.VertxInitUtils.ENABLE_METRICS_PUBLISH;
 import static io.vertx.example.web.proxy.VertxInitUtils.HTTP_PORT;
+import static io.vertx.example.web.proxy.filter.Filter.FilterBuilder.filterBuilder;
+import static junit.framework.Assert.assertEquals;
 
 @RunWith(VertxUnitRunner.class)
-public class MultiProxyToMultiRestRedisTest {
+public class MultiProxyToMultiRestTest {
 
     public static final int PROXY_PORT = 8080;
-    public static final int REST1_PORT = 8082;
-    public static final int REST2_PORT = 8083;
-    public static final String LOCALHOST = "localhost";
-    //SERVICES
-    public static final String WHO_AM_I = "whoAmI";
+    private static final int REST1_PORT = 8082;
+    private static final int REST2_PORT = 8083;
 
+    public static final String LOCALHOST = "localhost";
+
+    //SERVICES
+    private static final String WHO_AM_I = "whoAmI";
+
+
+    private static Set<String> serviceProvidersAddress;
     private static Vertx vertx;
-    private static Repository repository;
+    private static KeysRepository keysRepository;
+    private static InMemServiceLocator locator;
+
+    //realtime set of available services
+    private static Set<String> services = new ConcurrentSet<>();
+
 
     @BeforeClass
     public static void setUp(TestContext context) throws IOException, InterruptedException {
         //start verticals
         vertx = Vertx.vertx();
-        //start redis client
-        Jedis client = new Jedis("localhost");
 
-        //deploy redis server
-        vertx.deployVerticle(new RedisStarted(client), context.asyncAssertSuccess());
+        serviceProvidersAddress = new HashSet<>();
         //deploy rest server
-        vertx.deployVerticle(new SimpleREST(new RedisReporter(client, 25)),
+        vertx.deployVerticle(new SimpleREST(new InMemReporter(services)),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST1_PORT)),
                 context.asyncAssertSuccess());
 
-        vertx.deployVerticle(new SimpleREST(new RedisReporter(client, 25)),
+        vertx.deployVerticle(new SimpleREST(new InMemReporter(services)),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST2_PORT)),
                 context.asyncAssertSuccess());
 
+
         //keys & routes repository
-        repository = new RedisRepository(client);
+        keysRepository= new LocalCacheKeysRepository();
+        keysRepository.getServices().put(WHO_AM_I, "true");
 
         //proxy vertical deployment
+        locator = InMemServiceLocator.create(
+                ProxyServer.PROXY,
+                Collections.singletonMap(WHO_AM_I, services)
+        );
         vertx.deployVerticle(new ProxyServer(
-                        Filter.FilterBuilder.filterBuilder(repository).build(), repository,
-                        new RedisReporter(client, 25),
-                        new RedisServiceLocator(client, SimpleREST.REST)),
+                        filterBuilder(keysRepository)
+                                .add(new ServiceFilter())
+                                .add(new ProductFilter())
+                                .build(),
+                        (result, domain, descriptor) -> HealthCheck.Result.healthy(),
+                        locator),
                 new DeploymentOptions().setConfig(new JsonObject()
                         .put(HTTP_PORT, PROXY_PORT)
                         .put(ENABLE_METRICS_PUBLISH, false)),
@@ -83,6 +102,7 @@ public class MultiProxyToMultiRestRedisTest {
             resp1.bodyHandler(body1 -> {
                 JsonObject entries1 = new JsonObject(body1.toString());
                 System.out.println(requestURI + ":" + entries1.encodePrettily());
+                serviceProvidersAddress.add(entries1.encodePrettily());
                 async.complete();
             });
         });
@@ -101,6 +121,7 @@ public class MultiProxyToMultiRestRedisTest {
             resp1.bodyHandler(body1 -> {
                 JsonObject entries1 = new JsonObject(body1.toString());
                 System.out.println(requestURI + ":" + entries1.encodePrettily());
+                serviceProvidersAddress.add(entries1.encodePrettily());
                 async.complete();
             });
         });
@@ -108,6 +129,9 @@ public class MultiProxyToMultiRestRedisTest {
 
     @AfterClass
     public static void tearDown() throws Exception {
+        System.out.println("******** serviceProvidersAddress **********");
+        serviceProvidersAddress.stream().forEach(System.out::println);
+        assertEquals(serviceProvidersAddress.size(),2);
         vertx.close();
     }
 }

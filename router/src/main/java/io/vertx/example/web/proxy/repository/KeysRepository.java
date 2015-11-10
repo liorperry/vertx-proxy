@@ -8,7 +8,7 @@ import java.util.Optional;
 
 import static io.vertx.example.web.proxy.filter.ParseUtils.*;
 
-public interface Repository extends Closeable {
+public interface KeysRepository extends Closeable {
 
     Map<String, String> getServices();
 

@@ -1,28 +1,23 @@
 package io.vertx.example.web.proxy.healthcheck;
 
 import com.codahale.metrics.health.HealthCheck;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import io.netty.util.internal.ConcurrentSet;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
-import io.vertx.example.web.proxy.repository.LocalCacheRepository;
-import io.vertx.example.web.proxy.repository.Repository;
+
+import java.util.Set;
 
 public class InMemReporter implements Reporter{
 
-    private LocalCacheRepository repository;
+    private Set<String> services;
 
-    public InMemReporter(LocalCacheRepository repository) {
-        this.repository = repository;
+    public InMemReporter(Set<String> services) {
+        this.services = services;
     }
 
     @Override
     public HealthCheck.Result report(HealthCheck.Result result, String domain, ServiceDescriptor descriptor) {
-        repository.a
-        return null;
+        services.add(Reporter.buildResult(descriptor));
+        return HealthCheck.Result.healthy();
     }
 
-    @Override
-    public void close(Handler<AsyncResult<Void>> completionHandler) {
-
-    }
 }

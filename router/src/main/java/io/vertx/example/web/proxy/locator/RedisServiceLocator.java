@@ -6,6 +6,7 @@ import io.vertx.core.Handler;
 import io.vertx.example.web.proxy.filter.FilterUtils;
 import redis.clients.jedis.Jedis;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
@@ -30,7 +31,7 @@ public class RedisServiceLocator implements ServiceLocator{
         Set<String> keys = client.keys(domain + "." + service.get() + "*");
         //get values according to keys from redis
         String[] values = keys.stream().map(s -> client.get(s)).toArray(String[]::new );
-        pool.addServices(service.get(), Sets.newHashSet(values));
+        pool.addServices(service.get(),Sets.newHashSet(values));
         //get next (circular loop) round robin
         return pool.get(service.get());
     }
@@ -46,4 +47,10 @@ public class RedisServiceLocator implements ServiceLocator{
             client.close();
         }
     }
+
+    @Override
+    public Collection<String> getAllProviders(String serviceName) {
+        return client.keys(domain + "." + serviceName + "*");
+    }
+
 }

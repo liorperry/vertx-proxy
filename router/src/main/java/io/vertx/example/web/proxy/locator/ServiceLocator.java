@@ -1,7 +1,10 @@
 package io.vertx.example.web.proxy.locator;
 
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.core.impl.Closeable;
 
+import java.util.Collection;
 import java.util.Optional;
 
 public interface ServiceLocator extends Closeable {
@@ -18,5 +21,7 @@ public interface ServiceLocator extends Closeable {
         return address.substring(0, address.indexOf(":"));
     }
 
+    default void close(Handler<AsyncResult<Void>> completionHandler) {}
 
+    Collection<String> getAllProviders(String serviceName);
 }

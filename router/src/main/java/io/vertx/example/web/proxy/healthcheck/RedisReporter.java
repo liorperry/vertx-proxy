@@ -6,7 +6,6 @@ import io.vertx.core.Handler;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 import redis.clients.jedis.Jedis;
 
-import static io.vertx.example.web.proxy.healthcheck.ReportHealthCheck.buildResult;
 
 public class RedisReporter implements Reporter{
 
@@ -19,14 +18,14 @@ public class RedisReporter implements Reporter{
     }
 
     public HealthCheck.Result report(HealthCheck.Result result,String domain,ServiceDescriptor descriptor) {
-        String key = domain + "." + descriptor.getServiceName() + "@" +descriptor.getUuid();
+        String key = Reporter.buildKey(domain, descriptor);
         if (result.isHealthy()) {
-            jedis.set(key, buildResult(descriptor));
+            jedis.set(key, Reporter.buildResult(descriptor));
             jedis.expire(key, expirationTime);
-            System.out.println("Reporting live ["+key+"] :"+buildResult(descriptor));
+            System.out.println("Reporting live ["+key+"] :"+ Reporter.buildResult(descriptor));
         } else {
             //remove service from health services pool
-            jedis.del(key, buildResult(descriptor));
+            jedis.del(key, Reporter.buildResult(descriptor));
         }
         return result;
     }

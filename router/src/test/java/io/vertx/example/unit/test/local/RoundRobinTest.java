@@ -1,4 +1,4 @@
-package io.vertx.example.unit.test;
+package io.vertx.example.unit.test.local;
 
 import io.vertx.example.web.proxy.locator.RoundRobinPool;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -47,8 +47,8 @@ public class RoundRobinTest {
     @Test
     public void roundRobinPoolSimpleTest() {
         RoundRobinPool pool = new RoundRobinPool();
-        pool.addServices(SERVICE_A, setA);
-        pool.addServices(SERVICE_B, setB);
+        pool.addServices(SERVICE_A,setA);
+        pool.addServices(SERVICE_B,setB);
 
         iterate(pool, serviceAActivations, Optional.<Activity<RoundRobinPool>>empty(), SERVICE_A);
         iterate(pool, serviceBActivations, Optional.<Activity<RoundRobinPool>>empty(), SERVICE_B);
@@ -88,7 +88,7 @@ public class RoundRobinTest {
     @Test
     public void roundRobinPoolWithAddTest() {
         RoundRobinPool pool = new RoundRobinPool();
-        pool.addServices(SERVICE_A, setA);
+        pool.addServices(SERVICE_A,setA);
 
         iterate(pool, serviceAActivations, Optional.<Activity<RoundRobinPool>>of((element, index) -> {
             if (index % 5000 == 0) {
@@ -104,10 +104,35 @@ public class RoundRobinTest {
         assertEquals(serviceAActivations.get(ELEMENT_5).intValue(), 1000);
 
     }
+
     @Test
+    public void roundRobinPoolWithExclusionTest() {
+        RoundRobinPool pool = new RoundRobinPool();
+        pool.addServices(SERVICE_A,setA);
+        pool.addServices(SERVICE_B, setB);
+
+        HashSet exclusionList = new HashSet<>(setA);
+        exclusionList.remove(ELEMENT_1);
+        Optional<String> result = pool.get(SERVICE_A, exclusionList);
+        assertEquals(result.get(),ELEMENT_1);
+
+        Set results = new HashSet<>();
+        exclusionList = new HashSet<>(setA);
+        exclusionList.remove(ELEMENT_1);
+        exclusionList.remove(ELEMENT_2);
+
+        results.add(pool.get(SERVICE_A, exclusionList));
+        results.add(pool.get(SERVICE_A, exclusionList));
+
+        assertEquals(results.size(),2);
+
+
+    }
+
+
     public void roundRobinPoolWithAddRemoveTest() {
         RoundRobinPool pool = new RoundRobinPool();
-        pool.addServices(SERVICE_A, setA);
+        pool.addServices(SERVICE_A,setA);
 
         iterate(pool, serviceAActivations, Optional.<Activity<RoundRobinPool>>of((element, index) -> {
             if (index % 5000 == 0) {

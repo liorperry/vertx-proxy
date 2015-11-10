@@ -1,4 +1,4 @@
-package io.vertx.example.unit.test;
+package io.vertx.example.unit.test.redis;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.DeploymentOptions;
@@ -9,10 +9,12 @@ import io.vertx.example.web.proxy.ProxyServer;
 import io.vertx.example.web.proxy.RedisStarted;
 import io.vertx.example.web.proxy.SimpleREST;
 import io.vertx.example.web.proxy.filter.Filter;
+import io.vertx.example.web.proxy.filter.ProductFilter;
+import io.vertx.example.web.proxy.filter.ServiceFilter;
 import io.vertx.example.web.proxy.healthcheck.RedisReporter;
 import io.vertx.example.web.proxy.locator.RedisServiceLocator;
-import io.vertx.example.web.proxy.repository.RedisRepository;
-import io.vertx.example.web.proxy.repository.Repository;
+import io.vertx.example.web.proxy.repository.KeysRepository;
+import io.vertx.example.web.proxy.repository.RedisKeysRepository;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -26,6 +28,7 @@ import java.io.IOException;
 
 import static io.vertx.example.web.proxy.VertxInitUtils.ENABLE_METRICS_PUBLISH;
 import static io.vertx.example.web.proxy.VertxInitUtils.HTTP_PORT;
+import static io.vertx.example.web.proxy.filter.Filter.FilterBuilder.filterBuilder;
 
 @RunWith(VertxUnitRunner.class)
 public class ProxyToRestRedisTest {
@@ -52,18 +55,21 @@ public class ProxyToRestRedisTest {
         Jedis client = new Jedis("localhost");
 
         //deploy redis server
-//        vertx.deployVerticle(new RedisStarted(client), context.asyncAssertSuccess());
+        vertx.deployVerticle(new RedisStarted(client), context.asyncAssertSuccess());
         //deploy rest server
         vertx.deployVerticle(new SimpleREST(new RedisReporter(client,25 )),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST_PORT)),
                 context.asyncAssertSuccess());
 
-        //keys & routes repository
-        Repository repository = new RedisRepository(client);
+        //keys & routes keysRepository
+        KeysRepository keysRepository = new RedisKeysRepository(client);
 
         //proxy vertical deployment
         vertx.deployVerticle(new ProxyServer(
-                        Filter.FilterBuilder.filterBuilder(repository).build(),repository,
+                        filterBuilder(keysRepository)
+                                .add(new ServiceFilter())
+                                .add(new ProductFilter())
+                                .build(),
                         new RedisReporter(client,25 ),
                         new RedisServiceLocator(client, SimpleREST.REST)),
                 new DeploymentOptions().setConfig(new JsonObject()

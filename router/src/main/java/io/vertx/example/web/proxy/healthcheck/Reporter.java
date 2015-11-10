@@ -2,13 +2,25 @@ package io.vertx.example.web.proxy.healthcheck;
 
 import com.codahale.metrics.health.HealthCheck;
 import com.codahale.metrics.health.HealthCheckRegistry;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.impl.Closeable;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
-import io.vertx.example.web.proxy.locator.ServiceRegistry;
+import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
 
 public interface Reporter extends Closeable {
     HealthCheck.Result report(HealthCheck.Result result,String domain,ServiceDescriptor descriptor);
+
+    default void close(Handler<AsyncResult<Void>> completionHandler) {}
+
+    static String buildResult(ServiceDescriptor descriptor) {
+        return descriptor.getHost() + ":" + descriptor.getPort();
+    }
+
+    static String buildKey(String domain, ServiceDescriptor descriptor) {
+        return domain + "." + descriptor.getServiceName() + "@" +descriptor.getUuid();
+    }
 
     /**
      * health check reporter
@@ -17,7 +29,7 @@ public interface Reporter extends Closeable {
      * @param reporter
      * @return
      */
-    static void setUpHealthCheck(Vertx vertx,String domain, ServiceRegistry registry,Reporter reporter) {
+    static void setUpHealthCheck(Vertx vertx,String domain, VerticalServiceRegistry registry,Reporter reporter) {
         final HealthCheckRegistry healthChecks = new HealthCheckRegistry();
         for (ServiceDescriptor descriptor : registry.getServices()) {
             healthChecks.register(descriptor.getServiceName(), ReportHealthCheck.build(domain, descriptor, reporter));

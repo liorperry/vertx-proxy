@@ -21,10 +21,6 @@ public abstract class ReportHealthCheck extends HealthCheck {
         return report(Result.healthy());
     }
 
-    public static String buildResult(ServiceDescriptor descriptor) {
-        return descriptor.getHost() + ":" + descriptor.getPort();
-    }
-
     public static ReportHealthCheck build(String domain,ServiceDescriptor descriptor,Reporter reporter) {
         return new ReportHealthCheck(domain,descriptor,reporter) {
             @Override

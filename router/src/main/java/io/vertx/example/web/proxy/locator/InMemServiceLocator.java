@@ -1,34 +1,51 @@
 package io.vertx.example.web.proxy.locator;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
 import io.vertx.example.web.proxy.filter.FilterUtils;
 
-import java.rmi.registry.Registry;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class InMemServiceLocator implements ServiceLocator {
     private String domain;
+    private Map<String, Set<String>> servicesLocations;
+    private Map<String, HashSet<String>> servicesBlockedLocations;
     private RoundRobinPool pool;
-    private Registry registry;
 
-    public InMemServiceLocator(String domain, Set<String> services, Registry registry) {
+    public InMemServiceLocator(String domain, Map<String, Set<String>> servicesLocations) {
+        this.servicesBlockedLocations = new HashMap<>();
         this.domain = domain;
-        this.registry = registry;
+        this.servicesLocations = servicesLocations;
         this.pool = new RoundRobinPool();
         //update keys in pool - if absent
-        pool.addServices(domain, services);
+        this.pool.addServices(Collections.unmodifiableMap(servicesLocations));
     }
 
     @Override
     public Optional<String> getService(String uri) {
+        System.out.println("******* InMemServiceLocator :: *****************");
         Optional<String> service = FilterUtils.extractService(uri);
         if (!service.isPresent()) {
+            System.out.println("InMemServiceLocator:: return empty");
             return Optional.empty();
         }
-        //get next (circular loop) round robin
-        return pool.get(service.get());
+
+        //reload pool if services where removed/added
+        if (servicesLocations.get(service.get()).size() != pool.getAll(service.get()).size()) {
+            pool.updateService(service.get(), servicesLocations.get(service.get()));
+        }
+
+        if (!servicesBlockedLocations.containsKey(service.get())) {
+            //get next (circular loop) round robin
+            Optional<String> result = pool.get(service.get());
+            System.out.println("InMemServiceLocator::result" + result);
+            return result;
+        }
+
+        HashSet<String> excludeList = servicesBlockedLocations.get(service.get());
+        System.out.println("InMemServiceLocator::servicesBlockedLocations");
+        excludeList.stream().forEach(System.out::println);
+        Optional<String> result = pool.get(service.get(), excludeList);
+        System.out.println("InMemServiceLocator::result" + result);
+        return result;
     }
 
     public String getDomain() {
@@ -36,8 +53,19 @@ public class InMemServiceLocator implements ServiceLocator {
     }
 
     @Override
-    public void close(Handler<AsyncResult<Void>> completionHandler) {
+    public Collection<String> getAllProviders(String serviceName) {
+        return Collections.unmodifiableCollection(pool.getAll(serviceName));
+    }
 
+    public void blockServiceProvider(String service, String address) {
+        if (!servicesBlockedLocations.containsKey(service)) {
+            servicesBlockedLocations.put(service, new HashSet<>());
+        }
+        servicesBlockedLocations.get(service).add(address);
+    }
+
+    public static InMemServiceLocator create(String domain, Map<String, Set<String>> servicesLocations) {
+        return new InMemServiceLocator(domain, servicesLocations);
     }
 }
 

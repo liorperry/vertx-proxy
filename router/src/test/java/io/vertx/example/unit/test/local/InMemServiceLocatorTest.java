@@ -1,4 +1,4 @@
-package io.vertx.example.unit.test;
+package io.vertx.example.unit.test.local;
 
 import io.vertx.example.web.proxy.locator.InMemServiceLocator;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -7,28 +7,34 @@ import org.junit.runner.RunWith;
 
 import java.util.*;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 @RunWith(VertxUnitRunner.class)
 public class InMemServiceLocatorTest {
 
+    public static final String DOMAIN = "test";
+    public static final String SERVICE = "service";
     private InMemServiceLocator locator;
-    private Set<String> services;
+    private Set<String> servicesLocations;
 
     @Test
     public void serviceLocatorSingleHostTest() {
-        services = new HashSet<>();
-        services.add("localhost:8080");
-        locator = new InMemServiceLocator("test",services, );
-        Optional<String> service = locator.getService("/test/prod123");
+        servicesLocations = new HashSet<>();
+        servicesLocations.add("localhost:8080");
+        locator = new InMemServiceLocator(DOMAIN,
+                Collections.singletonMap(SERVICE,servicesLocations)
+        );
+
+        Optional<String> service = locator.getService("/service/prod1");
         assertTrue(service.isPresent());
         assertEquals(service.get(), "localhost:8080");
 
-        service = locator.getService("/test/prod321");
+        service = locator.getService("/service/prod1");
         assertTrue(service.isPresent());
         assertEquals(service.get(), "localhost:8080");
 
-        service = locator.getService("/test/");
+        service = locator.getService("/service/");
         assertTrue(service.isPresent());
         assertEquals(service.get(), "localhost:8080");
     }
@@ -37,27 +43,30 @@ public class InMemServiceLocatorTest {
     public void serviceLocatorMultiHostsTest() {
         Map<String,Integer> map = new HashMap<>();
 
-        services = new HashSet<>();
-        services.add("localhost:8080");
-        services.add("localhost1:8080");
-        services.add("localhost2:8080");
-        locator = new InMemServiceLocator("test",services, );
+        servicesLocations = new HashSet<>();
+        servicesLocations.add("localhost:8080");
+        servicesLocations.add("localhost1:8080");
+        servicesLocations.add("localhost2:8080");
+
+        locator = new InMemServiceLocator(DOMAIN,
+                Collections.singletonMap(SERVICE,servicesLocations)
+        );
 
         Optional<String> service = Optional.empty();
         for (int i = 0; i < 90; i++) {
-            service = locator.getService("/test/prod123");
+            service = locator.getService("/service/prod1");
             if(!map.containsKey(service.get())) {
                 map.put(service.get(),0);
             }
             map.put(service.get(),map.get(service.get())+1);
 
-            service = locator.getService("/test/prod321");
+            service = locator.getService("/service/prod2");
             if(!map.containsKey(service.get())) {
                 map.put(service.get(),0);
             }
             map.put(service.get(),map.get(service.get())+1);
 
-            service = locator.getService("/test/");
+            service = locator.getService("/service/");
             if(!map.containsKey(service.get())) {
                 map.put(service.get(),0);
             }

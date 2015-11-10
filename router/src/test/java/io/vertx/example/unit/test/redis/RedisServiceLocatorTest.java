@@ -1,13 +1,12 @@
-package io.vertx.example.unit.test;
+package io.vertx.example.unit.test.redis;
 
-import com.codahale.metrics.health.HealthCheck;
 import io.vertx.core.Vertx;
 import io.vertx.example.web.proxy.RedisStarted;
 import io.vertx.example.web.proxy.healthcheck.RedisReporter;
 import io.vertx.example.web.proxy.healthcheck.Reporter;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 import io.vertx.example.web.proxy.locator.RedisServiceLocator;
-import io.vertx.example.web.proxy.locator.ServiceRegistry;
+import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.AfterClass;
@@ -37,7 +36,7 @@ public class RedisServiceLocatorTest {
     private static Jedis client;
     private static Vertx vertx;
     private static RedisReporter reporter;
-    private static ServiceRegistry serviceRegistry;
+    private static VerticalServiceRegistry verticalServiceRegistry;
 
     @BeforeClass
     public static void setUp(TestContext context) throws Exception {
@@ -45,16 +44,16 @@ public class RedisServiceLocatorTest {
         client = new Jedis();
         vertx.deployVerticle(new RedisStarted(client),context.asyncAssertSuccess());
         reporter = new RedisReporter(client, 100);
-        serviceRegistry = new ServiceRegistry();
+        verticalServiceRegistry = new VerticalServiceRegistry();
 
     }
 
     @Test
     public void testRepositoryGetServices() throws Exception {
-        serviceRegistry.register(ServiceDescriptor.create(SERVICE_A_OPEN, PORT));
-        serviceRegistry.register(ServiceDescriptor.create(SERVICE_B_BLOCKED, PORT));
+        verticalServiceRegistry.register(ServiceDescriptor.create(SERVICE_A_OPEN, PORT));
+        verticalServiceRegistry.register(ServiceDescriptor.create(SERVICE_B_BLOCKED, PORT));
         //set services health checks
-        Reporter.setUpHealthCheck(vertx,REST,serviceRegistry,reporter);
+        Reporter.setUpHealthCheck(vertx,REST, verticalServiceRegistry,reporter);
         //service locator
         RedisServiceLocator locator = new RedisServiceLocator(client, REST);
         assertEquals(locator.getDomain(), REST);

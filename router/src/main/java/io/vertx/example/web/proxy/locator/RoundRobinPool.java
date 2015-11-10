@@ -3,9 +3,7 @@ package io.vertx.example.web.proxy.locator;
 import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap.Builder;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RoundRobinPool {
@@ -20,6 +18,12 @@ public class RoundRobinPool {
             pools.put(name, new ServiceIndexMapTuple());
         }
         pools.get(name).putAddress(address);
+    }
+
+    public void addService(String name, Set<String> address) {
+        for (String entry : address) {
+            addService(name,entry);
+        }
     }
 
     public void removeService(String name, String address) {
@@ -47,10 +51,35 @@ public class RoundRobinPool {
         return Optional.of(pools.get(service).getNext());
     }
 
+    public void addServices(Map<String, Set<String>> keys) {
+        for (Map.Entry<String, Set<String>> entry : keys.entrySet()) {
+            addService(entry.getKey(), entry.getValue());
+        }
+    }
+
     public void addServices(String service, Set<String> keys) {
         for (String key : keys) {
-            addService(service,key);
+            addService(service, key);
         }
+    }
+
+    public Collection<String> getAll(String serviceName) {
+        if(!pools.containsKey(serviceName))
+            return Collections.emptySet();
+
+        return Collections.unmodifiableCollection(pools.get(serviceName).getAll());
+    }
+
+    public void updateService(String serviceName, Set<String> keys) {
+        pools.remove(serviceName);
+        addService(serviceName,keys);
+    }
+
+    public Optional<String> get(String serviceName, HashSet<String> excludeList) {
+        if (!pools.containsKey(serviceName)) {
+            return Optional.empty();
+        }
+        return pools.get(serviceName).getNext(excludeList);
     }
 
     private static class ServiceIndexMapTuple {
@@ -79,6 +108,28 @@ public class RoundRobinPool {
         String getNext() {
             index = (index + 1) % pool.keySet().size();
             return pool.keySet().toArray(new String[pool.keySet().size()])[index];
+        }
+
+
+        public Collection<String> getAll() {
+            return pool.values();
+        }
+
+        /**
+         * go over the entire list of service providers to match address not in the exclusion list
+         * @param excludeList
+         * @return
+         */
+        public Optional<String> getNext(HashSet<String> excludeList) {
+            int size = pool.size();
+            for (int i = 0; i < size; i++) {
+                String next = getNext();
+                if(!excludeList.contains(next)) {
+                    return Optional.of(next);
+                }
+            }
+            //no match was found
+            return Optional.empty();
         }
     }
 }
