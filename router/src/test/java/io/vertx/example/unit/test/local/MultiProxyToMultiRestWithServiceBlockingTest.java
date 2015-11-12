@@ -12,6 +12,8 @@ import io.vertx.example.web.proxy.filter.ProductFilter;
 import io.vertx.example.web.proxy.filter.ServiceFilter;
 import io.vertx.example.web.proxy.healthcheck.InMemReporter;
 import io.vertx.example.web.proxy.locator.InMemServiceLocator;
+import io.vertx.example.web.proxy.locator.ServiceDescriptor;
+import io.vertx.example.web.proxy.locator.ServiceVersion;
 import io.vertx.example.web.proxy.repository.KeysRepository;
 import io.vertx.example.web.proxy.repository.LocalCacheKeysRepository;
 import io.vertx.ext.unit.Async;
@@ -24,8 +26,6 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.net.Inet4Address;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -55,7 +55,7 @@ public class MultiProxyToMultiRestWithServiceBlockingTest {
     private static InMemServiceLocator locator;
 
     //realtime set of available services
-    private static Set<String> services = new ConcurrentSet<>();
+    private static Set<ServiceDescriptor> services = new ConcurrentSet<>();
     private static String hostAddress;
 
 
@@ -87,10 +87,7 @@ public class MultiProxyToMultiRestWithServiceBlockingTest {
         keysRepository.getServices().put(WHO_AM_I, "true");
 
         //proxy vertical deployment
-        locator = InMemServiceLocator.create(
-                ProxyServer.PROXY,
-                Collections.singletonMap(WHO_AM_I, services)
-        );
+        locator = new InMemServiceLocator(ProxyServer.PROXY, services);
         vertx.deployVerticle(new ProxyServer(
                         filterBuilder(keysRepository)
                                 .add(new ServiceFilter())
@@ -118,7 +115,7 @@ public class MultiProxyToMultiRestWithServiceBlockingTest {
                 System.out.println(requestURI + ":" + entries1.encodePrettily());
                 serviceProvidersAddress.add(WHO_AM_I + ":" + entries1.getValue("/" + WHO_AM_I));
                 //block REST 3 service (assuming the first one returning wasnt REST3 )
-                locator.blockServiceProvider(WHO_AM_I, hostAddress + ":" + REST3_PORT);
+                locator.blockServiceProvider(ServiceDescriptor.create(new ServiceVersion(WHO_AM_I,"1"), hostAddress , REST3_PORT));
                 async.complete();
             });
         });

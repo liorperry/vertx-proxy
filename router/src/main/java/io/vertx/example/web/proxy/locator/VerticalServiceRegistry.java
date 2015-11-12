@@ -6,31 +6,26 @@ import io.vertx.core.impl.Closeable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * service registry for single vertical
+ */
 public class VerticalServiceRegistry implements Closeable {
-    private static final Logger LOGGER = LoggerFactory.getLogger(VerticalServiceRegistry.class);
-    private final ConcurrentMap<String, ServiceDescriptor> services = new ConcurrentHashMap();
+    private final Set<ServiceDescriptor> services = new HashSet<>();
 
     public void register(ServiceDescriptor descriptor) {
-        this.services.putIfAbsent(descriptor.getServiceName(), descriptor);
+        this.services.add(descriptor);
     }
 
-    public void unregister(String name) {
-        this.services.remove(name);
-    }
-
-    public SortedSet<String> getNames() {
-        return Collections.unmodifiableSortedSet(new TreeSet(this.services.keySet()));
+    public void unregister(ServiceDescriptor descriptor) {
+        this.services.remove(descriptor);
     }
 
     public Collection<ServiceDescriptor> getServices() {
-        return Collections.unmodifiableCollection(services.values());
+        return Collections.unmodifiableCollection(services);
     }
 
     @Override

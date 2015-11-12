@@ -3,6 +3,7 @@ package io.vertx.example.web.proxy.locator;
 import com.google.common.collect.Sets;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import io.vertx.core.json.JsonObject;
 import io.vertx.example.web.proxy.filter.FilterUtils;
 import redis.clients.jedis.Jedis;
 
@@ -22,18 +23,14 @@ public class RedisServiceLocator implements ServiceLocator{
     }
 
     @Override
-    public Optional<String> getService(String uri) {
+    public Optional<ServiceDescriptor> getService(String uri, String version) {
         Optional<String> service = FilterUtils.extractService(uri);
         if(!service.isPresent()) {
             return Optional.empty();
         }
-        //update keys in pool - if absent
-        Set<String> keys = client.keys(domain + "." + service.get() + "*");
-        //get values according to keys from redis
-        String[] values = keys.stream().map(s -> client.get(s)).toArray(String[]::new );
-        pool.addServices(service.get(),Sets.newHashSet(values));
+        pool.addServices(Sets.newHashSet(getAllProviders(new ServiceVersion(service.get(),version))));
         //get next (circular loop) round robin
-        return pool.get(service.get());
+        return pool.get(new ServiceVersion(service.get(),version));
     }
 
     @Override
@@ -49,8 +46,11 @@ public class RedisServiceLocator implements ServiceLocator{
     }
 
     @Override
-    public Collection<String> getAllProviders(String serviceName) {
-        return client.keys(domain + "." + serviceName + "*");
+    public Collection<ServiceDescriptor> getAllProviders(ServiceVersion serviceVersion) {
+        //update keys in pool - if absent
+        Set<String> keys = client.keys(domain + "." + serviceVersion.getName() + "*");
+        //get values according to keys from redis
+        return Sets.newHashSet(keys.stream().map(s -> ServiceDescriptor.create(new JsonObject(client.get(s)))).toArray(ServiceDescriptor[]::new));
     }
 
 }

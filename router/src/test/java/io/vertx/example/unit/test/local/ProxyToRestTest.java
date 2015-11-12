@@ -11,6 +11,7 @@ import io.vertx.example.web.proxy.SimpleREST;
 import io.vertx.example.web.proxy.filter.ProductFilter;
 import io.vertx.example.web.proxy.filter.ServiceFilter;
 import io.vertx.example.web.proxy.locator.InMemServiceLocator;
+import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 import io.vertx.example.web.proxy.repository.LocalCacheKeysRepository;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -20,7 +21,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -53,8 +53,8 @@ public class ProxyToRestTest {
                 context.asyncAssertSuccess());
 
 
-        Set<String> services = new LinkedHashSet<>();
-        services.add("localhost:" + REST_PORT);
+        Set<ServiceDescriptor> services = new LinkedHashSet<>();
+        services.add(ServiceDescriptor.create(SERVICE_A_OPEN,PROXY_PORT));
 
         //keys & routes repository
         LocalCacheKeysRepository repository = new LocalCacheKeysRepository();
@@ -68,10 +68,8 @@ public class ProxyToRestTest {
                                 .add(new ProductFilter())
                                 .build(),
                         (result, domain, descriptor) -> HealthCheck.Result.healthy(),
-                        InMemServiceLocator.create(
-                                ProxyServer.PROXY,
-                                Collections.singletonMap(SERVICE_A_OPEN, services)
-                        )),
+                        new InMemServiceLocator(ProxyServer.PROXY, services)
+                        ),
                 new DeploymentOptions().setConfig(new JsonObject()
                         .put(HTTP_PORT, PROXY_PORT)
                         .put(ENABLE_METRICS_PUBLISH, false)),

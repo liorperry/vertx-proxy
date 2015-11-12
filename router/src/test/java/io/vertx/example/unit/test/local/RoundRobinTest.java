@@ -1,6 +1,8 @@
 package io.vertx.example.unit.test.local;
 
 import io.vertx.example.web.proxy.locator.RoundRobinPool;
+import io.vertx.example.web.proxy.locator.ServiceDescriptor;
+import io.vertx.example.web.proxy.locator.ServiceVersion;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,31 +16,20 @@ import static junit.framework.Assert.assertEquals;
 public class RoundRobinTest {
     public static final String SERVICE_A = "serviceA";
     private static final String SERVICE_B = "serviceB";
+
     public static final int COUNTER = 10000;
+
     public static final String ELEMENT_1 = "element 1";
     public static final String ELEMENT_2 = "element 2";
     public static final String ELEMENT_3 = "element 3";
     public static final String ELEMENT_4 = "element 4";
     public static final String ELEMENT_5 = "element 5";
 
-    Map<String, Integer> serviceAActivations;
-    Map<String, Integer> serviceBActivations;
-    private Set setA;
-    private Set setB;
+    Map<ServiceDescriptor, Integer> serviceAActivations;
+    Map<ServiceDescriptor, Integer> serviceBActivations;
 
     @Before
     public void setUp() throws Exception {
-        setA = new HashSet();
-        setA.add(ELEMENT_1);
-        setA.add(ELEMENT_2);
-        setA.add(ELEMENT_3);
-        setA.add(ELEMENT_4);
-
-        setB = new HashSet();
-        setB.add(ELEMENT_1);
-        setB.add(ELEMENT_2);
-        setB.add(ELEMENT_3);
-        setB.add(ELEMENT_4);
 
         serviceAActivations = new HashMap<>();
         serviceBActivations = new HashMap<>();
@@ -47,82 +38,99 @@ public class RoundRobinTest {
     @Test
     public void roundRobinPoolSimpleTest() {
         RoundRobinPool pool = new RoundRobinPool();
-        pool.addServices(SERVICE_A,setA);
-        pool.addServices(SERVICE_B,setB);
+        populatePool(pool,SERVICE_A );
+        assertEquals(pool.size(), 1);
+        assertEquals(pool.size(new ServiceVersion(SERVICE_A, "1")), 4);
+        populatePool(pool, SERVICE_B);
+        assertEquals(pool.size(new ServiceVersion(SERVICE_B, "1")), 4);
+        assertEquals(pool.size(), 2);
 
-        iterate(pool, serviceAActivations, Optional.<Activity<RoundRobinPool>>empty(), SERVICE_A);
-        iterate(pool, serviceBActivations, Optional.<Activity<RoundRobinPool>>empty(), SERVICE_B);
+        iterate(pool, serviceAActivations, Optional.<Activity<RoundRobinPool>>empty(), new ServiceVersion(SERVICE_A,"1"));
+        iterate(pool, serviceBActivations, Optional.<Activity<RoundRobinPool>>empty(), new ServiceVersion(SERVICE_B,"1"));
 
         assertEquals(serviceAActivations.size(), 4);
-        assertEquals(serviceAActivations.get(ELEMENT_1).intValue(), 2500);
-        assertEquals(serviceAActivations.get(ELEMENT_2).intValue(), 2500);
-        assertEquals(serviceAActivations.get(ELEMENT_3).intValue(), 2500);
-        assertEquals(serviceAActivations.get(ELEMENT_4).intValue(), 2500);
+        assertEquals(serviceAActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_1, 8080)).intValue(), 2500);
+        assertEquals(serviceAActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_2, 8080)).intValue(), 2500);
+        assertEquals(serviceAActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_3, 8080)).intValue(), 2500);
+        assertEquals(serviceAActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_4, 8080)).intValue(), 2500);
 
         assertEquals(serviceBActivations.size(), 4);
-        assertEquals(serviceBActivations.get(ELEMENT_1).intValue(), 2500);
-        assertEquals(serviceBActivations.get(ELEMENT_2).intValue(), 2500);
-        assertEquals(serviceBActivations.get(ELEMENT_3).intValue(), 2500);
-        assertEquals(serviceBActivations.get(ELEMENT_4).intValue(), 2500);
+        assertEquals(serviceBActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_B, "1"), ELEMENT_1, 8080)).intValue(), 2500);
+        assertEquals(serviceBActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_B, "1"), ELEMENT_2, 8080)).intValue(), 2500);
+        assertEquals(serviceBActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_B, "1"), ELEMENT_3, 8080)).intValue(), 2500);
+        assertEquals(serviceBActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_B, "1"), ELEMENT_4, 8080)).intValue(), 2500);
+    }
+
+    private void populatePool(RoundRobinPool pool, String serviceName) {
+        pool.addService(ServiceDescriptor.create(new ServiceVersion(serviceName, "1"), ELEMENT_1, 8080));
+        pool.addService(ServiceDescriptor.create(new ServiceVersion(serviceName, "1"), ELEMENT_2, 8080));
+        pool.addService(ServiceDescriptor.create(new ServiceVersion(serviceName, "1"), ELEMENT_3, 8080));
+        pool.addService(ServiceDescriptor.create(new ServiceVersion(serviceName, "1"), ELEMENT_4, 8080));
     }
 
     @Test
     public void roundRobinPoolWithRemovalTest() {
         RoundRobinPool pool = new RoundRobinPool();
-        pool.addServices(SERVICE_A, setA);
+        populatePool(pool,SERVICE_A );
+        assertEquals(pool.size(new ServiceVersion(SERVICE_A, "1")), 4);
+        //validate pool has a set of unique service descriptors
+        populatePool(pool, SERVICE_A);
+        assertEquals(pool.size(new ServiceVersion(SERVICE_A, "1")), 4);
+
 
         iterate(pool, serviceAActivations, Optional.<Activity<RoundRobinPool>>of((element, index) -> {
             if (index % 5020 == 0) {
-                element.removeService(SERVICE_A, ELEMENT_1);
+                element.removeService(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_1, 8080));
             }
-        }), SERVICE_A);
+        }), new ServiceVersion(SERVICE_A,"1"));
 
         assertEquals(serviceAActivations.size(), 4);
-        assertEquals(serviceAActivations.get(ELEMENT_1).intValue(), 1255);
-        assertEquals(serviceAActivations.get(ELEMENT_2).intValue(), 2915);
-        assertEquals(serviceAActivations.get(ELEMENT_3).intValue(), 2915);
-        assertEquals(serviceAActivations.get(ELEMENT_4).intValue(), 2915);
+        assertEquals(serviceAActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_1, 8080)).intValue(), 1255);
+        assertEquals(serviceAActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_2, 8080)).intValue(), 2915);
+        assertEquals(serviceAActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_3, 8080)).intValue(), 2915);
+        assertEquals(serviceAActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_4, 8080)).intValue(), 2915);
 
     }
 
     @Test
     public void roundRobinPoolWithAddTest() {
         RoundRobinPool pool = new RoundRobinPool();
-        pool.addServices(SERVICE_A,setA);
+        populatePool(pool, SERVICE_A);
+        assertEquals(pool.size(new ServiceVersion(SERVICE_A, "1")), 4);
 
         iterate(pool, serviceAActivations, Optional.<Activity<RoundRobinPool>>of((element, index) -> {
             if (index % 5000 == 0) {
-                element.addService(SERVICE_A, ELEMENT_5);
+                pool.addService(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_5, 8080));
             }
-        }), SERVICE_A);
+        }), new ServiceVersion(SERVICE_A, "1"));
+
+        assertEquals(pool.size(new ServiceVersion(SERVICE_A, "1")), 5);
 
         assertEquals(serviceAActivations.size(), 5);
-        assertEquals(serviceAActivations.get(ELEMENT_1).intValue(), 2250);
-        assertEquals(serviceAActivations.get(ELEMENT_2).intValue(), 2250);
-        assertEquals(serviceAActivations.get(ELEMENT_3).intValue(), 2250);
-        assertEquals(serviceAActivations.get(ELEMENT_4).intValue(), 2250);
-        assertEquals(serviceAActivations.get(ELEMENT_5).intValue(), 1000);
+        assertEquals(serviceAActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_1, 8080)).intValue(), 2250);
+        assertEquals(serviceAActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_2, 8080)).intValue(), 2250);
+        assertEquals(serviceAActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_3, 8080)).intValue(), 2250);
+        assertEquals(serviceAActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_4, 8080)).intValue(), 2250);
+        assertEquals(serviceAActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_5, 8080)).intValue(), 1000);
 
     }
 
     @Test
     public void roundRobinPoolWithExclusionTest() {
+        Set<ServiceDescriptor> results = new HashSet<>();
         RoundRobinPool pool = new RoundRobinPool();
-        pool.addServices(SERVICE_A,setA);
-        pool.addServices(SERVICE_B, setB);
+        populatePool(pool, SERVICE_A);
 
-        HashSet exclusionList = new HashSet<>(setA);
-        exclusionList.remove(ELEMENT_1);
-        Optional<String> result = pool.get(SERVICE_A, exclusionList);
-        assertEquals(result.get(),ELEMENT_1);
+        Collection<ServiceDescriptor> all = pool.getAll(new ServiceVersion(SERVICE_A, "1"));
+        HashSet<ServiceDescriptor> exclusionList = new HashSet<>(all);
+        exclusionList.remove(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_1, 8080));
 
-        Set results = new HashSet<>();
-        exclusionList = new HashSet<>(setA);
-        exclusionList.remove(ELEMENT_1);
-        exclusionList.remove(ELEMENT_2);
+        Optional<ServiceDescriptor> result = pool.get(new ServiceVersion(SERVICE_A, "1"), exclusionList);
+        assertEquals(result.get(), ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_1, 8080));
 
-        results.add(pool.get(SERVICE_A, exclusionList));
-        results.add(pool.get(SERVICE_A, exclusionList));
+        exclusionList.remove(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_2, 8080));
+        results.add(pool.get(new ServiceVersion(SERVICE_A, "1"), exclusionList).get());
+        results.add(pool.get(new ServiceVersion(SERVICE_A, "1"), exclusionList).get());
 
         assertEquals(results.size(),2);
 
@@ -132,34 +140,35 @@ public class RoundRobinTest {
 
     public void roundRobinPoolWithAddRemoveTest() {
         RoundRobinPool pool = new RoundRobinPool();
-        pool.addServices(SERVICE_A,setA);
+        populatePool(pool, SERVICE_A);
+
 
         iterate(pool, serviceAActivations, Optional.<Activity<RoundRobinPool>>of((element, index) -> {
             if (index % 5000 == 0) {
-                element.addService(SERVICE_A, ELEMENT_5);
+                element.addService(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_5, 8080));
             }
             if (index % 7500 == 0) {
-                element.removeService(SERVICE_A, ELEMENT_1);
+                element.removeService(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_1, 8080));
             }
-        }), SERVICE_A);
+        }), new ServiceVersion(SERVICE_A,"1"));
 
         assertEquals(serviceAActivations.size(), 5);
-        assertEquals(serviceAActivations.get(ELEMENT_1).intValue(), 1750);
-        assertEquals(serviceAActivations.get(ELEMENT_2).intValue(), 2375);
-        assertEquals(serviceAActivations.get(ELEMENT_3).intValue(), 2375);
-        assertEquals(serviceAActivations.get(ELEMENT_4).intValue(), 2375);
-        assertEquals(serviceAActivations.get(ELEMENT_5).intValue(), 1125);
+        assertEquals(serviceAActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_1, 8080)).intValue(), 1750);
+        assertEquals(serviceAActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_2, 8080)).intValue(), 2375);
+        assertEquals(serviceAActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_3, 8080)).intValue(), 2375);
+        assertEquals(serviceAActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_4, 8080)).intValue(), 2375);
+        assertEquals(serviceAActivations.get(ServiceDescriptor.create(new ServiceVersion(SERVICE_A, "1"), ELEMENT_5, 8080)).intValue(), 1125);
 
     }
 
-    private void iterate(RoundRobinPool pool, Map<String, Integer> map, Optional<Activity<RoundRobinPool>> activity, String serviceName) {
+    private void iterate(RoundRobinPool pool, Map<ServiceDescriptor,Integer> map, Optional<Activity<RoundRobinPool>> activity, ServiceVersion serviceName) {
         for (int i = 1; i < COUNTER+1; i++) {
-            Optional<String> response = pool.get(serviceName);
+            Optional<ServiceDescriptor> response = pool.get(serviceName);
             if (response.isPresent()) {
                 if (activity.isPresent()) {
                     activity.get().doActivity(pool,i);
                 }
-                String key = response.get();
+                ServiceDescriptor key = response.get();
                 if (!map.containsKey(key)) {
                     map.put(key, 0);
                 }
@@ -168,7 +177,7 @@ public class RoundRobinTest {
         }
     }
 
-    static interface Activity<T> {
+    interface Activity<T> {
         void doActivity(T element,int index);
     }
 }

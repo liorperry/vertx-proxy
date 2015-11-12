@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface ServiceLocator extends Closeable {
 
-    Optional<String> getService(String uri);
+    Optional<ServiceDescriptor> getService(String uri, String version);
 
     String getDomain();
 
@@ -23,5 +23,5 @@ public interface ServiceLocator extends Closeable {
 
     default void close(Handler<AsyncResult<Void>> completionHandler) {}
 
-    Collection<String> getAllProviders(String serviceName);
+    Collection<ServiceDescriptor> getAllProviders(ServiceVersion serviceVersion);
 }

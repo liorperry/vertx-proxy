@@ -19,13 +19,12 @@ import java.util.Optional;
 
 import static io.vertx.example.web.proxy.VertxInitUtils.ENABLE_METRICS_PUBLISH;
 import static io.vertx.example.web.proxy.VertxInitUtils.HTTP_PORT;
-import static io.vertx.example.web.proxy.locator.ServiceLocator.getHost;
-import static io.vertx.example.web.proxy.locator.ServiceLocator.getPort;
 
 
 public class ProxyServer extends AbstractVerticle {
 
     public static final String PROXY = "PROXY";
+    public static final String VERSION = "version";
 
     private Filter filter;
     private EventBus bus;
@@ -98,11 +97,11 @@ public class ProxyServer extends AbstractVerticle {
             if (!filter.filter(req)) {
                 returnForbiddenResponse(req);
             } else {
-                Optional<String> address = locator.getService(req.uri());
-                if (!address.isPresent()) {
+                Optional<ServiceDescriptor> service = locator.getService(req.uri(), req.getHeader(VERSION)!=null ? req.getHeader(VERSION) : "1");
+                if (!service.isPresent()) {
                     returnForbiddenResponse(req);
                 } else {
-                    proxyRequestOn(client, req, address.get());
+                    proxyRequestOn(client, req, service.get());
                 }
             }
         }).listen(this.port, result -> {
@@ -114,9 +113,9 @@ public class ProxyServer extends AbstractVerticle {
         });
     }
 
-    private void proxyRequestOn(HttpClient client, HttpServerRequest req, String address) {
-        System.out.println("ServiceLocator:" + req.uri() + "->" + getHost(address) + ":" + getPort(address));
-        HttpClientRequest c_req = client.request(req.method(), getPort(address), getHost(address), req.uri(), c_res -> {
+    private void proxyRequestOn(HttpClient client, HttpServerRequest req, ServiceDescriptor descriptor) {
+        System.out.println("ServiceLocator:" + req.uri() + "->" + descriptor.getHost() + ":" + descriptor.getPort());
+        HttpClientRequest c_req = client.request(req.method(), descriptor.getPort(), descriptor.getHost(), req.uri(), c_res -> {
             System.out.println("Proxying response: " + c_res.statusCode());
             req.response().setChunked(true);
             req.response().setStatusCode(c_res.statusCode());

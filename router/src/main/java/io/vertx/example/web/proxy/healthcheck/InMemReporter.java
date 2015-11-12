@@ -8,15 +8,15 @@ import java.util.Set;
 
 public class InMemReporter implements Reporter{
 
-    private Set<String> services;
+    private Set<ServiceDescriptor> services;
 
-    public InMemReporter(Set<String> services) {
+    public InMemReporter(Set<ServiceDescriptor> services) {
         this.services = services;
     }
 
     @Override
     public HealthCheck.Result report(HealthCheck.Result result, String domain, ServiceDescriptor descriptor) {
-        services.add(Reporter.buildResult(descriptor));
+        services.add(descriptor);
         return HealthCheck.Result.healthy();
     }
 

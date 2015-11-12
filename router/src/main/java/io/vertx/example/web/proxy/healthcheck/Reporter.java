@@ -19,7 +19,7 @@ public interface Reporter extends Closeable {
     }
 
     static String buildKey(String domain, ServiceDescriptor descriptor) {
-        return domain + "." + descriptor.getServiceName() + "@" +descriptor.getUuid();
+        return domain + "." + descriptor.getServiceVersion().getName()+"#"+descriptor.getServiceVersion().getVersion() + "@" +descriptor.getPort();
     }
 
     /**
@@ -32,7 +32,7 @@ public interface Reporter extends Closeable {
     static void setUpHealthCheck(Vertx vertx,String domain, VerticalServiceRegistry registry,Reporter reporter) {
         final HealthCheckRegistry healthChecks = new HealthCheckRegistry();
         for (ServiceDescriptor descriptor : registry.getServices()) {
-            healthChecks.register(descriptor.getServiceName(), ReportHealthCheck.build(domain, descriptor, reporter));
+            healthChecks.register(descriptor.getServiceVersion().getName(), ReportHealthCheck.build(domain, descriptor, reporter));
         }
         //first time health check reporting
         vertx.runOnContext(t -> healthChecks.runHealthChecks());

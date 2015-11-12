@@ -12,6 +12,7 @@ import io.vertx.example.web.proxy.filter.ProductFilter;
 import io.vertx.example.web.proxy.filter.ServiceFilter;
 import io.vertx.example.web.proxy.healthcheck.InMemReporter;
 import io.vertx.example.web.proxy.locator.InMemServiceLocator;
+import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 import io.vertx.example.web.proxy.repository.KeysRepository;
 import io.vertx.example.web.proxy.repository.LocalCacheKeysRepository;
 import io.vertx.ext.unit.Async;
@@ -49,7 +50,7 @@ public class MultiProxyToMultiRestTest {
     private static InMemServiceLocator locator;
 
     //realtime set of available services
-    private static Set<String> services = new ConcurrentSet<>();
+    private static Set<ServiceDescriptor> services = new ConcurrentSet<>();
 
 
     @BeforeClass
@@ -73,10 +74,7 @@ public class MultiProxyToMultiRestTest {
         keysRepository.getServices().put(WHO_AM_I, "true");
 
         //proxy vertical deployment
-        locator = InMemServiceLocator.create(
-                ProxyServer.PROXY,
-                Collections.singletonMap(WHO_AM_I, services)
-        );
+        locator = new InMemServiceLocator(ProxyServer.PROXY,services);
         vertx.deployVerticle(new ProxyServer(
                         filterBuilder(keysRepository)
                                 .add(new ServiceFilter())

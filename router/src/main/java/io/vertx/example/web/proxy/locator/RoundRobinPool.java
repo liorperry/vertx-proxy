@@ -5,114 +5,104 @@ import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap.Builder;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 public class RoundRobinPool {
-    private Map<String, ServiceIndexMapTuple> pools;
+    private Map<ServiceVersion, ServiceIndexMapTuple> pools;
 
     public RoundRobinPool() {
         this.pools = new ConcurrentHashMap<>();
     }
 
-    public void addService(String name, String address) {
-        if (!pools.containsKey(name)) {
-            pools.put(name, new ServiceIndexMapTuple());
+    public void addService(ServiceDescriptor serviceDescriptor) {
+        if (!pools.containsKey(serviceDescriptor.getServiceVersion())) {
+            pools.put(serviceDescriptor.getServiceVersion(), new ServiceIndexMapTuple());
         }
-        pools.get(name).putAddress(address);
+        pools.get(serviceDescriptor.getServiceVersion()).putDescriptor(serviceDescriptor);
     }
 
-    public void addService(String name, Set<String> address) {
-        for (String entry : address) {
-            addService(name,entry);
+    public void addServices(Set<ServiceDescriptor> serviceDescriptor) {
+        for (ServiceDescriptor descriptor : serviceDescriptor) {
+            addService(descriptor);
         }
     }
 
-    public void removeService(String name, String address) {
-        if (!pools.containsKey(name)) {
+    public void removeService(ServiceDescriptor descriptor) {
+        if (!pools.containsKey(descriptor.getServiceVersion())) {
             return;
         }
-        pools.get(name).removeAddress(address);
+        pools.get(descriptor.getServiceVersion()).removeDescriptor(descriptor);
     }
 
     public int size() {
         return pools.size();
     }
 
-    public int size(String service) {
+    public int size(ServiceVersion service) {
         if(pools.containsKey(service)) {
             return pools.get(service).size();
         }
         return 0;
     }
 
-    public Optional<String> get(String service) {
+    public Optional<ServiceDescriptor> get(ServiceVersion service) {
         if (!pools.containsKey(service)) {
             return Optional.empty();
         }
         return Optional.of(pools.get(service).getNext());
     }
 
-    public void addServices(Map<String, Set<String>> keys) {
-        for (Map.Entry<String, Set<String>> entry : keys.entrySet()) {
-            addService(entry.getKey(), entry.getValue());
-        }
-    }
 
-    public void addServices(String service, Set<String> keys) {
-        for (String key : keys) {
-            addService(service, key);
-        }
-    }
 
-    public Collection<String> getAll(String serviceName) {
-        if(!pools.containsKey(serviceName))
+    public Collection<ServiceDescriptor> getAll(ServiceVersion service) {
+        if(!pools.containsKey(service))
             return Collections.emptySet();
 
-        return Collections.unmodifiableCollection(pools.get(serviceName).getAll());
+        return Collections.unmodifiableCollection(pools.get(service).getAll());
     }
 
-    public void updateService(String serviceName, Set<String> keys) {
-        pools.remove(serviceName);
-        addService(serviceName,keys);
+    public void updateService(Set<ServiceDescriptor> descriptors) {
+        for (ServiceDescriptor descriptor : descriptors) {
+            removeService(descriptor);
+            addService(descriptor);
+        }
     }
 
-    public Optional<String> get(String serviceName, HashSet<String> excludeList) {
-        if (!pools.containsKey(serviceName)) {
+    public Optional<ServiceDescriptor> get(ServiceVersion serviceVersion, Set<ServiceDescriptor> excludeList) {
+        if (!pools.containsKey(serviceVersion)) {
             return Optional.empty();
         }
-        return pools.get(serviceName).getNext(excludeList);
+        return pools.get(serviceVersion).getNext(excludeList);
     }
 
     private static class ServiceIndexMapTuple {
         int index;
-        ConcurrentLinkedHashMap<String, String> pool;
+        ConcurrentSkipListSet<ServiceDescriptor> pool;
 
         public ServiceIndexMapTuple() {
-            this.pool = new Builder<String, String>()
-                    .initialCapacity(16)
-                    .maximumWeightedCapacity(16)
-                    .build();
+            pool = new ConcurrentSkipListSet<>();
         }
 
         public int size() {
             return pool.size();
         }
 
-        void putAddress(String address) {
-            pool.putIfAbsent(address, address);
+        void putDescriptor(ServiceDescriptor descriptor) {
+            pool.add(descriptor);
         }
 
-        void removeAddress(String address) {
-            pool.remove(address);
+        void removeDescriptor(ServiceDescriptor descriptor) {
+            pool.remove(descriptor);
         }
 
-        String getNext() {
-            index = (index + 1) % pool.keySet().size();
-            return pool.keySet().toArray(new String[pool.keySet().size()])[index];
+        ServiceDescriptor getNext() {
+            index = (index + 1) % pool.size();
+            return pool.toArray(new ServiceDescriptor[pool.size()])[index];
         }
 
 
-        public Collection<String> getAll() {
-            return pool.values();
+        public Collection<ServiceDescriptor> getAll() {
+            return Collections.unmodifiableCollection(pool);
         }
 
         /**
@@ -120,10 +110,10 @@ public class RoundRobinPool {
          * @param excludeList
          * @return
          */
-        public Optional<String> getNext(HashSet<String> excludeList) {
+        public Optional<ServiceDescriptor> getNext(Set<ServiceDescriptor> excludeList) {
             int size = pool.size();
             for (int i = 0; i < size; i++) {
-                String next = getNext();
+                ServiceDescriptor next = getNext();
                 if(!excludeList.contains(next)) {
                     return Optional.of(next);
                 }

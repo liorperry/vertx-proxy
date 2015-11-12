@@ -1,24 +1,31 @@
 package io.vertx.example.web.proxy.locator;
 
+import com.google.common.collect.Sets;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
-import java.util.UUID;
 
-public class ServiceDescriptor {
-    private String serviceName;
-    private UUID uuid;
+public class ServiceDescriptor implements Comparable<ServiceDescriptor>{
+    public static final String NAME = "name";
+    public static final String HOST = "host";
+    public static final String PORT = "port";
+    public static final String VERSION = "version";
+    public static final String SERVICE_VERSION = "serviceVersion";
+
+    private ServiceVersion serviceVersion;
     private String host;
     private int port;
 
-    ServiceDescriptor(String serviceName, String host, int port) {
-        this.serviceName = serviceName;
+    ServiceDescriptor(ServiceVersion serviceVersion, String host, int port) {
+        this.serviceVersion = serviceVersion;
         this.host = host;
         this.port = port;
-        this.uuid = UUID.randomUUID();
     }
 
-    public String getServiceName() {
-        return serviceName;
+    public ServiceVersion getServiceVersion() {
+        return serviceVersion;
     }
 
     public String getHost() {
@@ -29,12 +36,37 @@ public class ServiceDescriptor {
         return port;
     }
 
-    public UUID getUuid() {
-        return uuid;
+    public static ServiceDescriptor create(ServiceVersion serviceVersion, int port)  {
+        return new ServiceDescriptor(serviceVersion,"127.0.0.1",port);
     }
 
-    public static ServiceDescriptor create(String serviceName,String hostAddress, int port)  {
-        return new ServiceDescriptor(serviceName, hostAddress,port);
+    public static ServiceDescriptor create(ServiceVersion serviceVersion, String hostAddress, int port)  {
+        return new ServiceDescriptor(serviceVersion, hostAddress,port);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ServiceDescriptor that = (ServiceDescriptor) o;
+
+        if (port != that.port) return false;
+        if (!serviceVersion.equals(that.serviceVersion)) return false;
+        return host.equals(that.host);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = serviceVersion.hashCode();
+        result = 31 * result + host.hashCode();
+        result = 31 * result + port;
+        return result;
+    }
+
+    public static ServiceDescriptor create(String serviceName)  {
+        return create(serviceName,8080);
     }
 
     public static ServiceDescriptor create(String serviceName, int port)  {
@@ -44,6 +76,23 @@ public class ServiceDescriptor {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        return create(serviceName,hostAddress,port);
+        return create(new ServiceVersion(serviceName,"1.0"),hostAddress, port);
+    }
+
+    public static ServiceDescriptor create(JsonObject entry)  {
+        String version = entry.getString(VERSION);
+        JsonObject jsoServiceVersion = entry.getJsonObject(SERVICE_VERSION);
+        JsonArray jsonArray = jsoServiceVersion.getJsonArray(VERSION);
+        String[] versions = jsonArray.stream().map(s -> ((JsonObject) s).getString(VERSION)).toArray(String[]::new);
+
+        return create(new ServiceVersion(jsoServiceVersion.getString(NAME),
+                        version,
+                        Sets.newHashSet(versions)),
+                entry.getString(HOST),entry.getInteger(PORT));
+    }
+
+    @Override
+    public int compareTo(ServiceDescriptor o) {
+        return (this.hashCode()-o.hashCode());
     }
 }

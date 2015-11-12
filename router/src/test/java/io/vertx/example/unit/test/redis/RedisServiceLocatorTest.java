@@ -58,14 +58,16 @@ public class RedisServiceLocatorTest {
         RedisServiceLocator locator = new RedisServiceLocator(client, REST);
         assertEquals(locator.getDomain(), REST);
 
-        Optional<String> locatorService = locator.getService("/" + SERVICE_A_OPEN + "/" + PROD7340_OPED);
+        Optional<ServiceDescriptor> locatorService = locator.getService("/" + SERVICE_A_OPEN + "/" + PROD7340_OPED, "1");
         assertTrue(locatorService.isPresent());
         String hostAddress = Inet4Address.getLocalHost().getHostAddress();
-        assertEquals(locatorService.get(), hostAddress +":"+ PORT);
+        assertEquals(locatorService.get().getHost(), hostAddress );
+        assertEquals(locatorService.get().getPort(), PORT );
 
-        locatorService = locator.getService("/" + SERVICE_B_BLOCKED + "/" + PROD8643_OPEN);
+        locatorService = locator.getService("/" + SERVICE_B_BLOCKED + "/" + PROD8643_OPEN,"1" );
         assertTrue(locatorService.isPresent());
-        assertEquals(locatorService.get(), hostAddress +":"+ PORT);
+        assertEquals(locatorService.get().getHost(), hostAddress );
+        assertEquals(locatorService.get().getPort(), PORT );
 
     }
 
