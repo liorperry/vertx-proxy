@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface ServiceLocator extends Closeable {
+    String DEFAULT_VERSION = "1.0";
 
     Optional<ServiceDescriptor> getService(String uri, String version);
 

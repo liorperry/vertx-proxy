@@ -5,6 +5,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.example.web.proxy.ProxyServer;
 import io.vertx.example.web.proxy.SimpleREST;
@@ -54,7 +55,7 @@ public class ProxyToRestTest {
 
 
         Set<ServiceDescriptor> services = new LinkedHashSet<>();
-        services.add(ServiceDescriptor.create(SERVICE_A_OPEN,PROXY_PORT));
+        services.add(ServiceDescriptor.create(SERVICE_A_OPEN, PROXY_PORT));
 
         //keys & routes repository
         LocalCacheKeysRepository repository = new LocalCacheKeysRepository();
@@ -69,7 +70,7 @@ public class ProxyToRestTest {
                                 .build(),
                         (result, domain, descriptor) -> HealthCheck.Result.healthy(),
                         new InMemServiceLocator(ProxyServer.PROXY, services)
-                        ),
+                ),
                 new DeploymentOptions().setConfig(new JsonObject()
                         .put(HTTP_PORT, PROXY_PORT)
                         .put(ENABLE_METRICS_PUBLISH, false)),
@@ -87,7 +88,7 @@ public class ProxyToRestTest {
         Async async = context.async();
         // Send a request and get a response
         String requestURI = "/" + SERVICE_A_OPEN;
-        client.getNow(PROXY_PORT, LOCALHOST, requestURI, resp -> {
+        client.request(HttpMethod.GET, PROXY_PORT, LOCALHOST, requestURI).handler(resp -> {
             resp.bodyHandler(body -> {
                 System.out.println(requestURI + ":" + resp.statusCode() + " [" + body.toString() + "]");
                 context.assertTrue(body.toString().contains(PROD3568_BLOCKED));
@@ -96,7 +97,8 @@ public class ProxyToRestTest {
                 async.complete();
                 client.close();
             });
-        });
+        }).putHeader("version", "1.0").end();
+        context.asyncAssertSuccess();
     }
 
     @Test
@@ -112,6 +114,7 @@ public class ProxyToRestTest {
                 async.complete();
             });
         });
+        context.asyncAssertSuccess();
     }
 
     @Test
@@ -127,6 +130,7 @@ public class ProxyToRestTest {
                 async.complete();
             });
         });
+        context.asyncAssertSuccess();
     }
 
     @Test
@@ -142,5 +146,6 @@ public class ProxyToRestTest {
                 async.complete();
             });
         });
+        context.asyncAssertSuccess();
     }
 }

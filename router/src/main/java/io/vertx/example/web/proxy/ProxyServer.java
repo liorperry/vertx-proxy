@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import static io.vertx.example.web.proxy.VertxInitUtils.ENABLE_METRICS_PUBLISH;
 import static io.vertx.example.web.proxy.VertxInitUtils.HTTP_PORT;
+import static io.vertx.example.web.proxy.locator.ServiceLocator.DEFAULT_VERSION;
 
 
 public class ProxyServer extends AbstractVerticle {
@@ -97,7 +98,7 @@ public class ProxyServer extends AbstractVerticle {
             if (!filter.filter(req)) {
                 returnForbiddenResponse(req);
             } else {
-                Optional<ServiceDescriptor> service = locator.getService(req.uri(), req.getHeader(VERSION)!=null ? req.getHeader(VERSION) : "1");
+                Optional<ServiceDescriptor> service = locator.getService(req.uri(), req.getHeader(VERSION)!=null ? req.getHeader(VERSION) : DEFAULT_VERSION);
                 if (!service.isPresent()) {
                     returnForbiddenResponse(req);
                 } else {

@@ -7,6 +7,8 @@ import io.vertx.core.json.JsonObject;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 
+import static io.vertx.example.web.proxy.locator.ServiceLocator.DEFAULT_VERSION;
+
 public class ServiceDescriptor implements Comparable<ServiceDescriptor>{
     public static final String NAME = "name";
     public static final String HOST = "host";
@@ -76,7 +78,7 @@ public class ServiceDescriptor implements Comparable<ServiceDescriptor>{
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        return create(new ServiceVersion(serviceName,"1.0"),hostAddress, port);
+        return create(new ServiceVersion(serviceName, DEFAULT_VERSION),hostAddress, port);
     }
 
     public static ServiceDescriptor create(JsonObject entry)  {
