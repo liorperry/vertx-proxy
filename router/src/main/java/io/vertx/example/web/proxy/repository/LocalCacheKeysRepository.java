@@ -3,6 +3,7 @@ package io.vertx.example.web.proxy.repository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,8 +14,8 @@ import static java.lang.Boolean.TRUE;
 
 public class LocalCacheKeysRepository implements KeysRepository {
 
-    private ConcurrentHashMap<String,String> servicesMap;
-    private ConcurrentHashMap<String,String> productsMap;
+    private ConcurrentHashMap<String, String> servicesMap;
+    private ConcurrentHashMap<String, String> productsMap;
 
     public LocalCacheKeysRepository() {
         servicesMap = new ConcurrentHashMap<>();
@@ -34,24 +35,24 @@ public class LocalCacheKeysRepository implements KeysRepository {
 
     @Override
     public Map<String, String> getServices() {
-        return servicesMap;
+        return Collections.unmodifiableMap(servicesMap);
     }
 
     @Override
     public Map<String, String> getProducts() {
-        return productsMap;
+        return Collections.unmodifiableMap(productsMap);
     }
 
     @Override
     public Optional<Boolean> getService(String uri) {
         Optional<String> service = extractService(uri);
-        if(!service.isPresent()) {
+        if (!service.isPresent()) {
             return Optional.empty();
         }
 
         String value = servicesMap.get(service.get());
-        if(value==null) {
-            System.out.println(" Service "+service +" not found in keys set");
+        if (value == null) {
+            System.out.println(" Service " + service + " not found in keys set");
             return Optional.empty();
         }
         return Optional.of(Boolean.valueOf(value));
@@ -60,12 +61,12 @@ public class LocalCacheKeysRepository implements KeysRepository {
     @Override
     public Optional<Boolean> getProduct(String uri) {
         Optional<String> product = extractProduct(uri);
-        if(!product.isPresent()) {
+        if (!product.isPresent()) {
             return Optional.empty();
         }
         String value = productsMap.get(product.get());
-        if(value==null) {
-            System.out.println(" Product "+product +" not found in keys set");
+        if (value == null) {
+            System.out.println(" Product " + product + " not found in keys set");
             return Optional.empty();
         }
         return Optional.of(Boolean.valueOf(value));
@@ -82,8 +83,18 @@ public class LocalCacheKeysRepository implements KeysRepository {
     }
 
     @Override
+    public void addService(String serviceName, boolean status) {
+        servicesMap.put(serviceName, Boolean.toString(status));
+    }
+
+    @Override
+    public void addProduct(String productName, boolean status) {
+        productsMap.put(productName, Boolean.toString(status));
+    }
+
+    @Override
     public boolean blockService(String serviceName) {
-        return Boolean.parseBoolean(servicesMap.put(serviceName,Boolean.FALSE.toString()));
+        return Boolean.parseBoolean(servicesMap.put(serviceName, Boolean.FALSE.toString()));
     }
 
     @Override

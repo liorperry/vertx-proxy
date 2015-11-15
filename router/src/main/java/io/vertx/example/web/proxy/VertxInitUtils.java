@@ -18,15 +18,28 @@ public interface VertxInitUtils {
                 .setClustered(false);
     }
 
-    static DeploymentOptions initDeploymentOptions() throws IOException {
-        //locate open port
-        ServerSocket socket = new ServerSocket(0);
-        int port = socket.getLocalPort();
-        socket.close();
+    static DeploymentOptions initDeploymentOptions() {
+        return initDeploymentOptions(true);
+    }
 
+    static DeploymentOptions initDeploymentOptions(boolean enableMetricsPublish) {
+        //locate open port
+        int port = 8282;
+        try {
+            ServerSocket socket = new ServerSocket(0);
+            port = socket.getLocalPort();
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Init deployment options selected port: " + port);
         return new DeploymentOptions().setConfig(new JsonObject()
-                .put(ENABLE_METRICS_PUBLISH, true)
+                .put(ENABLE_METRICS_PUBLISH, enableMetricsPublish)
                 .put(HTTP_PORT, port));
     }
 
+    static int getPort(DeploymentOptions options) {
+        return options.getConfig().getInteger(HTTP_PORT);
+    }
 }

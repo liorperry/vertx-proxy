@@ -31,12 +31,15 @@ public class SimpleREST extends AbstractVerticle {
 
     private Map<String, JsonObject> products = new HashMap<>();
 
+/*
+// removed - causing error on stoping the testing junit vert.x threads
     @Override
     public void stop(Future<Void> stopFuture) throws Exception {
         super.stop();
-        verticalServiceRegistry.close(event -> {});
+        verticalServiceRegistry.close(event -> {stopFuture.complete();});
         reporter.close(event -> {stopFuture.complete();});
     }
+*/
 
     @Override
     public void start(Future<Void> fut) {

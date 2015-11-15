@@ -71,7 +71,7 @@ public class MultiProxyToMultiRestTest {
 
         //keys & routes repository
         keysRepository= new LocalCacheKeysRepository();
-        keysRepository.getServices().put(WHO_AM_I, "true");
+        keysRepository.addService(WHO_AM_I, true);
 
         //proxy vertical deployment
         locator = new InMemServiceLocator(ProxyServer.PROXY,services);

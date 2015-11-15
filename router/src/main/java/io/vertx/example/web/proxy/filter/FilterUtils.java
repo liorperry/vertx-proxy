@@ -5,7 +5,7 @@ import java.util.Optional;
 import static io.vertx.example.web.proxy.filter.ParseUtils.count;
 
 public interface FilterUtils {
-    public static Optional<String> extractService(String uri) {
+    static Optional<String> extractService(String uri) {
         if(!checkValid(uri) ) {
             return Optional.empty();
         }
@@ -16,12 +16,12 @@ public interface FilterUtils {
         return Optional.of(uri.substring(beginIndex + 1, uri.indexOf("/", beginIndex + 1)));
     }
 
-    public static boolean checkValid(String uri) {
+    static boolean checkValid(String uri) {
         return !uri.isEmpty() && (count(uri, '/') > 0);
 
     }
 
-    public static Optional<String> extractProduct(String uri) {
+    static Optional<String> extractProduct(String uri) {
         int beginIndex = uri.lastIndexOf("/");
         if(count(uri, '/') < 2)
             return Optional.empty();

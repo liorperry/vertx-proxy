@@ -47,6 +47,9 @@ public class ProxyServer extends AbstractVerticle {
         bus = new RedisEventBus();
     }
 
+
+/*
+// removed - causing error on stopping the testing junit vert.x threads
     @Override
     public void stop(Future<Void> stopFuture) throws Exception {
         super.stop();
@@ -59,6 +62,7 @@ public class ProxyServer extends AbstractVerticle {
         filter.close(event -> {
         });
     }
+*/
 
     @Override
     public void start(Future<Void> fut) throws Exception {

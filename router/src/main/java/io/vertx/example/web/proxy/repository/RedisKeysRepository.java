@@ -98,4 +98,15 @@ public class RedisKeysRepository implements KeysRepository {
         }
     }
 
+    @Override
+    public void addService(String serviceName, boolean status) {
+        jedis.hset(SERVICES, serviceName, Boolean.toString(status));
+
+    }
+
+    @Override
+    public void addProduct(String productName, boolean status) {
+        jedis.hset(PRODUCTS, productName, Boolean.toString(status));
+
+    }
 }

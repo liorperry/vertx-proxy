@@ -8,6 +8,6 @@ import io.vertx.example.web.proxy.repository.KeysRepository;
  */
 public interface FilterPhase {
 
-    public boolean filter(HttpServerRequest request, KeysRepository keysRepository);
+    boolean filter(HttpServerRequest request, KeysRepository keysRepository);
 
 }

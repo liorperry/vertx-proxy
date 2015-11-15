@@ -4,6 +4,7 @@ import com.codahale.metrics.health.HealthCheck;
 import io.netty.util.internal.ConcurrentSet;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 
+import java.util.Collections;
 import java.util.Set;
 
 public class InMemReporter implements Reporter{
@@ -20,4 +21,7 @@ public class InMemReporter implements Reporter{
         return HealthCheck.Result.healthy();
     }
 
+    public Set<ServiceDescriptor> getServices() {
+        return Collections.unmodifiableSet(services);
+    }
 }

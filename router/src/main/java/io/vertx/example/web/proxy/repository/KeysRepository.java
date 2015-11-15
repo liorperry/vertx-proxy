@@ -26,4 +26,7 @@ public interface KeysRepository extends Closeable {
 
     boolean openProduct(String productName);
 
+    void addService(String serviceName, boolean status);
+
+    void addProduct(String productName, boolean status);
 }
