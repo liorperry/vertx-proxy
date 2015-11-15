@@ -162,7 +162,7 @@ public class MultiProxyToMultiRestWithServiceBlockingTest {
     public static void tearDown() throws Exception {
         System.out.println("******** serviceProvidersAddress **********");
         serviceProvidersAddress.stream().forEach(System.out::println);
-        assertEquals(serviceProvidersAddress.size(),2);
+        assertEquals(serviceProvidersAddress.size(), 3);
         vertx.close();
     }
 }

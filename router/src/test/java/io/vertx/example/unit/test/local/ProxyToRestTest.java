@@ -50,15 +50,14 @@ public class ProxyToRestTest {
                 restOptions,
                 context.asyncAssertSuccess());
 
-        int port = VertxInitUtils.getPort(proxyOptions);
         Set<ServiceDescriptor> services = new LinkedHashSet<>();
-        services.add(ServiceDescriptor.create(SERVICE_A_OPEN, port));
+        services.add(ServiceDescriptor.create(SERVICE_A_OPEN, VertxInitUtils.getPort(restOptions)));
 
         //keys & routes repository
         LocalCacheKeysRepository repository = new LocalCacheKeysRepository();
         repository.addService(SERVICE_A_OPEN, true);
         repository.addService(SERVICE_B_BLOCKED, false);
-        repository.addService(PROD3568_BLOCKED, false);
+        repository.addProduct(PROD3568_BLOCKED, false);
 
         vertx.deployVerticle(new ProxyServer(
                         filterBuilder(repository)
@@ -75,6 +74,24 @@ public class ProxyToRestTest {
     @AfterClass
     public static void tearDown(TestContext context) {
         vertx.close(context.asyncAssertSuccess());
+    }
+
+    @Test
+    public void testProxyAlive(TestContext context) {
+        Async async = context.async();
+        HttpClient client = vertx.createHttpClient();
+        // Send a request and get a response
+        int port = VertxInitUtils.getPort(restOptions);
+        client.getNow(port, LOCALHOST, "/serviceA", resp -> {
+            resp.bodyHandler(body -> {
+                System.out.println("/serviceA" + ":" + resp.statusCode() + " [" + body.toString() + "]");
+                context.assertTrue(body.toString().contains("prod7340"));
+                context.assertTrue(body.toString().contains("prod3568"));
+                context.assertTrue(body.toString().contains("prod8643"));
+//                client.close();
+                async.complete();
+            });
+        });
     }
 
     @Test

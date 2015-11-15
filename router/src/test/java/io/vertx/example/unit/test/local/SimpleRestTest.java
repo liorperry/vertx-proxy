@@ -9,9 +9,7 @@ import io.vertx.example.web.proxy.VertxInitUtils;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
@@ -23,15 +21,15 @@ public class SimpleRestTest {
     static DeploymentOptions options = VertxInitUtils.initDeploymentOptions();
     static Vertx vertx;
 
-    @Before
-    public void setUp(TestContext context) throws IOException {
+    @BeforeClass
+    public static void setUp(TestContext context) throws IOException {
         vertx = Vertx.vertx();
         vertx.deployVerticle(new SimpleREST((result, domain, descriptor) -> HealthCheck.Result.healthy()),
                 options,context.asyncAssertSuccess());
     }
 
-    @After
-    public void tearDown(TestContext context) {
+    @AfterClass
+    public static void tearDown(TestContext context) {
         vertx.close(context.asyncAssertSuccess());
     }
 
