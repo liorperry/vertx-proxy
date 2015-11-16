@@ -31,9 +31,7 @@ public interface Reporter extends Closeable {
      */
     static void setUpHealthCheck(Vertx vertx,String domain, VerticalServiceRegistry registry,Reporter reporter) {
         final HealthCheckRegistry healthChecks = new HealthCheckRegistry();
-        for (ServiceDescriptor descriptor : registry.getServices()) {
-            healthChecks.register(descriptor.getServiceVersion().getName(), ReportHealthCheck.build(domain, descriptor, reporter));
-        }
+        registry.getServices().stream().forEach(descriptor ->  healthChecks.register(descriptor.getServiceVersion().getName(), ReportHealthCheck.build(domain, descriptor, reporter)));
         //first time health check reporting
         vertx.runOnContext(t -> healthChecks.runHealthChecks());
         //run periodic health checks

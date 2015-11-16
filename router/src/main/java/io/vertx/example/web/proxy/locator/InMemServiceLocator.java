@@ -1,26 +1,24 @@
 package io.vertx.example.web.proxy.locator;
 
+import com.google.common.collect.Sets;
 import io.netty.util.internal.ConcurrentSet;
 import io.vertx.example.web.proxy.filter.FilterUtils;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class InMemServiceLocator implements ServiceLocator {
     private String domain;
-    private Set<ServiceDescriptor> servicesLocations;
     private Set<ServiceDescriptor> servicesBlockedLocations;
     private RoundRobinPool pool;
+    private VerticalServiceRegistry registry;
 
-    public InMemServiceLocator(String domain, Set<ServiceDescriptor> servicesLocations) {
+    public InMemServiceLocator(String domain, VerticalServiceRegistry registry) {
+        this.registry = registry;
         this.servicesBlockedLocations = new ConcurrentSet<>();
         this.domain = domain;
-        this.servicesLocations = servicesLocations;
         this.pool = new RoundRobinPool();
         //update keys in pool - if absent
-        this.pool.addServices(Collections.unmodifiableSet(servicesLocations));
+        this.pool.addServices(new HashSet<>(registry.getServices()));
     }
 
     @Override
@@ -33,8 +31,8 @@ public class InMemServiceLocator implements ServiceLocator {
         }
 
         //reload pool if services where removed/added
-        if (servicesLocations.size() != pool.size()) {
-            pool.updateService(servicesLocations);
+        if (registry.size() != pool.size()) {
+            pool.updateService(Sets.newHashSet(registry.getServices()));
         }
         ServiceVersion serviceVersion = new ServiceVersion(serviceName.get(), version);
 
@@ -58,6 +56,10 @@ public class InMemServiceLocator implements ServiceLocator {
 
     public Collection<ServiceDescriptor> getAllProviders(ServiceVersion serviceVersion) {
         return Collections.unmodifiableCollection(pool.getAll(serviceVersion));
+    }
+
+    public Collection<ServiceDescriptor> getAllProviders() {
+        return Collections.unmodifiableCollection(pool.getAll());
     }
 
     public void blockServiceProvider(ServiceDescriptor descriptor) {

@@ -8,6 +8,8 @@ import io.vertx.example.web.proxy.repository.KeysRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 /**
  * Filter responsible for apply the service verification gateway
@@ -34,12 +36,8 @@ public class Filter implements Closeable{
      * @return
      */
     public boolean filter(HttpServerRequest request) {
-        for (FilterPhase filterPhase : chain) {
-            if(!filterPhase.filter(request, keysRepository)) {
-                return false;
-            }
-        }
-        return true;
+        Optional<FilterPhase> first = chain.stream().filter(filterPhase -> !filterPhase.filter(request, keysRepository)).findFirst();
+        return !first.isPresent();
     }
 
     @Override

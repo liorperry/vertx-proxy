@@ -1,7 +1,6 @@
 package io.vertx.example.unit.test.local;
 
 import com.codahale.metrics.health.HealthCheck;
-import io.netty.util.internal.ConcurrentSet;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
@@ -14,6 +13,7 @@ import io.vertx.example.web.proxy.healthcheck.InMemReporter;
 import io.vertx.example.web.proxy.locator.InMemServiceLocator;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 import io.vertx.example.web.proxy.locator.ServiceVersion;
+import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
 import io.vertx.example.web.proxy.repository.KeysRepository;
 import io.vertx.example.web.proxy.repository.LocalCacheKeysRepository;
 import io.vertx.ext.unit.Async;
@@ -54,9 +54,10 @@ public class MultiProxyToMultiRestWithServiceBlockingTest {
     private static KeysRepository keysRepository;
     private static InMemServiceLocator locator;
 
-    //realtime set of available services
-    private static Set<ServiceDescriptor> services = new ConcurrentSet<>();
     private static String hostAddress;
+
+    //realtime set of available services
+    private static VerticalServiceRegistry registry = new VerticalServiceRegistry();
 
 
 
@@ -69,15 +70,15 @@ public class MultiProxyToMultiRestWithServiceBlockingTest {
 
         serviceProvidersAddress = new HashSet<>();
         //deploy rest server
-        vertx.deployVerticle(new SimpleREST(new InMemReporter(services)),
+        vertx.deployVerticle(new SimpleREST(new InMemReporter(registry)),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST1_PORT)),
                 context.asyncAssertSuccess());
 
-        vertx.deployVerticle(new SimpleREST(new InMemReporter(services)),
+        vertx.deployVerticle(new SimpleREST(new InMemReporter(registry)),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST2_PORT)),
                 context.asyncAssertSuccess());
 
-        vertx.deployVerticle(new SimpleREST(new InMemReporter(services)),
+        vertx.deployVerticle(new SimpleREST(new InMemReporter(registry)),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST3_PORT)),
                 context.asyncAssertSuccess());
 
@@ -87,7 +88,7 @@ public class MultiProxyToMultiRestWithServiceBlockingTest {
         keysRepository.addService(WHO_AM_I, true);
 
         //proxy vertical deployment
-        locator = new InMemServiceLocator(ProxyServer.PROXY, services);
+        locator = new InMemServiceLocator(ProxyServer.PROXY, registry);
         vertx.deployVerticle(new ProxyServer(
                         filterBuilder(keysRepository)
                                 .add(new ServiceFilter())

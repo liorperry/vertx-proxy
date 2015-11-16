@@ -1,27 +1,27 @@
 package io.vertx.example.web.proxy.healthcheck;
 
 import com.codahale.metrics.health.HealthCheck;
-import io.netty.util.internal.ConcurrentSet;
+import com.google.common.collect.Sets;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
+import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
 
-import java.util.Collections;
 import java.util.Set;
 
 public class InMemReporter implements Reporter{
 
-    private Set<ServiceDescriptor> services;
+    private VerticalServiceRegistry registry ;
 
-    public InMemReporter(Set<ServiceDescriptor> services) {
-        this.services = services;
+    public InMemReporter(VerticalServiceRegistry registry) {
+        this.registry = registry;
     }
 
     @Override
     public HealthCheck.Result report(HealthCheck.Result result, String domain, ServiceDescriptor descriptor) {
-        services.add(descriptor);
+        registry.register(descriptor);
         return HealthCheck.Result.healthy();
     }
 
     public Set<ServiceDescriptor> getServices() {
-        return Collections.unmodifiableSet(services);
+        return Sets.newHashSet(registry.getServices());
     }
 }

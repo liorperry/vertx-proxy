@@ -13,6 +13,7 @@ import io.vertx.example.web.proxy.filter.ProductFilter;
 import io.vertx.example.web.proxy.filter.ServiceFilter;
 import io.vertx.example.web.proxy.locator.InMemServiceLocator;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
+import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
 import io.vertx.example.web.proxy.repository.LocalCacheKeysRepository;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -50,8 +51,10 @@ public class ProxyToRestTest {
                 restOptions,
                 context.asyncAssertSuccess());
 
+
         Set<ServiceDescriptor> services = new LinkedHashSet<>();
         services.add(ServiceDescriptor.create(SERVICE_A_OPEN, VertxInitUtils.getPort(restOptions)));
+        VerticalServiceRegistry registry = new VerticalServiceRegistry(services);
 
         //keys & routes repository
         LocalCacheKeysRepository repository = new LocalCacheKeysRepository();
@@ -65,7 +68,7 @@ public class ProxyToRestTest {
                                 .add(new ProductFilter())
                                 .build(),
                         (result, domain, descriptor) -> HealthCheck.Result.healthy(),
-                        new InMemServiceLocator(ProxyServer.PROXY, services)
+                        new InMemServiceLocator(ProxyServer.PROXY, registry)
                 ),
                 proxyOptions,
                 context.asyncAssertSuccess());

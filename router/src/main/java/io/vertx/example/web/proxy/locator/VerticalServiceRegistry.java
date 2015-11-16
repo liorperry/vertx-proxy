@@ -16,12 +16,24 @@ import java.util.concurrent.ConcurrentMap;
 public class VerticalServiceRegistry implements Closeable {
     private final Set<ServiceDescriptor> services = new HashSet<>();
 
-    public void register(ServiceDescriptor descriptor) {
-        this.services.add(descriptor);
+    public VerticalServiceRegistry() {}
+
+    public VerticalServiceRegistry(Set<ServiceDescriptor> services ) {
+        services.stream().forEach(this::register);
     }
 
-    public void unregister(ServiceDescriptor descriptor) {
+    public VerticalServiceRegistry register(ServiceDescriptor descriptor) {
+        this.services.add(descriptor);
+        return this;
+    }
+
+    public VerticalServiceRegistry unregister(ServiceDescriptor descriptor) {
         this.services.remove(descriptor);
+        return this;
+    }
+
+    public int size() {
+        return services.size();
     }
 
     public Collection<ServiceDescriptor> getServices() {

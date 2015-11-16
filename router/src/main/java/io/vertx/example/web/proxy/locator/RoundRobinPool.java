@@ -6,6 +6,7 @@ import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap.Builder;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.stream.Stream;
 
 public class RoundRobinPool {
     private Map<ServiceVersion, ServiceIndexMapTuple> pools;
@@ -22,9 +23,7 @@ public class RoundRobinPool {
     }
 
     public void addServices(Set<ServiceDescriptor> serviceDescriptor) {
-        for (ServiceDescriptor descriptor : serviceDescriptor) {
-            addService(descriptor);
-        }
+        serviceDescriptor.stream().forEach(this::addService);
     }
 
     public void removeService(ServiceDescriptor descriptor) {
@@ -39,7 +38,7 @@ public class RoundRobinPool {
     }
 
     public int size(ServiceVersion service) {
-        if(pools.containsKey(service)) {
+        if (pools.containsKey(service)) {
             return pools.get(service).size();
         }
         return 0;
@@ -53,19 +52,22 @@ public class RoundRobinPool {
     }
 
 
-
+    public Collection<ServiceDescriptor> getAll() {
+        Stream<ServiceDescriptor> serviceDescriptorStream = pools.values().stream().flatMap(serviceIndexMapTuple -> serviceIndexMapTuple.getAll().stream());
+        return Arrays.asList(serviceDescriptorStream.toArray(ServiceDescriptor[]::new));
+    }
     public Collection<ServiceDescriptor> getAll(ServiceVersion service) {
-        if(!pools.containsKey(service))
+        if (!pools.containsKey(service))
             return Collections.emptySet();
 
         return Collections.unmodifiableCollection(pools.get(service).getAll());
     }
 
     public void updateService(Set<ServiceDescriptor> descriptors) {
-        for (ServiceDescriptor descriptor : descriptors) {
+        descriptors.stream().forEach(descriptor -> {
             removeService(descriptor);
             addService(descriptor);
-        }
+        });
     }
 
     public Optional<ServiceDescriptor> get(ServiceVersion serviceVersion, Set<ServiceDescriptor> excludeList) {
@@ -107,14 +109,16 @@ public class RoundRobinPool {
 
         /**
          * go over the entire list of service providers to match address not in the exclusion list
+         *
          * @param excludeList
          * @return
          */
         public Optional<ServiceDescriptor> getNext(Set<ServiceDescriptor> excludeList) {
             int size = pool.size();
+            //not applicable for streams :)
             for (int i = 0; i < size; i++) {
                 ServiceDescriptor next = getNext();
-                if(!excludeList.contains(next)) {
+                if (!excludeList.contains(next)) {
                     return Optional.of(next);
                 }
             }
