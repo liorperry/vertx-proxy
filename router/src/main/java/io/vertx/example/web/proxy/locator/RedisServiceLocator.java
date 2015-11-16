@@ -5,11 +5,14 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.example.web.proxy.filter.FilterUtils;
+import io.vertx.example.web.proxy.healthcheck.Reporter;
 import redis.clients.jedis.Jedis;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class RedisServiceLocator implements ServiceLocator{
     private Jedis client;
@@ -48,9 +51,16 @@ public class RedisServiceLocator implements ServiceLocator{
     @Override
     public Collection<ServiceDescriptor> getAllProviders(ServiceVersion serviceVersion) {
         //update keys in pool - if absent
-        Set<String> keys = client.keys(domain + "." + serviceVersion.getName() + "*");
+        String query = "\\\""+ domain + "\\." + serviceVersion.getKey() + "*";
+        System.out.println("Fetching keys for provider[" + serviceVersion.getKey() + "] query:" + query);
+        System.out.println("client connected:" + client.isConnected());
+        Set<String> keys = client.keys(query);
+        if(keys==null || keys.isEmpty())
+            return Collections.emptySet();
         //get values according to keys from redis
-        return Sets.newHashSet(keys.stream().map(s -> ServiceDescriptor.create(new JsonObject(client.get(s)))).toArray(ServiceDescriptor[]::new));
+        Stream<String> stringStream = keys.stream().map(client::get);
+        return Sets.newHashSet(stringStream.map(s -> ServiceDescriptor.create(new JsonObject(s))).toArray(ServiceDescriptor[]::new));
+
     }
 
 }

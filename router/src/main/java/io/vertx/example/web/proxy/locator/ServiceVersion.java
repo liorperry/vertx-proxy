@@ -48,4 +48,8 @@ public class ServiceVersion {
         result = 31 * result + version.hashCode();
         return result;
     }
+
+    public String getKey() {
+        return getName()+"#"+getVersion();
+    }
 }

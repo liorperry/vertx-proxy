@@ -85,11 +85,15 @@ public class ServiceDescriptor implements Comparable<ServiceDescriptor>{
 
     public static ServiceDescriptor create(JsonObject entry)  {
         String version = entry.getString(VERSION);
+        String name = entry.getString(NAME);
         JsonObject jsoServiceVersion = entry.getJsonObject(SERVICE_VERSION);
-        JsonArray jsonArray = jsoServiceVersion.getJsonArray(VERSION);
-        String[] versions = jsonArray.stream().map(s -> ((JsonObject) s).getString(VERSION)).toArray(String[]::new);
+        String[] versions = new String[] {version};
+        if(jsoServiceVersion!=null) {
+            JsonArray jsonArray = jsoServiceVersion.getJsonArray(VERSION);
+            versions = jsonArray.stream().map(s -> ((JsonObject) s).getString(VERSION)).toArray(String[]::new);
+        }
 
-        return create(new ServiceVersion(jsoServiceVersion.getString(NAME),
+        return create(new ServiceVersion(name,
                         version,
                         Sets.newHashSet(versions)),
                 entry.getString(HOST),entry.getInteger(PORT));
@@ -101,6 +105,11 @@ public class ServiceDescriptor implements Comparable<ServiceDescriptor>{
     }
 
     public String getKey() {
-        return getServiceVersion().getName()+"#"+getServiceVersion().getVersion() + "@"+getHost()+":"+getPort();
+        return getServiceVersion().getKey() + "@"+getHost()+":"+getPort();
     }
+
+    public JsonObject getAsJsonKey() {
+        return new JsonObject().put(NAME, getServiceVersion().getName()).put(VERSION, getServiceVersion().getVersion()).put(HOST,getHost()).put(PORT,getPort());
+    }
+
 }

@@ -10,6 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import java.util.Map;
 import java.util.Optional;
@@ -34,8 +35,9 @@ public class RedisKeysRepositoryTest {
     @BeforeClass
     public static void setUp(TestContext context) throws Exception {
         vertx = Vertx.vertx();
-        client = new Jedis();
-        vertx.deployVerticle(new RedisStarted(client),context.asyncAssertSuccess());
+        JedisPool pool = RedisStarted.getJedisPool("localhost");
+        client = pool.getResource();
+//        vertx.deployVerticle(new RedisStarted(client),context.asyncAssertSuccess());
     }
 
     @Test

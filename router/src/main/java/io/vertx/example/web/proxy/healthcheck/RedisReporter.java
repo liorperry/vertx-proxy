@@ -3,6 +3,7 @@ package io.vertx.example.web.proxy.healthcheck;
 import com.codahale.metrics.health.HealthCheck;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import io.vertx.core.json.Json;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 import redis.clients.jedis.Jedis;
 
@@ -19,13 +20,14 @@ public class RedisReporter implements Reporter{
 
     public HealthCheck.Result report(HealthCheck.Result result,String domain,ServiceDescriptor descriptor) {
         String key = Reporter.buildKey(domain, descriptor);
+        String value = descriptor.getAsJsonKey().encode();
         if (result.isHealthy()) {
-            jedis.set(key, Reporter.buildResult(descriptor));
+            System.out.println("Reporting live [" + key + "] :" + value);
+            jedis.set(key, value);
             jedis.expire(key, expirationTime);
-            System.out.println("Reporting live ["+key+"] :"+ Reporter.buildResult(descriptor));
         } else {
             //remove service from health services pool
-            jedis.del(key, Reporter.buildResult(descriptor));
+            jedis.del(key, value);
         }
         return result;
     }

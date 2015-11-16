@@ -23,6 +23,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import java.io.IOException;
 
@@ -46,16 +47,18 @@ public class ProxyToRestRedisTest {
     public static final String PROXY = "PROXY";
 
     private static Vertx vertx;
+    private static Jedis client;
 
     @BeforeClass
     public static void setUp(TestContext context) throws IOException, InterruptedException {
         //start verticals
         vertx = Vertx.vertx();
         //start redis client
-        Jedis client = new Jedis("localhost");
+        JedisPool pool = RedisStarted.getJedisPool("localhost");
+        client = pool.getResource();
 
         //deploy redis server
-        vertx.deployVerticle(new RedisStarted(client), context.asyncAssertSuccess());
+//        vertx.deployVerticle(new RedisStarted(client), context.asyncAssertSuccess());
         //deploy rest server
         vertx.deployVerticle(new SimpleREST(new RedisReporter(client,25 )),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST_PORT)),
@@ -80,6 +83,7 @@ public class ProxyToRestRedisTest {
 
     @AfterClass
     public static void tearDown(TestContext context) {
+        client.close();
         vertx.close(context.asyncAssertSuccess());
     }
 
