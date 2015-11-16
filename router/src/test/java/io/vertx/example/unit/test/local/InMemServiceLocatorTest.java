@@ -48,6 +48,75 @@ public class InMemServiceLocatorTest {
     }
 
     @Test
+    public void serviceLocatorSingleHostBlockTest() {
+        ServiceDescriptor serviceDescriptor = ServiceDescriptor.create(new ServiceVersion(SERVICE, "1"), "localhost", 8080);
+
+        locator = new InMemServiceLocator(DOMAIN,
+                new VerticalServiceRegistry(Sets.newHashSet(
+                        serviceDescriptor)));
+
+        Optional<ServiceDescriptor> service = locator.getService("/service/prod1", "1");
+        assertTrue(service.isPresent());
+        assertEquals(service.get().getHost(), "localhost");
+        assertEquals(service.get().getPort(), 8080);
+        assertEquals(service.get().getServiceVersion().getName(), SERVICE);
+        assertEquals(service.get().getServiceVersion().getVersion(), "1");
+
+        //no appropriate version for service was found
+        service = locator.getService("/service/prod1", "4");
+        assertFalse(service.isPresent());
+
+        service = locator.getService("/service/", "1");
+        assertTrue(service.isPresent());
+        assertEquals(service.get().getHost(), "localhost");
+        assertEquals(service.get().getPort(), 8080);
+        assertEquals(service.get().getServiceVersion().getName(), SERVICE);
+        assertEquals(service.get().getServiceVersion().getVersion(), "1");
+
+        locator.blockServiceProvider(serviceDescriptor);
+        service = locator.getService("/service/prod1", "1");
+        assertFalse(service.isPresent());
+    }
+
+    @Test
+    public void serviceLocatorSingleHostUnBlockTest() {
+        ServiceDescriptor serviceDescriptor = ServiceDescriptor.create(new ServiceVersion(SERVICE, "1"), "localhost", 8080);
+        locator = new InMemServiceLocator(DOMAIN,
+                new VerticalServiceRegistry(Sets.newHashSet(
+                        serviceDescriptor)));
+
+        Optional<ServiceDescriptor> service = locator.getService("/service/prod1", "1");
+        assertTrue(service.isPresent());
+        assertEquals(service.get().getHost(), "localhost");
+        assertEquals(service.get().getPort(), 8080);
+        assertEquals(service.get().getServiceVersion().getName(), SERVICE);
+        assertEquals(service.get().getServiceVersion().getVersion(), "1");
+
+        //no appropriate version for service was found
+        service = locator.getService("/service/prod1", "4");
+        assertFalse(service.isPresent());
+
+        service = locator.getService("/service/", "1");
+        assertTrue(service.isPresent());
+        assertEquals(service.get().getHost(), "localhost");
+        assertEquals(service.get().getPort(), 8080);
+        assertEquals(service.get().getServiceVersion().getName(), SERVICE);
+        assertEquals(service.get().getServiceVersion().getVersion(), "1");
+
+        locator.blockServiceProvider(serviceDescriptor);
+        service = locator.getService("/service/prod1", "1");
+        assertFalse(service.isPresent());
+
+        locator.unblockServiceProvider(serviceDescriptor);
+        service = locator.getService("/service/prod1", "1");
+        assertTrue(service.isPresent());
+        assertEquals(service.get().getHost(), "localhost");
+        assertEquals(service.get().getPort(), 8080);
+        assertEquals(service.get().getServiceVersion().getName(), SERVICE);
+        assertEquals(service.get().getServiceVersion().getVersion(), "1");
+    }
+
+    @Test
     public void serviceLocatorMultiHostsTest() {
         Map<ServiceDescriptor, Integer> map = new HashMap<>();
         ServiceDescriptor descriptor1 = ServiceDescriptor.create(new ServiceVersion(SERVICE, "1"), "localhost", 8080);

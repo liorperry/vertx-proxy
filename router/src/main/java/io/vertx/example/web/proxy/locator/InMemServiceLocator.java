@@ -66,5 +66,9 @@ public class InMemServiceLocator implements ServiceLocator {
         servicesBlockedLocations.add(descriptor);
     }
 
+    public void unblockServiceProvider(ServiceDescriptor descriptor) {
+        servicesBlockedLocations.remove(descriptor);
+    }
+
 }
 
