@@ -99,4 +99,8 @@ public class ServiceDescriptor implements Comparable<ServiceDescriptor>{
     public int compareTo(ServiceDescriptor o) {
         return (this.hashCode()-o.hashCode());
     }
+
+    public String getKey() {
+        return getServiceVersion().getName()+"#"+getServiceVersion().getVersion() + "@"+getHost()+":"+getPort();
+    }
 }

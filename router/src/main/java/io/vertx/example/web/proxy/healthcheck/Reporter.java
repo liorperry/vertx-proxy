@@ -19,7 +19,7 @@ public interface Reporter extends Closeable {
     }
 
     static String buildKey(String domain, ServiceDescriptor descriptor) {
-        return domain + "." + descriptor.getServiceVersion().getName()+"#"+descriptor.getServiceVersion().getVersion() + "@" +descriptor.getPort();
+        return domain + "." + descriptor.getKey();
     }
 
     /**

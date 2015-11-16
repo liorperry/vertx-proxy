@@ -10,19 +10,28 @@ public interface FilterUtils {
             return Optional.empty();
         }
         int beginIndex = uri.indexOf("/");
+
+        if(beginIndex<0)
+            return Optional.of(uri);
+
         if(count(uri, '/') ==1)
             return Optional.of(uri.replace("/",""));
+
         //else
         return Optional.of(uri.substring(beginIndex + 1, uri.indexOf("/", beginIndex + 1)));
     }
 
     static boolean checkValid(String uri) {
-        return !uri.isEmpty() && (count(uri, '/') > 0);
+        return !uri.isEmpty() ;
 
     }
 
     static Optional<String> extractProduct(String uri) {
         int beginIndex = uri.lastIndexOf("/");
+
+        if(beginIndex<0)
+            return Optional.of(uri);
+
         if(count(uri, '/') < 2)
             return Optional.empty();
         //else

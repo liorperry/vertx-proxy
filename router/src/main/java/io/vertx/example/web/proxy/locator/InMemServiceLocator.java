@@ -1,20 +1,20 @@
 package io.vertx.example.web.proxy.locator;
 
 import com.google.common.collect.Sets;
-import io.netty.util.internal.ConcurrentSet;
 import io.vertx.example.web.proxy.filter.FilterUtils;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemServiceLocator implements ServiceLocator {
     private String domain;
-    private Set<ServiceDescriptor> servicesBlockedLocations;
+    private Map<String,ServiceDescriptor> servicesBlockedLocations;
     private RoundRobinPool pool;
     private VerticalServiceRegistry registry;
 
     public InMemServiceLocator(String domain, VerticalServiceRegistry registry) {
         this.registry = registry;
-        this.servicesBlockedLocations = new ConcurrentSet<>();
+        this.servicesBlockedLocations = new ConcurrentHashMap<>();
         this.domain = domain;
         this.pool = new RoundRobinPool();
         //update keys in pool - if absent
@@ -36,7 +36,7 @@ public class InMemServiceLocator implements ServiceLocator {
         }
         ServiceVersion serviceVersion = new ServiceVersion(serviceName.get(), version);
 
-        if (!servicesBlockedLocations.stream().anyMatch(descriptor -> descriptor.getServiceVersion().equals(serviceVersion))) {
+        if (!servicesBlockedLocations.values().stream().anyMatch(descriptor -> descriptor.getServiceVersion().equals(serviceVersion))) {
             //get next (circular loop) round robin
             Optional<ServiceDescriptor> serviceDescriptor = pool.get(serviceVersion);
             System.out.println("InMemServiceLocator::result" + serviceDescriptor);
@@ -44,8 +44,8 @@ public class InMemServiceLocator implements ServiceLocator {
         }
 
         System.out.println("InMemServiceLocator::servicesBlockedLocations");
-        servicesBlockedLocations.stream().forEach(System.out::println);
-        Optional<ServiceDescriptor> descriptor = pool.get(serviceVersion, servicesBlockedLocations);
+        servicesBlockedLocations.values().stream().forEach(System.out::println);
+        Optional<ServiceDescriptor> descriptor = pool.get(serviceVersion, Sets.newHashSet(servicesBlockedLocations.values()));
         System.out.println("InMemServiceLocator::result" + descriptor);
         return descriptor;
     }
@@ -62,12 +62,23 @@ public class InMemServiceLocator implements ServiceLocator {
         return Collections.unmodifiableCollection(pool.getAll());
     }
 
-    public void blockServiceProvider(ServiceDescriptor descriptor) {
-        servicesBlockedLocations.add(descriptor);
+    public Optional<ServiceDescriptor> blockServiceProvider(String id) {
+        Optional<ServiceDescriptor> provider = pool.getProvider(id);
+        if(!provider.isPresent())
+            return provider;
+
+        return blockServiceProvider(provider.get());
+    }
+    public Optional<ServiceDescriptor> blockServiceProvider(ServiceDescriptor descriptor) {
+        return Optional.ofNullable(servicesBlockedLocations.put(descriptor.getKey(), descriptor));
     }
 
-    public void unblockServiceProvider(ServiceDescriptor descriptor) {
-        servicesBlockedLocations.remove(descriptor);
+    public Optional<ServiceDescriptor> unblockServiceProvider(ServiceDescriptor descriptor) {
+        return Optional.ofNullable(servicesBlockedLocations.remove(descriptor.getKey()));
+    }
+
+    public Optional<ServiceDescriptor> unblockServiceProvider(String id) {
+        return Optional.ofNullable(servicesBlockedLocations.remove(id));
     }
 
 }

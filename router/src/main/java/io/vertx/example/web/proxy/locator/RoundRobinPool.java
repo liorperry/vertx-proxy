@@ -1,8 +1,5 @@
 package io.vertx.example.web.proxy.locator;
 
-import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
-import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap.Builder;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -56,6 +53,10 @@ public class RoundRobinPool {
         Stream<ServiceDescriptor> serviceDescriptorStream = pools.values().stream().flatMap(serviceIndexMapTuple -> serviceIndexMapTuple.getAll().stream());
         return Arrays.asList(serviceDescriptorStream.toArray(ServiceDescriptor[]::new));
     }
+    public Optional<ServiceDescriptor> getProvider(String key) {
+        return getAll().stream().filter(descriptor -> descriptor.getKey().equals(key)).findAny();
+    }
+
     public Collection<ServiceDescriptor> getAll(ServiceVersion service) {
         if (!pools.containsKey(service))
             return Collections.emptySet();

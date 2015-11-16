@@ -38,8 +38,9 @@ public class Dashboard extends AbstractVerticle {
     public static void main(String[] args) {
         Vertx vertx = Vertx.vertx();
         DeploymentOptions options = VertxInitUtils.initDeploymentOptions();
-        VerticalServiceRegistry registry = new VerticalServiceRegistry(Sets.newHashSet(
-                ServiceDescriptor.create(new ServiceVersion(SERVICE, "1"), "localhost", 8080)));
+        ServiceDescriptor descriptor1 = ServiceDescriptor.create(new ServiceVersion(SERVICE, "1"), "localhost", 8080);
+        ServiceDescriptor descriptor2 = ServiceDescriptor.create(new ServiceVersion(SERVICE, "1"), "localhost", 8081);
+        VerticalServiceRegistry registry = new VerticalServiceRegistry(Sets.newHashSet(descriptor1, descriptor2));
 
         vertx.deployVerticle(new Dashboard(new InMemServiceLocator(REST, registry), EMPTY), options);
         System.out.println("Dashboard accepting requests: " + VertxInitUtils.getPort(options));
@@ -67,8 +68,8 @@ public class Dashboard extends AbstractVerticle {
         router.route("/eventbus/*").handler(SockJSHandler.create(vertx).bridge(options));
 
         // Serve the static resources
-        router.post("/manage/services/block").handler(this::blockService);
-        router.post("/manage/services/unblock").handler(this::unblockService);
+        router.post("/manage/service/block/:id").handler(this::blockService);
+        router.post("/manage/service/unblock/:id").handler(this::unblockService);
         router.get("/manage/service/:uri").handler(this::getNextServices);
         router.get("/manage/services").handler(this::getSupportedServices);
         router.route().handler(StaticHandler.create());
@@ -83,30 +84,41 @@ public class Dashboard extends AbstractVerticle {
                 vertx.eventBus().publish("metrics", metrics.get());
             }
         });
-
-
     }
 
     private void getNextServices(RoutingContext routingContext) {
         String uri = routingContext.request().getParam("uri");
+        String version = routingContext.request().getParam("version");
         if (uri == null) {
             routingContext.response().setStatusCode(400).end();
         } else {
-            serviceLocator.getService(uri,)
+            Optional<ServiceDescriptor> service = serviceLocator.getService(uri, version);
+            if (!service.isPresent()) {
+                routingContext.response().setStatusCode(400).end();
+            } else {
+                routingContext.response().putHeader("content-type", "application/json").end(Json.encodePrettily(service.get()));
+            }
         }
-        routingContext.response().setStatusCode(204).end();
     }
 
     private void unblockService(RoutingContext routingContext) {
-        ServiceDescriptor serviceDescriptor = Json.decodeValue(routingContext.getBodyAsString(), ServiceDescriptor.class);
-        serviceLocator.unblockServiceProvider(serviceDescriptor);
-        routingContext.response().putHeader("content-type", "application/json").end(Json.encodePrettily(serviceDescriptor));
+        String id = routingContext.request().getParam("id");
+        Optional<ServiceDescriptor> serviceDescriptor = serviceLocator.unblockServiceProvider(id);
+        if (!serviceDescriptor.isPresent()) {
+            routingContext.response().setStatusCode(400).end();
+        } else {
+            routingContext.response().putHeader("content-type", "application/json").end(Json.encodePrettily(serviceDescriptor));
+        }
     }
 
     private void blockService(RoutingContext routingContext) {
-        ServiceDescriptor serviceDescriptor = Json.decodeValue(routingContext.getBodyAsString(), ServiceDescriptor.class);
-        serviceLocator.blockServiceProvider(serviceDescriptor);
-        routingContext.response().putHeader("content-type", "application/json").end(Json.encodePrettily(serviceDescriptor));
+        String id = routingContext.request().getParam("id");
+        Optional<ServiceDescriptor> descriptor = serviceLocator.blockServiceProvider(id);
+        if (!descriptor.isPresent()) {
+            routingContext.response().setStatusCode(400).end();
+        } else {
+            routingContext.response().putHeader("content-type", "application/json").end(Json.encodePrettily(descriptor));
+        }
     }
 
     private void getSupportedServices(RoutingContext routingContext) {
@@ -115,7 +127,7 @@ public class Dashboard extends AbstractVerticle {
         providers.forEach(descriptor -> {
             arr.add(Json.encode(descriptor));
         });
-        routingContext.response().putHeader("content-type", "application/json").end(arr.encode());
+        routingContext.response().putHeader("content-type", "application/json").end(arr.encodePrettily());
 
     }
 }
