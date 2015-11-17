@@ -1,15 +1,18 @@
 package io.vertx.example.unit.test.local;
 
-import com.codahale.metrics.health.HealthCheck;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.example.web.proxy.SimpleREST;
 import io.vertx.example.web.proxy.VertxInitUtils;
+import io.vertx.example.web.proxy.healthcheck.InMemReporter;
+import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
@@ -24,7 +27,7 @@ public class SimpleRestTest {
     @BeforeClass
     public static void setUp(TestContext context) throws IOException {
         vertx = Vertx.vertx();
-        vertx.deployVerticle(new SimpleREST((result, domain, descriptor) -> HealthCheck.Result.healthy()),
+        vertx.deployVerticle(new SimpleREST(new InMemReporter(new VerticalServiceRegistry())),
                 options,context.asyncAssertSuccess());
     }
 

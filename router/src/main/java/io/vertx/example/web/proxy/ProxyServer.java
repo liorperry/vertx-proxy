@@ -14,6 +14,7 @@ import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
 import io.vertx.ext.dropwizard.Match;
 import io.vertx.ext.dropwizard.MatchType;
 import io.vertx.ext.dropwizard.MetricsService;
+import org.boon.datarepo.Repo;
 import redis.clients.jedis.JedisPool;
 
 import java.util.Optional;
@@ -70,7 +71,8 @@ public class ProxyServer extends AbstractVerticle {
     @Override
     public void start(Future<Void> fut) throws Exception {
         port = vertx.getOrCreateContext().config().getInteger(HTTP_PORT);
-        verticalServiceRegistry.register(ServiceDescriptor.create("manage", port));
+        ServiceDescriptor descriptor = ServiceDescriptor.create(PROXY, port);
+        verticalServiceRegistry.register(descriptor);
         //set services health checks
         timer = Reporter.setUpHealthCheck(getVertx(), PROXY, verticalServiceRegistry, reporter, 2000);
 
@@ -88,15 +90,10 @@ public class ProxyServer extends AbstractVerticle {
                                 new Match().setValue("/.*").setType(MatchType.REGEX))
         ));
 
-        // set up server metrics
-        MetricsService metricsService = MetricsService.create(vertx);
-
         // Send a metrics events every second
-        if (getVertx().getOrCreateContext().config().getBoolean(ENABLE_METRICS_PUBLISH)) {
-            vertx.setPeriodic(1000, t -> {
-                String value = metricsService.getMetricsSnapshot(httpServer).encodePrettily();
-                bus.publish("metrics", value);
-            });
+        if (getVertx().getOrCreateContext().config().containsKey(ENABLE_METRICS_PUBLISH) &&
+                getVertx().getOrCreateContext().config().getBoolean(ENABLE_METRICS_PUBLISH)) {
+            Reporter.setUpStatisticsReporter(descriptor,vertx,bus,httpServer,3000);
         }
 
 /*
