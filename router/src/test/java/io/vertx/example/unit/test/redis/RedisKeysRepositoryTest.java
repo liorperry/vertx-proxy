@@ -15,6 +15,7 @@ import redis.clients.jedis.JedisPool;
 import java.util.Map;
 import java.util.Optional;
 
+import static io.vertx.example.web.proxy.RedisStarted.*;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
@@ -31,18 +32,24 @@ public class RedisKeysRepositoryTest {
 
     private static Jedis client;
     private static Vertx vertx;
+    private static JedisPool pool;
 
     @BeforeClass
     public static void setUp(TestContext context) throws Exception {
         vertx = Vertx.vertx();
-        JedisPool pool = RedisStarted.getJedisPool("localhost");
-        client = pool.getResource();
+        pool = RedisStarted.getJedisPool("localhost");
+        Jedis jedis = pool.getResource();
+        jedis.flushDB();
+        populate(jedis);
+        jedis.close();
+
+
 //        vertx.deployVerticle(new RedisStarted(client),context.asyncAssertSuccess());
     }
 
     @Test
     public void testRepositoryGetServices() throws Exception {
-        RedisKeysRepository repository = new RedisKeysRepository(client);
+        RedisKeysRepository repository = new RedisKeysRepository(pool);
         Map<String, String> services = repository.getServices();
         assertEquals(services.size(),3);
         assertTrue(Boolean.valueOf(services.get(SERVICE_A_OPEN)));
@@ -56,7 +63,7 @@ public class RedisKeysRepositoryTest {
 
     @Test
     public void testRepositoryGetProducts() throws Exception {
-        RedisKeysRepository repository = new RedisKeysRepository(client);
+        RedisKeysRepository repository = new RedisKeysRepository(pool);
         Map<String, String> products = repository.getProducts();
         assertEquals(products.size(),1);
         assertTrue(!Boolean.valueOf(products.get(PROD3568_BLOCKED)));
@@ -69,7 +76,10 @@ public class RedisKeysRepositoryTest {
 
     @AfterClass
     public static void tearDown(TestContext context) {
-        client.close();
+        pool = RedisStarted.getJedisPool("localhost");
+        Jedis jedis = pool.getResource();
+        jedis.flushDB();
+        jedis.close();
         vertx.close(context.asyncAssertSuccess());
     }
 

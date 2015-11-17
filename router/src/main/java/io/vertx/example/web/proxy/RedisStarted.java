@@ -49,7 +49,7 @@ public class RedisStarted extends AbstractVerticle {
 
     private void launchRedis() throws IOException {
         startRedis();
-        populate();
+        populate(jedis);
 
     }
 
@@ -59,24 +59,29 @@ public class RedisStarted extends AbstractVerticle {
         System.out.println("Starting redis:6379");
     }
 
-    private void populate() {
-        System.out.println(" ************** populate redis **************");
-        System.out.println(" Create services set");
-        System.out.println(" >> hset services serviceA true");
-        jedis.hset(SERVICES, "serviceA", "true");
-        System.out.println(" >> hset services serviceB false");
-        jedis.hset(SERVICES, "serviceB", "false");
-        System.out.println(" >> hset services whoAmI true");
-        jedis.hset(SERVICES, "whoAmI", "true");
+    public static void populate(Jedis jedis) {
+        try {
+            System.out.println(" ************** populate redis **************");
+            System.out.println(" Create services set");
+            System.out.println(" >> hset services serviceA true");
+            jedis.hset(SERVICES, "serviceA", "true");
+            System.out.println(" >> hset services serviceB false");
+            jedis.hset(SERVICES, "serviceB", "false");
+            System.out.println(" >> hset services whoAmI true");
+            jedis.hset(SERVICES, "whoAmI", "true");
 
-        System.out.println(" Create products set");
-        System.out.println(" >> hset products prod3568 false");
-        jedis.hset(PRODUCTS, "prod3568", "false");
+            System.out.println(" Create products set");
+            System.out.println(" >> hset products prod3568 false");
+            jedis.hset(PRODUCTS, "prod3568", "false");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static JedisPool getJedisPool(String host) {
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-        jedisPoolConfig.setMaxWaitMillis(500);
+        jedisPoolConfig.setTestOnBorrow(true);
+        jedisPoolConfig.setMaxWaitMillis(1000);
         return new JedisPool(jedisPoolConfig,host);
 
     }

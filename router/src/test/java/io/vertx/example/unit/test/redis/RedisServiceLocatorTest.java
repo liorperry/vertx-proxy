@@ -14,13 +14,13 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.net.Inet4Address;
 import java.util.Optional;
 
+import static io.vertx.example.web.proxy.RedisStarted.populate;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
@@ -38,31 +38,37 @@ public class RedisServiceLocatorTest {
     public static final String REST = "REST";
     public static final String VERSION = "1.0";
 
-    private static Jedis client;
     private static Vertx vertx;
     private static RedisReporter reporter;
     private static VerticalServiceRegistry verticalServiceRegistry;
+    private static long timer;
+    private static JedisPool pool;
+
 
     @BeforeClass
     public static void setUp(TestContext context) throws Exception {
         Async async = context.async();
         vertx = Vertx.vertx();
-        JedisPool pool = RedisStarted.getJedisPool("localhost");
-        client = pool.getResource();
+        pool = RedisStarted.getJedisPool("localhost");
+        Jedis jedis = pool.getResource();
+        jedis.flushDB();
+        populate(jedis);
+        jedis.close();
+
 //        vertx.deployVerticle(new RedisStarted(client),context.asyncAssertSuccess());
-        reporter = new RedisReporter(client, 1000);
+        reporter = new RedisReporter(pool, 1000);
         verticalServiceRegistry = new VerticalServiceRegistry();
+        verticalServiceRegistry.register(ServiceDescriptor.create(SERVICE_A_OPEN, PORT));
+        verticalServiceRegistry.register(ServiceDescriptor.create(SERVICE_B_BLOCKED, PORT));
+        //set services health checks
+        timer = Reporter.setUpHealthCheck(vertx, REST, verticalServiceRegistry, reporter, 2000);
         async.complete();
     }
 
     @Test
     public void testRepositoryGetServices() throws Exception {
-        verticalServiceRegistry.register(ServiceDescriptor.create(SERVICE_A_OPEN, PORT));
-        verticalServiceRegistry.register(ServiceDescriptor.create(SERVICE_B_BLOCKED, PORT));
-        //set services health checks
-        Reporter.setUpHealthCheck(vertx,REST, verticalServiceRegistry,reporter);
         //service locator
-        RedisServiceLocator locator = new RedisServiceLocator(client, REST);
+        RedisServiceLocator locator = new RedisServiceLocator(pool, REST);
         assertEquals(locator.getDomain(), REST);
 
         Optional<ServiceDescriptor> locatorService = locator.getService("/" + SERVICE_A_OPEN + "/" + PROD7340_OPED, VERSION);
@@ -80,7 +86,11 @@ public class RedisServiceLocatorTest {
 
     @AfterClass
     public static void tearDown(TestContext context) {
-        client.close();
+        pool = RedisStarted.getJedisPool("localhost");
+        Jedis jedis = pool.getResource();
+        jedis.flushDB();
+        jedis.close();
+        vertx.cancelTimer(timer);
         vertx.close(context.asyncAssertSuccess());
     }
 

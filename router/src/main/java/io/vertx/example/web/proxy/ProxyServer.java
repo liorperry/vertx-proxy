@@ -14,6 +14,7 @@ import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
 import io.vertx.ext.dropwizard.Match;
 import io.vertx.ext.dropwizard.MatchType;
 import io.vertx.ext.dropwizard.MetricsService;
+import redis.clients.jedis.JedisPool;
 
 import java.util.Optional;
 
@@ -27,12 +28,14 @@ public class ProxyServer extends AbstractVerticle {
     public static final String PROXY = "PROXY";
     public static final String VERSION = "version";
 
+    private JedisPool pool;
     private Filter filter;
     private EventBus bus;
     private Reporter reporter;
     private ServiceLocator locator;
     private VerticalServiceRegistry verticalServiceRegistry;
     private int port;
+    private long timer;
 
     public ProxyServer(Filter filter, Reporter reporter, ServiceLocator locator) {
         this.filter = filter;
@@ -44,7 +47,7 @@ public class ProxyServer extends AbstractVerticle {
     public void init(io.vertx.core.Vertx vertx, Context context) {
         super.init(vertx, context);
         verticalServiceRegistry = new VerticalServiceRegistry();
-        bus = new RedisEventBus();
+        bus = new RedisEventBus(pool);
     }
 
 
@@ -69,7 +72,7 @@ public class ProxyServer extends AbstractVerticle {
         port = vertx.getOrCreateContext().config().getInteger(HTTP_PORT);
         verticalServiceRegistry.register(ServiceDescriptor.create("manage", port));
         //set services health checks
-        Reporter.setUpHealthCheck(getVertx(), PROXY, verticalServiceRegistry, reporter);
+        timer = Reporter.setUpHealthCheck(getVertx(), PROXY, verticalServiceRegistry, reporter, 2000);
 
         // If a config file is set, read the host and port.
         HttpClient client = vertx.createHttpClient(new HttpClientOptions());
@@ -96,13 +99,22 @@ public class ProxyServer extends AbstractVerticle {
             });
         }
 
+/*
+        locator.updateFromRegistry();
+        //setup serviceLocator pool periodic update policy
+        vertx.setPeriodic(3000, t -> {
+            locator.updateFromRegistry();
+        });
+*/
+
         //request handling
         httpServer.requestHandler(req -> {
             System.out.println("Proxying request: " + req.uri());
             if (!filter.filter(req)) {
                 returnForbiddenResponse(req);
             } else {
-                Optional<ServiceDescriptor> service = locator.getService(req.uri(), req.getHeader(VERSION)!=null ? req.getHeader(VERSION) : DEFAULT_VERSION);
+                String version = req.getHeader(VERSION) != null ? req.getHeader(VERSION) : DEFAULT_VERSION;
+                Optional<ServiceDescriptor> service = locator.getService(req.uri(), version);
                 if (!service.isPresent()) {
                     returnForbiddenResponse(req);
                 } else {

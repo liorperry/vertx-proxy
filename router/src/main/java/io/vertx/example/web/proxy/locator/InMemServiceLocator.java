@@ -32,8 +32,9 @@ public class InMemServiceLocator implements ServiceLocator {
 
         //reload pool if services where removed/added
         if (registry.size() != pool.size()) {
-            pool.updateService(Sets.newHashSet(registry.getServices()));
+            updateFromRegistry();
         }
+
         ServiceVersion serviceVersion = new ServiceVersion(serviceName.get(), version);
 
         if (!servicesBlockedLocations.values().stream().anyMatch(descriptor -> descriptor.getServiceVersion().equals(serviceVersion))) {
@@ -56,6 +57,12 @@ public class InMemServiceLocator implements ServiceLocator {
 
     public Collection<ServiceDescriptor> getAllProviders(ServiceVersion serviceVersion) {
         return Collections.unmodifiableCollection(pool.getAll(serviceVersion));
+    }
+
+    @Override
+    public void updateFromRegistry() {
+        //update the pool services from services registry
+        pool.updateService(Sets.newHashSet(registry.getServices()));
     }
 
     public Collection<ServiceDescriptor> getAllProviders() {

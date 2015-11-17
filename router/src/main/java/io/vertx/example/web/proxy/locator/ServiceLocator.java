@@ -22,7 +22,12 @@ public interface ServiceLocator extends Closeable {
         return address.substring(0, address.indexOf(":"));
     }
 
-    default void close(Handler<AsyncResult<Void>> completionHandler) {}
+    default void close(Handler<AsyncResult<Void>> completionHandler) {
+    }
 
     Collection<ServiceDescriptor> getAllProviders(ServiceVersion serviceVersion);
+
+    Collection<ServiceDescriptor> getAllProviders();
+
+    void updateFromRegistry();
 }

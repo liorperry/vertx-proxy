@@ -1,19 +1,17 @@
 package io.vertx.example.web.proxy.events;
 
-import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import java.util.Optional;
 
 public class RedisEventBus implements EventBus{
     private RedisPublisher publisher;
     private RedisSubscriber subscriber;
-    private Jedis jedis;
 
-    public RedisEventBus() {
+    public RedisEventBus(JedisPool pool) {
         // Create the redis client
-        jedis = new Jedis("localhost");
-        publisher = new RedisPublisher(jedis);
-        subscriber = new RedisSubscriber(jedis);
+        publisher = new RedisPublisher(pool);
+        subscriber = new RedisSubscriber(pool);
     }
 
     @Override

@@ -14,10 +14,6 @@ public interface Reporter extends Closeable {
 
     default void close(Handler<AsyncResult<Void>> completionHandler) {}
 
-    static String buildResult(ServiceDescriptor descriptor) {
-        return "\"" +descriptor.getHost() + ":" + descriptor.getPort() + "\"";
-    }
-
     static String buildKey(String domain, ServiceDescriptor descriptor) {
         return "\""+ domain + "." + descriptor.getKey()+"\"";
     }
@@ -27,14 +23,17 @@ public interface Reporter extends Closeable {
      * @param vertx
      * @param domain
      * @param reporter
-     * @return
+     * @param delayTime
      */
-    static void setUpHealthCheck(Vertx vertx,String domain, VerticalServiceRegistry registry,Reporter reporter) {
+    static long setUpHealthCheck(Vertx vertx, String domain, VerticalServiceRegistry registry, Reporter reporter, int delayTime) {
         final HealthCheckRegistry healthChecks = new HealthCheckRegistry();
         registry.getServices().stream().forEach(descriptor ->  healthChecks.register(descriptor.getKey(), ReportHealthCheck.build(domain, descriptor, reporter)));
+
+        healthChecks.runHealthChecks();
         //first time health check reporting
-        vertx.runOnContext(t -> healthChecks.runHealthChecks());
+//        vertx.runOnContext(t -> healthChecks.runHealthChecks());
+
         //run periodic health checks
-        vertx.setPeriodic(2000, t -> healthChecks.runHealthChecks());
+        return vertx.setPeriodic(delayTime, t -> healthChecks.runHealthChecks());
     }
 }

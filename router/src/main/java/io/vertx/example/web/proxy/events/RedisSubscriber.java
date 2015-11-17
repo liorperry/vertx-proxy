@@ -1,18 +1,24 @@
 package io.vertx.example.web.proxy.events;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import java.util.Optional;
 
 class RedisSubscriber implements Subscriber{
-    private Jedis jedis;
+    private JedisPool pool;
 
-    public RedisSubscriber(Jedis jedis) {
-        this.jedis = jedis;
+    public RedisSubscriber(JedisPool pool) {
+        this.pool = pool;
     }
 
     @Override
     public Optional subscribe(String key) {
-        return Optional.ofNullable(jedis.get(key));
+        Jedis jedis = pool.getResource();
+        try {
+            return Optional.ofNullable(jedis.get(key));
+        } finally {
+            jedis.close();
+        }
     }
 }

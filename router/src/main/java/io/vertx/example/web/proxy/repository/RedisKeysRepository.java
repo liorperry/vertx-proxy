@@ -3,6 +3,7 @@ package io.vertx.example.web.proxy.repository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import java.util.Collections;
 import java.util.Map;
@@ -14,16 +15,17 @@ public class RedisKeysRepository implements KeysRepository {
     public static final String SERVICES = "services";
     public static final String PRODUCTS = "products";
 
-    private Jedis jedis;
+    private JedisPool pool;
 
-    public RedisKeysRepository(Jedis client) {
-        // Create the redis client
-        jedis = client;
+    public RedisKeysRepository(JedisPool pool) {
+        this.pool = pool;
     }
 
     @Override
     public Map<String, String> getServices() {
+        Jedis jedis = pool.getResource();
         Map<String, String> map = jedis.hgetAll(SERVICES);
+        jedis.close();
         if(map!=null)
             return map;
         return Collections.emptyMap();
@@ -31,7 +33,9 @@ public class RedisKeysRepository implements KeysRepository {
 
     @Override
     public Map<String, String> getProducts() {
+        Jedis jedis = pool.getResource();
         Map<String, String> map = jedis.hgetAll(PRODUCTS);
+        jedis.close();
         if(map!=null)
             return map;
         return Collections.emptyMap();
@@ -45,7 +49,9 @@ public class RedisKeysRepository implements KeysRepository {
         }
 
 //        String value = jedis.hget(SERVICES, service.get());
+        Jedis jedis = pool.getResource();
         Map<String, String> map = jedis.hgetAll(SERVICES);
+        jedis.close();
         if(map==null || !map.containsKey(service.get())) {
             System.out.println(" Service "+service +" not found in keys set");
             return Optional.empty();
@@ -59,7 +65,15 @@ public class RedisKeysRepository implements KeysRepository {
         if(!product.isPresent()) {
             return Optional.empty();
         }
-        String value = jedis.hget(PRODUCTS, product.get());
+        Jedis jedis = pool.getResource();
+        String value = null;
+        try {
+            value = jedis.hget(PRODUCTS, product.get());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            jedis.close();
+        }
         if(value==null) {
             System.out.println(" Product "+product +" not found in keys set");
             return Optional.empty();
@@ -69,44 +83,52 @@ public class RedisKeysRepository implements KeysRepository {
 
     @Override
     public boolean blockService(String serviceName) {
+        Jedis jedis = pool.getResource();
         jedis.hset(SERVICES,serviceName,Boolean.FALSE.toString());
+        jedis.close();
         return true;
     }
 
     @Override
     public boolean openService(String serviceName) {
+        Jedis jedis = pool.getResource();
         jedis.hset(SERVICES,serviceName,Boolean.TRUE.toString());
+        jedis.close();
         return true;
     }
 
     @Override
     public boolean blockProduct(String productName) {
+        Jedis jedis = pool.getResource();
         jedis.hset(PRODUCTS, productName, Boolean.FALSE.toString());
+        jedis.close();
         return false;
     }
 
     @Override
     public boolean openProduct(String productName) {
+        Jedis jedis = pool.getResource();
         jedis.hset(PRODUCTS, productName, Boolean.TRUE.toString());
+        jedis.close();
         return false;
     }
 
     @Override
     public void close(Handler<AsyncResult<Void>> completionHandler) {
-        if(jedis.isConnected()) {
-            jedis.close();
-        }
+        pool.close();
     }
 
     @Override
     public void addService(String serviceName, boolean status) {
+        Jedis jedis = pool.getResource();
         jedis.hset(SERVICES, serviceName, Boolean.toString(status));
-
+        jedis.close();
     }
 
     @Override
     public void addProduct(String productName, boolean status) {
+        Jedis jedis = pool.getResource();
         jedis.hset(PRODUCTS, productName, Boolean.toString(status));
-
+        jedis.close();
     }
 }

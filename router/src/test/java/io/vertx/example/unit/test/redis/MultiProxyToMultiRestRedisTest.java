@@ -7,7 +7,6 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.example.web.proxy.ProxyServer;
 import io.vertx.example.web.proxy.RedisStarted;
 import io.vertx.example.web.proxy.SimpleREST;
-import io.vertx.example.web.proxy.filter.Filter;
 import io.vertx.example.web.proxy.filter.ProductFilter;
 import io.vertx.example.web.proxy.filter.ServiceFilter;
 import io.vertx.example.web.proxy.healthcheck.RedisReporter;
@@ -26,6 +25,8 @@ import redis.clients.jedis.JedisPool;
 
 import java.io.IOException;
 
+import static io.vertx.example.web.proxy.RedisStarted.getJedisPool;
+import static io.vertx.example.web.proxy.RedisStarted.populate;
 import static io.vertx.example.web.proxy.VertxInitUtils.ENABLE_METRICS_PUBLISH;
 import static io.vertx.example.web.proxy.VertxInitUtils.HTTP_PORT;
 import static io.vertx.example.web.proxy.filter.Filter.FilterBuilder.filterBuilder;
@@ -43,28 +44,32 @@ public class MultiProxyToMultiRestRedisTest {
     private static Vertx vertx;
     private static KeysRepository keysRepository;
     private static Jedis client;
+    private static JedisPool pool;
 
     @BeforeClass
     public static void setUp(TestContext context) throws IOException, InterruptedException {
         //start verticals
         vertx = Vertx.vertx();
         //start redis client
-        JedisPool pool = RedisStarted.getJedisPool("localhost");
-        client = pool.getResource();
+        pool = getJedisPool("localhost");
+        Jedis jedis = pool.getResource();
+        jedis.flushDB();
+        populate(jedis);
+        jedis.close();
 
         //deploy redis server
 //        vertx.deployVerticle(new RedisStarted(client), context.asyncAssertSuccess());
         //deploy rest server
-        vertx.deployVerticle(new SimpleREST(new RedisReporter(client, 25)),
+        vertx.deployVerticle(new SimpleREST(new RedisReporter(pool, 25)),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST1_PORT)),
                 context.asyncAssertSuccess());
 
-        vertx.deployVerticle(new SimpleREST(new RedisReporter(client, 25)),
+        vertx.deployVerticle(new SimpleREST(new RedisReporter(pool, 25)),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST2_PORT)),
                 context.asyncAssertSuccess());
 
         //keys & routes keysRepository
-        keysRepository = new RedisKeysRepository(client);
+        keysRepository = new RedisKeysRepository(pool);
 
         //proxy vertical deployment
         vertx.deployVerticle(new ProxyServer(
@@ -72,8 +77,8 @@ public class MultiProxyToMultiRestRedisTest {
                                 .add(new ServiceFilter())
                                 .add(new ProductFilter())
                                 .build(),
-                        new RedisReporter(client, 25),
-                        new RedisServiceLocator(client, SimpleREST.REST)),
+                        new RedisReporter(pool, 25),
+                        new RedisServiceLocator(pool, SimpleREST.REST)),
                 new DeploymentOptions().setConfig(new JsonObject()
                         .put(HTTP_PORT, PROXY_PORT)
                         .put(ENABLE_METRICS_PUBLISH, false)),
@@ -117,7 +122,10 @@ public class MultiProxyToMultiRestRedisTest {
 
     @AfterClass
     public static void tearDown() throws Exception {
-        client.close();
+        pool = RedisStarted.getJedisPool("localhost");
+        Jedis jedis = pool.getResource();
+        jedis.flushDB();
+        jedis.close();
         vertx.close();
     }
 }

@@ -24,6 +24,7 @@ public class SimpleREST extends AbstractVerticle {
     private VerticalServiceRegistry verticalServiceRegistry;
     private Reporter reporter;
     private int port;
+    private long timer;
 
     public SimpleREST(Reporter reporter) {
         this.reporter = reporter;
@@ -51,7 +52,7 @@ public class SimpleREST extends AbstractVerticle {
         verticalServiceRegistry.register(ServiceDescriptor.create("whoAmI", port));
 
         //set services health checks
-        Reporter.setUpHealthCheck(getVertx(), REST, verticalServiceRegistry, reporter);
+        timer = Reporter.setUpHealthCheck(getVertx(), REST, verticalServiceRegistry, reporter, 2000);
 
         setUpInitialData();
         Router router = Router.router(vertx);
