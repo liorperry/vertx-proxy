@@ -5,15 +5,15 @@ import io.vertx.core.Handler;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static io.vertx.example.web.proxy.filter.FilterUtils.*;
 
 public class RedisKeysRepository implements KeysRepository {
     public static final String SERVICES = "services";
     public static final String PRODUCTS = "products";
+    public static final String MOBILE_CHANNEL = "channel.mobile";
+    public static final String INTERNET_CHANNEL = "channel.internet";
 
     private JedisPool pool;
 
@@ -42,6 +42,14 @@ public class RedisKeysRepository implements KeysRepository {
     }
 
     @Override
+    public Set<String> getChannelServices(String channelName) {
+        Jedis jedis = pool.getResource();
+        Set<String> members = jedis.smembers(channelName);
+        jedis.close();
+        return members;
+    }
+
+    @Override
     public Optional<Boolean> getService(String uri) {
         Optional<String> service = extractService(uri);
         if(!service.isPresent()) {
@@ -57,6 +65,18 @@ public class RedisKeysRepository implements KeysRepository {
             return Optional.empty();
         }
         return Optional.of(Boolean.valueOf(map.get(service.get())));
+    }
+
+    @Override
+    public Optional<Boolean> getChannelService(String uri, String channelName) {
+        Optional<String> service = extractService(uri);
+        if(!service.isPresent()) {
+            return Optional.empty();
+        }
+        Jedis jedis = pool.getResource();
+        Set<String> members = jedis.smembers(channelName);
+        jedis.close();
+        return Optional.of(members.contains(service.get()));
     }
 
     @Override
@@ -114,11 +134,18 @@ public class RedisKeysRepository implements KeysRepository {
     }
 
     @Override
+    public void addService(String serviceName, boolean status, String... channels) {
+        addService(serviceName,status);
+        Jedis jedis = pool.getResource();
+        Arrays.asList(channels).stream().forEach(s -> { jedis.sadd(s,serviceName);});
+        jedis.close();
+    }
+
+    @Override
     public void close(Handler<AsyncResult<Void>> completionHandler) {
         pool.close();
     }
 
-    @Override
     public void addService(String serviceName, boolean status) {
         Jedis jedis = pool.getResource();
         jedis.hset(SERVICES, serviceName, Boolean.toString(status));

@@ -55,7 +55,9 @@ public class RedisServiceLocatorTest {
         populate(jedis);
         jedis.close();
 
-//        vertx.deployVerticle(new RedisStarted(client),context.asyncAssertSuccess());
+        //deploy embedded redis
+//        vertx.deployVerticle(new RedisStarted(jedis),context.asyncAssertSuccess());
+
         reporter = new RedisReporter(pool, 1000);
         verticalServiceRegistry = new VerticalServiceRegistry();
         verticalServiceRegistry.register(ServiceDescriptor.create(SERVICE_A_OPEN, PORT));

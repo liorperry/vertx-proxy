@@ -14,6 +14,7 @@ import redis.clients.jedis.JedisPool;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static io.vertx.example.web.proxy.RedisStarted.*;
 import static junit.framework.Assert.assertEquals;
@@ -43,7 +44,7 @@ public class RedisKeysRepositoryTest {
         populate(jedis);
         jedis.close();
 
-
+        //deploy embedded redis
 //        vertx.deployVerticle(new RedisStarted(client),context.asyncAssertSuccess());
     }
 
@@ -57,6 +58,23 @@ public class RedisKeysRepositoryTest {
         assertTrue(!Boolean.valueOf(services.get(SERVICE_B_BLOCKED)));
 
         Optional<Boolean> service = repository.getService("/" + SERVICE_A_OPEN + "/" + PROD7340_OPED);
+        assertTrue(service.isPresent());
+        assertTrue(service.get().booleanValue());
+    }
+
+    @Test
+    public void testRepositoryGetChannelServices() throws Exception {
+        RedisKeysRepository repository = new RedisKeysRepository(pool);
+        Set<String> services = repository.getChannelServices("channel.internet");
+        assertEquals(services.size(),3);
+        assertTrue(services.contains(SERVICE_A_OPEN));
+        assertTrue(services.contains(WHO_AM_I));
+        assertTrue(services.contains(SERVICE_B_BLOCKED));
+
+        Optional<Boolean> service = repository.getChannelService("/" + SERVICE_A_OPEN + "/" + PROD7340_OPED,"channel.internet");
+        assertTrue(service.isPresent());
+        assertTrue(service.get().booleanValue());
+        service = repository.getChannelService("/" + WHO_AM_I  ,"channel.internet");
         assertTrue(service.isPresent());
         assertTrue(service.get().booleanValue());
     }

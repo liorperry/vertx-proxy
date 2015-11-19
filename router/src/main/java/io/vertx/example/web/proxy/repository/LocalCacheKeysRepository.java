@@ -3,9 +3,7 @@ package io.vertx.example.web.proxy.repository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static io.vertx.example.web.proxy.filter.FilterUtils.extractProduct;
@@ -16,10 +14,12 @@ public class LocalCacheKeysRepository implements KeysRepository {
 
     private ConcurrentHashMap<String, String> servicesMap;
     private ConcurrentHashMap<String, String> productsMap;
+    private ConcurrentHashMap<String, Set<String>> channelServicesMap;
 
     public LocalCacheKeysRepository() {
         servicesMap = new ConcurrentHashMap<>();
         productsMap = new ConcurrentHashMap<>();
+        channelServicesMap = new ConcurrentHashMap<>();
     }
 
     public LocalCacheKeysRepository(Map<String, String> servicesMap) {
@@ -44,6 +44,11 @@ public class LocalCacheKeysRepository implements KeysRepository {
     }
 
     @Override
+    public Set<String> getChannelServices(String channelName) {
+        return Collections.emptySet();
+    }
+
+    @Override
     public Optional<Boolean> getService(String uri) {
         Optional<String> service = extractService(uri);
         if (!service.isPresent()) {
@@ -56,6 +61,11 @@ public class LocalCacheKeysRepository implements KeysRepository {
             return Optional.empty();
         }
         return Optional.of(Boolean.valueOf(value));
+    }
+
+    @Override
+    public Optional<Boolean> getChannelService(String uri, String channelName) {
+        return Optional.empty();
     }
 
     @Override
@@ -83,8 +93,12 @@ public class LocalCacheKeysRepository implements KeysRepository {
     }
 
     @Override
-    public void addService(String serviceName, boolean status) {
+    public void addService(String serviceName, boolean status, String ... channels) {
         servicesMap.put(serviceName, Boolean.toString(status));
+        if(!channelServicesMap.containsKey(serviceName)) {
+            channelServicesMap.put(serviceName,new HashSet<>());
+        }
+        Collections.addAll(channelServicesMap.get(serviceName), channels);
     }
 
     @Override

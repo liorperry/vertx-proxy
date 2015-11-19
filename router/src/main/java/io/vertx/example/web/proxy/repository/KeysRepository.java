@@ -5,6 +5,7 @@ import io.vertx.example.web.proxy.filter.ParseUtils;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static io.vertx.example.web.proxy.filter.ParseUtils.*;
 
@@ -14,7 +15,11 @@ public interface KeysRepository extends Closeable {
 
     Map<String, String> getProducts();
 
+    Set<String> getChannelServices(String channelName);
+
     Optional<Boolean> getService(String uri);
+
+    Optional<Boolean> getChannelService(String uri, String channelName);
 
     Optional<Boolean> getProduct(String uri);
 
@@ -26,7 +31,7 @@ public interface KeysRepository extends Closeable {
 
     boolean openProduct(String productName);
 
-    void addService(String serviceName, boolean status);
+    void addService(String serviceName, boolean status, String ... channels);
 
     void addProduct(String productName, boolean status);
 }

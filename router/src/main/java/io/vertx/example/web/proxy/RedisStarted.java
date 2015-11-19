@@ -14,6 +14,7 @@ import java.io.IOException;
 public class RedisStarted extends AbstractVerticle {
     public static final String SERVICES = "services";
     public static final String PRODUCTS = "products";
+    public static final String CHANNEL_INTERNET = "channel.internet";
     private static RedisServer redisServer;
 
     private final Jedis jedis;
@@ -73,6 +74,11 @@ public class RedisStarted extends AbstractVerticle {
             System.out.println(" Create products set");
             System.out.println(" >> hset products prod3568 false");
             jedis.hset(PRODUCTS, "prod3568", "false");
+
+            System.out.println(" Create channel services set");
+            System.out.println(" >> sadd channel.internet serviceA serviceB");
+            jedis.sadd(CHANNEL_INTERNET, "serviceA", "serviceB", "whoAmI");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
