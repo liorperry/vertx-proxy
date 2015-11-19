@@ -7,6 +7,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.impl.Closeable;
+import io.vertx.core.json.JsonObject;
 import io.vertx.example.web.proxy.events.EventBus;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
@@ -43,8 +44,11 @@ public interface Reporter extends Closeable {
     static long setUpStatisticsReporter(ServiceDescriptor descriptor, Vertx vertx, EventBus bus, HttpServer httpServer,int delayTime) {
         long timer = vertx.setPeriodic(delayTime, t -> {
             MetricsService metricsService = MetricsService.create(vertx);
-            String value = metricsService.getMetricsSnapshot(httpServer).encodePrettily();
-            bus.publish("metrics"+"."+descriptor.getKey(), value);
+            JsonObject snapshot = metricsService.getMetricsSnapshot(httpServer);
+            if(snapshot!=null) {
+                String value = snapshot.encodePrettily();
+                bus.publish("metrics" + "." + descriptor.getKey(), value);
+            }
         });
         return timer;
     }

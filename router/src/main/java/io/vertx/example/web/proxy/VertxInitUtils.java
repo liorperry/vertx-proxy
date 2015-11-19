@@ -26,9 +26,7 @@ public interface VertxInitUtils {
         //locate open port
         int port = 8282;
         try {
-            ServerSocket socket = new ServerSocket(0);
-            port = socket.getLocalPort();
-            socket.close();
+            port = getNextAvailablePort();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -37,6 +35,12 @@ public interface VertxInitUtils {
         return new DeploymentOptions().setConfig(new JsonObject()
                 .put(ENABLE_METRICS_PUBLISH, enableMetricsPublish)
                 .put(HTTP_PORT, port));
+    }
+
+    static int getNextAvailablePort() throws IOException {
+        ServerSocket socket = new ServerSocket(0);
+        socket.close();
+        return socket.getLocalPort();
     }
 
     static int getPort(DeploymentOptions options) {
