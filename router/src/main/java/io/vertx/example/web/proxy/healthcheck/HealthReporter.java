@@ -8,12 +8,12 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.impl.Closeable;
 import io.vertx.core.json.JsonObject;
-import io.vertx.example.web.proxy.events.EventBus;
+import io.vertx.example.web.proxy.events.Publisher;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
 import io.vertx.ext.dropwizard.MetricsService;
 
-public interface Reporter extends Closeable {
+public interface HealthReporter extends Closeable {
     HealthCheck.Result report(HealthCheck.Result result,String domain,ServiceDescriptor descriptor);
 
     default void close(Handler<AsyncResult<Void>> completionHandler) {}
@@ -23,15 +23,15 @@ public interface Reporter extends Closeable {
     }
 
     /**
-     * health check reporter
+     * health check healthReporter
      * @param vertx
      * @param domain
-     * @param reporter
+     * @param healthReporter
      * @param delayTime
      */
-    static long setUpHealthCheck(Vertx vertx, String domain, VerticalServiceRegistry registry, Reporter reporter, int delayTime) {
+    static long setUpHealthCheck(Vertx vertx, String domain, VerticalServiceRegistry registry, HealthReporter healthReporter, int delayTime) {
         final HealthCheckRegistry healthChecks = new HealthCheckRegistry();
-        registry.getServices().stream().forEach(descriptor ->  healthChecks.register(descriptor.getKey(), ReportHealthCheck.build(domain, descriptor, reporter)));
+        registry.getServices().stream().forEach(descriptor ->  healthChecks.register(descriptor.getKey(), ReportHealthCheck.build(domain, descriptor, healthReporter)));
 
         healthChecks.runHealthChecks();
         //first time health check reporting
@@ -41,13 +41,13 @@ public interface Reporter extends Closeable {
         return vertx.setPeriodic(delayTime, t -> healthChecks.runHealthChecks());
     }
 
-    static long setUpStatisticsReporter(ServiceDescriptor descriptor, Vertx vertx, EventBus bus, HttpServer httpServer,int delayTime) {
+    static long setUpStatisticsReporter(ServiceDescriptor descriptor, Vertx vertx, Publisher publisher, HttpServer httpServer,int delayTime) {
         long timer = vertx.setPeriodic(delayTime, t -> {
             MetricsService metricsService = MetricsService.create(vertx);
             JsonObject snapshot = metricsService.getMetricsSnapshot(httpServer);
             if(snapshot!=null) {
                 String value = snapshot.encodePrettily();
-                bus.publish("metrics" + "." + descriptor.getKey(), value);
+                publisher.publish("metrics" + "." + descriptor.getKey(), value);
             }
         });
         return timer;

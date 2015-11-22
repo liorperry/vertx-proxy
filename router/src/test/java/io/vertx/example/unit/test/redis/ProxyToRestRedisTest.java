@@ -10,7 +10,7 @@ import io.vertx.example.web.proxy.RedisStarted;
 import io.vertx.example.web.proxy.SimpleREST;
 import io.vertx.example.web.proxy.filter.ProductFilter;
 import io.vertx.example.web.proxy.filter.ServiceFilter;
-import io.vertx.example.web.proxy.healthcheck.RedisReporter;
+import io.vertx.example.web.proxy.healthcheck.RedisHealthReporter;
 import io.vertx.example.web.proxy.locator.RedisServiceLocator;
 import io.vertx.example.web.proxy.repository.KeysRepository;
 import io.vertx.example.web.proxy.repository.RedisKeysRepository;
@@ -65,7 +65,7 @@ public class ProxyToRestRedisTest {
         //deploy redis server
 //        vertx.deployVerticle(new RedisStarted(client), context.asyncAssertSuccess());
         //deploy rest server
-        vertx.deployVerticle(new SimpleREST(new RedisReporter(pool,100 )),
+        vertx.deployVerticle(new SimpleREST(new RedisHealthReporter(pool,100 )),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST_PORT)),
                 context.asyncAssertSuccess());
 
@@ -78,7 +78,7 @@ public class ProxyToRestRedisTest {
                                 .add(new ServiceFilter())
                                 .add(new ProductFilter())
                                 .build(),
-                        new RedisReporter(pool,100 ),
+                        new RedisHealthReporter(pool,100 ),
                         new RedisServiceLocator(pool, SimpleREST.REST)),
                 new DeploymentOptions().setConfig(new JsonObject()
                         .put(HTTP_PORT, PROXY_PORT)

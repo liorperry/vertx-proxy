@@ -7,7 +7,6 @@ import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.process.runtime.Network;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
@@ -15,10 +14,11 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
-import io.vertx.example.web.proxy.events.EmptyEventBus;
-import io.vertx.example.web.proxy.events.EventBus;
-import io.vertx.example.web.proxy.healthcheck.InMemReporter;
-import io.vertx.example.web.proxy.healthcheck.Reporter;
+import io.vertx.example.web.proxy.events.MongoMessageProcessor;
+import io.vertx.example.web.proxy.events.Publisher;
+import io.vertx.example.web.proxy.events.Subscriber;
+import io.vertx.example.web.proxy.healthcheck.InMemHealthReporter;
+import io.vertx.example.web.proxy.healthcheck.HealthReporter;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
 import io.vertx.ext.mongo.MongoClient;
@@ -42,8 +42,9 @@ public class MongoStarted extends AbstractVerticle {
     static DeploymentOptions options = VertxInitUtils.initDeploymentOptions();
 
     private int port;
-    private final Reporter reporter;
-    private final EventBus bus;
+    private HealthReporter healthReporter;
+    private Publisher publisher;
+    private Subscriber subscriber;
 
     private static MongodExecutable mongodExecutable = null;
     private static MongodProcess mongod;
@@ -56,12 +57,14 @@ public class MongoStarted extends AbstractVerticle {
         MongodStarter starter = MongodStarter.getDefaultInstance();
         initMongo(starter);
         Vertx vertx = Vertx.vertx(VertxInitUtils.initOptions());
-        vertx.deployVerticle(new MongoStarted(new InMemReporter(new VerticalServiceRegistry()), EmptyEventBus.EMPTY),options);
+//        vertx.deployVerticle(new MongoStarted(new InMemHealthReporter(new VerticalServiceRegistry()), EventBus.EMPTY, Subscriber.EMPTY ),options);
+        vertx.deployVerticle(new MongoStarted(new InMemHealthReporter(new VerticalServiceRegistry()), Publisher.EMPTY, Subscriber.EMPTY ),options);
     }
 
-    public MongoStarted(Reporter reporter, EventBus bus) {
-        this.reporter = reporter;
-        this.bus = bus;
+    public MongoStarted(HealthReporter healthReporter, Publisher publisher,Subscriber subscriber) {
+        this.healthReporter = healthReporter;
+        this.publisher = publisher;
+        this.subscriber = subscriber;
     }
 
     public void start(Future<Void> fut) throws IOException {
@@ -72,12 +75,12 @@ public class MongoStarted extends AbstractVerticle {
         HttpServer httpServer = vertx.createHttpServer();
 
         //set services health checks
-        Reporter.setUpHealthCheck(getVertx(), DWH_LOG, registry, reporter, 2000);
+        HealthReporter.setUpHealthCheck(getVertx(), DWH_LOG, registry, healthReporter, 2000);
 
         // Send a metrics events every second
         if (getVertx().getOrCreateContext().config().containsKey(ENABLE_METRICS_PUBLISH) &&
                 getVertx().getOrCreateContext().config().getBoolean(ENABLE_METRICS_PUBLISH)) {
-            Reporter.setUpStatisticsReporter(ServiceDescriptor.create(DWH_LOG, port), vertx, bus, httpServer, 3000);
+            HealthReporter.setUpStatisticsReporter(ServiceDescriptor.create(DWH_LOG, port), vertx, publisher, httpServer, 3000);
         }
 
         JsonObject mongoconfig = new JsonObject()
@@ -92,6 +95,8 @@ public class MongoStarted extends AbstractVerticle {
         router.route().handler(BodyHandler.create());
         router.get("/log/:logId").handler(this::getLog);
         router.post("/log/:logId").handler(this::addLog);
+
+        subscriber.subscribe(DWH_LOG, new MongoMessageProcessor(mongoClient));
 
         httpServer.requestHandler(router::accept).listen(port, result -> {
             if (result.succeeded()) {
@@ -164,4 +169,6 @@ public class MongoStarted extends AbstractVerticle {
             stopFuture.fail(e);
         }
     }
+
+
 }

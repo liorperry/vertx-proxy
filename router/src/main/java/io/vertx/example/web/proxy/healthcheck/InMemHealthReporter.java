@@ -7,11 +7,11 @@ import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
 
 import java.util.Set;
 
-public class InMemReporter implements Reporter{
+public class InMemHealthReporter implements HealthReporter {
 
     private VerticalServiceRegistry registry ;
 
-    public InMemReporter(VerticalServiceRegistry registry) {
+    public InMemHealthReporter(VerticalServiceRegistry registry) {
         this.registry = registry;
     }
 

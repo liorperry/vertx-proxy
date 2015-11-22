@@ -3,18 +3,15 @@ package io.vertx.example.web.proxy;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.*;
 import io.vertx.core.http.*;
-import io.vertx.example.web.proxy.events.EventBus;
-import io.vertx.example.web.proxy.events.RedisEventBus;
+import io.vertx.example.web.proxy.events.Publisher;
 import io.vertx.example.web.proxy.filter.Filter;
-import io.vertx.example.web.proxy.healthcheck.Reporter;
+import io.vertx.example.web.proxy.healthcheck.HealthReporter;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 import io.vertx.example.web.proxy.locator.ServiceLocator;
 import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
 import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
 import io.vertx.ext.dropwizard.Match;
 import io.vertx.ext.dropwizard.MatchType;
-import io.vertx.ext.dropwizard.MetricsService;
-import org.boon.datarepo.Repo;
 import redis.clients.jedis.JedisPool;
 
 import java.util.Optional;
@@ -31,16 +28,17 @@ public class ProxyServer extends AbstractVerticle {
 
     private JedisPool pool;
     private Filter filter;
-    private EventBus bus;
-    private Reporter reporter;
+    private HealthReporter healthReporter;
+    private Publisher publisher;
     private ServiceLocator locator;
     private VerticalServiceRegistry verticalServiceRegistry;
     private int port;
     private long timer;
 
-    public ProxyServer(Filter filter, Reporter reporter, ServiceLocator locator) {
+    public ProxyServer(Filter filter, HealthReporter healthReporter,Publisher publisher, ServiceLocator locator) {
         this.filter = filter;
-        this.reporter = reporter;
+        this.healthReporter = healthReporter;
+        this.publisher = publisher;
         this.locator = locator;
     }
 
@@ -48,7 +46,6 @@ public class ProxyServer extends AbstractVerticle {
     public void init(io.vertx.core.Vertx vertx, Context context) {
         super.init(vertx, context);
         verticalServiceRegistry = new VerticalServiceRegistry();
-        bus = new RedisEventBus(pool);
     }
 
 
@@ -59,7 +56,7 @@ public class ProxyServer extends AbstractVerticle {
         super.stop();
         verticalServiceRegistry.close(event -> {
         });
-        reporter.close(event -> {
+        healthReporter.close(event -> {
         });
         locator.close(event -> {
         });
@@ -74,7 +71,7 @@ public class ProxyServer extends AbstractVerticle {
         ServiceDescriptor descriptor = ServiceDescriptor.create(PROXY, port);
         verticalServiceRegistry.register(descriptor);
         //set services health checks
-        timer = Reporter.setUpHealthCheck(getVertx(), PROXY, verticalServiceRegistry, reporter, 2000);
+        timer = HealthReporter.setUpHealthCheck(getVertx(), PROXY, verticalServiceRegistry, healthReporter, 2000);
 
         // If a config file is set, read the host and port.
         HttpClient client = vertx.createHttpClient(new HttpClientOptions());
@@ -93,7 +90,7 @@ public class ProxyServer extends AbstractVerticle {
         // Send a metrics events every second
         if (getVertx().getOrCreateContext().config().containsKey(ENABLE_METRICS_PUBLISH) &&
                 getVertx().getOrCreateContext().config().getBoolean(ENABLE_METRICS_PUBLISH)) {
-            Reporter.setUpStatisticsReporter(descriptor,vertx,bus,httpServer,3000);
+            HealthReporter.setUpStatisticsReporter(descriptor, vertx, publisher, httpServer, 3000);
         }
 
 /*

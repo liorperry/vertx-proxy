@@ -6,12 +6,12 @@ import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 public abstract class ReportHealthCheck extends HealthCheck {
     private ServiceDescriptor descriptor;
     private String domain;
-    private Reporter reporter;
+    private HealthReporter healthReporter;
 
-    ReportHealthCheck(String domain,  ServiceDescriptor descriptor, Reporter reporter) {
+    ReportHealthCheck(String domain,  ServiceDescriptor descriptor, HealthReporter healthReporter) {
         this.domain = domain;
         this.descriptor = descriptor;
-        this.reporter = reporter;
+        this.healthReporter = healthReporter;
     }
 
     protected abstract Result report(Result result);
@@ -21,11 +21,11 @@ public abstract class ReportHealthCheck extends HealthCheck {
         return report(Result.healthy());
     }
 
-    public static ReportHealthCheck build(String domain,ServiceDescriptor descriptor,Reporter reporter) {
-        return new ReportHealthCheck(domain,descriptor,reporter) {
+    public static ReportHealthCheck build(String domain,ServiceDescriptor descriptor,HealthReporter healthReporter) {
+        return new ReportHealthCheck(domain,descriptor, healthReporter) {
             @Override
             protected Result report(Result result) {
-                return reporter.report(result,domain,descriptor);
+                return healthReporter.report(result,domain,descriptor);
             }
         };
     }

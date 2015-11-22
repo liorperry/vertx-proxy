@@ -3,10 +3,10 @@ package io.vertx.example.web.proxy.events;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
-class RedisPublisher implements Publisher{
+class RedisPubSubPublisher implements Publisher{
     private JedisPool pool;
 
-    public RedisPublisher(JedisPool pool) {
+    public RedisPubSubPublisher(JedisPool pool) {
         this.pool = pool;
     }
 
@@ -14,7 +14,7 @@ class RedisPublisher implements Publisher{
     public Object publish(String key, String value) {
         Jedis jedis = pool.getResource();
         try {
-            return jedis.set(key,value);
+            return jedis.publish(key,value);
         } finally {
             jedis.close();
         }

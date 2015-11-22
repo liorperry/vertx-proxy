@@ -2,8 +2,8 @@ package io.vertx.example.unit.test.redis;
 
 import io.vertx.core.Vertx;
 import io.vertx.example.web.proxy.RedisStarted;
-import io.vertx.example.web.proxy.healthcheck.RedisReporter;
-import io.vertx.example.web.proxy.healthcheck.Reporter;
+import io.vertx.example.web.proxy.healthcheck.RedisHealthReporter;
+import io.vertx.example.web.proxy.healthcheck.HealthReporter;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 import io.vertx.example.web.proxy.locator.RedisServiceLocator;
 import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
@@ -39,7 +39,7 @@ public class RedisServiceLocatorTest {
     public static final String VERSION = "1.0";
 
     private static Vertx vertx;
-    private static RedisReporter reporter;
+    private static RedisHealthReporter reporter;
     private static VerticalServiceRegistry verticalServiceRegistry;
     private static long timer;
     private static JedisPool pool;
@@ -58,12 +58,12 @@ public class RedisServiceLocatorTest {
         //deploy embedded redis
 //        vertx.deployVerticle(new RedisStarted(jedis),context.asyncAssertSuccess());
 
-        reporter = new RedisReporter(pool, 1000);
+        reporter = new RedisHealthReporter(pool, 1000);
         verticalServiceRegistry = new VerticalServiceRegistry();
         verticalServiceRegistry.register(ServiceDescriptor.create(SERVICE_A_OPEN, PORT));
         verticalServiceRegistry.register(ServiceDescriptor.create(SERVICE_B_BLOCKED, PORT));
         //set services health checks
-        timer = Reporter.setUpHealthCheck(vertx, REST, verticalServiceRegistry, reporter, 2000);
+        timer = HealthReporter.setUpHealthCheck(vertx, REST, verticalServiceRegistry, reporter, 2000);
         async.complete();
     }
 

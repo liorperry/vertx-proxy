@@ -9,7 +9,7 @@ import io.vertx.example.web.proxy.RedisStarted;
 import io.vertx.example.web.proxy.SimpleREST;
 import io.vertx.example.web.proxy.filter.ProductFilter;
 import io.vertx.example.web.proxy.filter.ServiceFilter;
-import io.vertx.example.web.proxy.healthcheck.RedisReporter;
+import io.vertx.example.web.proxy.healthcheck.RedisHealthReporter;
 import io.vertx.example.web.proxy.locator.RedisServiceLocator;
 import io.vertx.example.web.proxy.repository.KeysRepository;
 import io.vertx.example.web.proxy.repository.RedisKeysRepository;
@@ -60,11 +60,11 @@ public class MultiProxyToMultiRestRedisTest {
         //deploy redis server
 //        vertx.deployVerticle(new RedisStarted(client), context.asyncAssertSuccess());
         //deploy rest server
-        vertx.deployVerticle(new SimpleREST(new RedisReporter(pool, 25)),
+        vertx.deployVerticle(new SimpleREST(new RedisHealthReporter(pool, 25)),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST1_PORT)),
                 context.asyncAssertSuccess());
 
-        vertx.deployVerticle(new SimpleREST(new RedisReporter(pool, 25)),
+        vertx.deployVerticle(new SimpleREST(new RedisHealthReporter(pool, 25)),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST2_PORT)),
                 context.asyncAssertSuccess());
 
@@ -77,7 +77,7 @@ public class MultiProxyToMultiRestRedisTest {
                                 .add(new ServiceFilter())
                                 .add(new ProductFilter())
                                 .build(),
-                        new RedisReporter(pool, 25),
+                        new RedisHealthReporter(pool, 25),
                         new RedisServiceLocator(pool, SimpleREST.REST)),
                 new DeploymentOptions().setConfig(new JsonObject()
                         .put(HTTP_PORT, PROXY_PORT)

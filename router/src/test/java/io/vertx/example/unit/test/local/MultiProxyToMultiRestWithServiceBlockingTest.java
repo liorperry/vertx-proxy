@@ -9,7 +9,7 @@ import io.vertx.example.web.proxy.ProxyServer;
 import io.vertx.example.web.proxy.SimpleREST;
 import io.vertx.example.web.proxy.filter.ProductFilter;
 import io.vertx.example.web.proxy.filter.ServiceFilter;
-import io.vertx.example.web.proxy.healthcheck.InMemReporter;
+import io.vertx.example.web.proxy.healthcheck.InMemHealthReporter;
 import io.vertx.example.web.proxy.locator.InMemServiceLocator;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 import io.vertx.example.web.proxy.locator.ServiceVersion;
@@ -70,15 +70,15 @@ public class MultiProxyToMultiRestWithServiceBlockingTest {
 
         serviceProvidersAddress = new HashSet<>();
         //deploy rest server
-        vertx.deployVerticle(new SimpleREST(new InMemReporter(registry)),
+        vertx.deployVerticle(new SimpleREST(new InMemHealthReporter(registry)),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST1_PORT)),
                 context.asyncAssertSuccess());
 
-        vertx.deployVerticle(new SimpleREST(new InMemReporter(registry)),
+        vertx.deployVerticle(new SimpleREST(new InMemHealthReporter(registry)),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST2_PORT)),
                 context.asyncAssertSuccess());
 
-        vertx.deployVerticle(new SimpleREST(new InMemReporter(registry)),
+        vertx.deployVerticle(new SimpleREST(new InMemHealthReporter(registry)),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST3_PORT)),
                 context.asyncAssertSuccess());
 

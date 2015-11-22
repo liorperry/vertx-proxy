@@ -5,7 +5,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.example.web.proxy.SimpleREST;
 import io.vertx.example.web.proxy.VertxInitUtils;
-import io.vertx.example.web.proxy.healthcheck.InMemReporter;
+import io.vertx.example.web.proxy.healthcheck.InMemHealthReporter;
 import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -27,7 +27,7 @@ public class SimpleRestTest {
     @BeforeClass
     public static void setUp(TestContext context) throws IOException {
         vertx = Vertx.vertx();
-        vertx.deployVerticle(new SimpleREST(new InMemReporter(new VerticalServiceRegistry())),
+        vertx.deployVerticle(new SimpleREST(new InMemHealthReporter(new VerticalServiceRegistry())),
                 options,context.asyncAssertSuccess());
     }
 

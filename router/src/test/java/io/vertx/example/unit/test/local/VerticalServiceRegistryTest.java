@@ -1,14 +1,10 @@
 package io.vertx.example.unit.test.local;
 
-import com.codahale.metrics.health.HealthCheck;
-import io.vertx.example.web.proxy.healthcheck.InMemReporter;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.util.HashSet;
 
 import static junit.framework.Assert.assertEquals;
 

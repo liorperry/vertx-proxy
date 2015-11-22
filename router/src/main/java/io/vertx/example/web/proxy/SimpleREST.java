@@ -6,9 +6,8 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.example.web.proxy.events.EmptyEventBus;
-import io.vertx.example.web.proxy.events.EventBus;
-import io.vertx.example.web.proxy.healthcheck.Reporter;
+import io.vertx.example.web.proxy.events.Publisher;
+import io.vertx.example.web.proxy.healthcheck.HealthReporter;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
 import io.vertx.ext.web.Router;
@@ -26,18 +25,20 @@ public class SimpleREST extends AbstractVerticle {
 
     public static final String REST = "REST";
     private VerticalServiceRegistry verticalServiceRegistry;
-    private Reporter reporter;
+    private HealthReporter healthReporter;
+    private Publisher healthPublisher;
     private int port;
     private long timer;
-    private EventBus bus;
+    private Publisher logPublisher;
 
-    public SimpleREST(Reporter reporter) {
-        this(reporter, EmptyEventBus.EMPTY);
+    public SimpleREST(HealthReporter healthReporter) {
+        this(healthReporter, Publisher.EMPTY , Publisher.EMPTY );
     }
 
-    public SimpleREST(Reporter reporter, EventBus bus) {
-        this.reporter = reporter;
-        this.bus = bus;
+    public SimpleREST(HealthReporter healthReporter, Publisher healthPublisher, Publisher logPublisher) {
+        this.healthReporter = healthReporter;
+        this.healthPublisher = healthPublisher;
+        this.logPublisher = logPublisher;
     }
 
     private Map<String, JsonObject> products = new HashMap<>();
@@ -48,7 +49,7 @@ public class SimpleREST extends AbstractVerticle {
     public void stop(Future<Void> stopFuture) throws Exception {
         super.stop();
         verticalServiceRegistry.close(event -> {stopFuture.complete();});
-        reporter.close(event -> {stopFuture.complete();});
+        healthReporter.close(event -> {stopFuture.complete();});
     }
 */
 
@@ -65,12 +66,12 @@ public class SimpleREST extends AbstractVerticle {
         HttpServer httpServer = vertx.createHttpServer();
 
         //set services health checks
-        timer = Reporter.setUpHealthCheck(getVertx(), REST, verticalServiceRegistry, reporter, 2000);
+        timer = HealthReporter.setUpHealthCheck(getVertx(), REST, verticalServiceRegistry, healthReporter, 2000);
 
         // Send a metrics events every second
         if (getVertx().getOrCreateContext().config().containsKey(ENABLE_METRICS_PUBLISH) &&
                 getVertx().getOrCreateContext().config().getBoolean(ENABLE_METRICS_PUBLISH)) {
-            Reporter.setUpStatisticsReporter(ServiceDescriptor.create(REST, port), vertx, bus, httpServer, 3000);
+            HealthReporter.setUpStatisticsReporter(ServiceDescriptor.create(REST, port), vertx, healthPublisher, httpServer, 3000);
         }
 
         setUpInitialData();
@@ -96,15 +97,21 @@ public class SimpleREST extends AbstractVerticle {
     }
 
     private void whoAmIHandler(RoutingContext routingContext) {
-        System.out.println("Rest:" + routingContext.request().uri() + " : " + port);
+        logRequest(routingContext);
         HttpServerResponse response = routingContext.response();
         JsonObject entries = new JsonObject();
         entries.put(routingContext.request().uri(), port);
         response.putHeader("content-type", "application/json").end(entries.encodePrettily());
     }
 
+    private void logRequest(RoutingContext routingContext) {
+        String msg = "Rest:" + routingContext.request().uri() + " : " + port;
+        System.out.println(msg);
+        vertx.runOnContext(event -> logPublisher.publish("DWH", msg));
+    }
+
     private void handleGetProduct(RoutingContext routingContext) {
-        System.out.println("Rest:" + routingContext.request().uri());
+        logRequest(routingContext);
         String productID = routingContext.request().getParam("productID");
         HttpServerResponse response = routingContext.response();
         if (productID == null) {
@@ -120,7 +127,7 @@ public class SimpleREST extends AbstractVerticle {
     }
 
     private void handleAddProduct(RoutingContext routingContext) {
-        System.out.println("Rest:" + routingContext.request().uri());
+        logRequest(routingContext);
         String productID = routingContext.request().getParam("productID");
         HttpServerResponse response = routingContext.response();
         if (productID == null) {
@@ -137,7 +144,7 @@ public class SimpleREST extends AbstractVerticle {
     }
 
     private void handleListProducts(RoutingContext routingContext) {
-        System.out.println("Rest:" + routingContext.request().uri());
+        logRequest(routingContext);
         JsonArray arr = new JsonArray();
         products.forEach((k, v) -> arr.add(v));
         routingContext.response().putHeader("content-type", "application/json").end(arr.encodePrettily());

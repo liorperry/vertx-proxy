@@ -8,7 +8,8 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.example.web.proxy.VertxInitUtils;
-import io.vertx.example.web.proxy.events.EventBus;
+import io.vertx.example.web.proxy.events.Publisher;
+import io.vertx.example.web.proxy.events.Subscriber;
 import io.vertx.example.web.proxy.locator.InMemServiceLocator;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 import io.vertx.example.web.proxy.locator.ServiceVersion;
@@ -24,7 +25,6 @@ import java.util.Collection;
 import java.util.Optional;
 
 import static io.vertx.example.web.proxy.VertxInitUtils.HTTP_PORT;
-import static io.vertx.example.web.proxy.events.EmptyEventBus.EMPTY;
 
 public class Dashboard extends AbstractVerticle {
 
@@ -32,7 +32,8 @@ public class Dashboard extends AbstractVerticle {
     private static final String SERVICE = "serviceA";
 
     private final InMemServiceLocator serviceLocator;
-    private EventBus eventBus;
+    private Publisher publisher;
+    private Subscriber subscriber;
 
     // Convenience method so you can run it in your IDE
     public static void main(String[] args) {
@@ -42,13 +43,14 @@ public class Dashboard extends AbstractVerticle {
         ServiceDescriptor descriptor2 = ServiceDescriptor.create(new ServiceVersion(SERVICE, "1"), "localhost", 8081);
         VerticalServiceRegistry registry = new VerticalServiceRegistry(Sets.newHashSet(descriptor1, descriptor2));
 
-        vertx.deployVerticle(new Dashboard(new InMemServiceLocator(REST, registry), EMPTY), options);
+        vertx.deployVerticle(new Dashboard(new InMemServiceLocator(REST, registry), Publisher.EMPTY, Subscriber.EMPTY), options);
         System.out.println("Dashboard accepting requests: " + VertxInitUtils.getPort(options));
     }
 
-    public Dashboard(InMemServiceLocator serviceLocator, EventBus eventBus) {
+    public Dashboard(InMemServiceLocator serviceLocator, Publisher publisher,Subscriber subscriber) {
         this.serviceLocator = serviceLocator;
-        this.eventBus = eventBus;
+        this.publisher = publisher;
+        this.subscriber = subscriber;
     }
 
     @Override
@@ -79,7 +81,7 @@ public class Dashboard extends AbstractVerticle {
 
         // Send a metrics events every 5 second
         vertx.setPeriodic(5000, t -> {
-            Optional metrics = eventBus.subscribe("metrics");
+            Optional metrics = subscriber.subscribe("metrics");
             if (metrics.isPresent()) {
                 vertx.eventBus().publish("metrics", metrics.get());
             }

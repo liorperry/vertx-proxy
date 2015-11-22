@@ -5,18 +5,21 @@ import redis.clients.jedis.JedisPool;
 
 import java.util.Optional;
 
-class RedisSubscriber implements Subscriber{
+class RedisPubSubSubscriber implements Subscriber{
     private JedisPool pool;
+    private MessageProcessor[] processors;
 
-    public RedisSubscriber(JedisPool pool) {
+    public RedisPubSubSubscriber(JedisPool pool, MessageProcessor ... processors) {
         this.pool = pool;
+        this.processors = processors;
     }
 
     @Override
     public Optional subscribe(String key) {
         Jedis jedis = pool.getResource();
         try {
-            return Optional.ofNullable(jedis.get(key));
+            jedis.subscribe(new RedisPubSubAdaptor(processors), key);
+            return Optional.of(true);
         } finally {
             jedis.close();
         }
