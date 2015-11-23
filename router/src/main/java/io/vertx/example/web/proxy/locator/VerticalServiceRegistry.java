@@ -21,6 +21,10 @@ public class VerticalServiceRegistry implements Closeable {
         services.stream().forEach(this::register);
     }
 
+    public void registerAll(VerticalServiceRegistry registry) {
+        registry.getServices().stream().forEach(this::register);
+    }
+
     public VerticalServiceRegistry register(ServiceDescriptor descriptor) {
         this.services.add(descriptor);
         return this;

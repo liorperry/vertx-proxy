@@ -7,10 +7,13 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.example.web.proxy.ProxyServer;
 import io.vertx.example.web.proxy.RedisStarted;
 import io.vertx.example.web.proxy.SimpleREST;
+import io.vertx.example.web.proxy.VertxInitUtils;
+import io.vertx.example.web.proxy.events.Publisher;
 import io.vertx.example.web.proxy.filter.ProductFilter;
 import io.vertx.example.web.proxy.filter.ServiceFilter;
 import io.vertx.example.web.proxy.healthcheck.RedisHealthReporter;
 import io.vertx.example.web.proxy.locator.RedisServiceLocator;
+import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
 import io.vertx.example.web.proxy.repository.KeysRepository;
 import io.vertx.example.web.proxy.repository.RedisKeysRepository;
 import io.vertx.ext.unit.Async;
@@ -49,7 +52,7 @@ public class MultiProxyToMultiRestRedisTest {
     @BeforeClass
     public static void setUp(TestContext context) throws IOException, InterruptedException {
         //start verticals
-        vertx = Vertx.vertx();
+        vertx = Vertx.vertx(VertxInitUtils.initOptions());
         //start redis client
         pool = getJedisPool("localhost");
         Jedis jedis = pool.getResource();
@@ -60,11 +63,11 @@ public class MultiProxyToMultiRestRedisTest {
         //deploy redis server
 //        vertx.deployVerticle(new RedisStarted(client), context.asyncAssertSuccess());
         //deploy rest server
-        vertx.deployVerticle(new SimpleREST(new RedisHealthReporter(pool, 25)),
+        vertx.deployVerticle(new SimpleREST(new RedisHealthReporter(pool, 25),Publisher.EMPTY, Publisher.EMPTY, new VerticalServiceRegistry()),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST1_PORT)),
                 context.asyncAssertSuccess());
 
-        vertx.deployVerticle(new SimpleREST(new RedisHealthReporter(pool, 25)),
+        vertx.deployVerticle(new SimpleREST(new RedisHealthReporter(pool, 25),Publisher.EMPTY, Publisher.EMPTY, new VerticalServiceRegistry()),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST2_PORT)),
                 context.asyncAssertSuccess());
 
@@ -78,6 +81,8 @@ public class MultiProxyToMultiRestRedisTest {
                                 .add(new ProductFilter())
                                 .build(),
                         new RedisHealthReporter(pool, 25),
+                        Publisher.EMPTY,
+                        new VerticalServiceRegistry(),
                         new RedisServiceLocator(pool, SimpleREST.REST)),
                 new DeploymentOptions().setConfig(new JsonObject()
                         .put(HTTP_PORT, PROXY_PORT)

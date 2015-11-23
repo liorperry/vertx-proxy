@@ -2,6 +2,7 @@ package io.vertx.example.unit.test.redis;
 
 import io.vertx.core.Vertx;
 import io.vertx.example.web.proxy.RedisStarted;
+import io.vertx.example.web.proxy.VertxInitUtils;
 import io.vertx.example.web.proxy.healthcheck.RedisHealthReporter;
 import io.vertx.example.web.proxy.healthcheck.HealthReporter;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
@@ -48,7 +49,7 @@ public class RedisServiceLocatorTest {
     @BeforeClass
     public static void setUp(TestContext context) throws Exception {
         Async async = context.async();
-        vertx = Vertx.vertx();
+        vertx = Vertx.vertx(VertxInitUtils.initOptions());
         pool = RedisStarted.getJedisPool("localhost");
         Jedis jedis = pool.getResource();
         jedis.flushDB();

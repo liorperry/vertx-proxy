@@ -24,4 +24,15 @@ class RedisPubSubSubscriber implements Subscriber{
             jedis.close();
         }
     }
+
+    @Override
+    public Optional subscribe(String key, MessageProcessor... messageProcessor) {
+        Jedis jedis = pool.getResource();
+        try {
+            jedis.subscribe(new RedisPubSubAdaptor(messageProcessor), key);
+            return Optional.of(true);
+        } finally {
+            jedis.close();
+        }
+    }
 }

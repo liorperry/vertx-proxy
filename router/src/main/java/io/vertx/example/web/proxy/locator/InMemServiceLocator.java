@@ -10,15 +10,17 @@ public class InMemServiceLocator implements ServiceLocator {
     private String domain;
     private Map<String,ServiceDescriptor> servicesBlockedLocations;
     private RoundRobinPool pool;
-    private VerticalServiceRegistry registry;
+    private VerticalServiceRegistry[] registry;
 
-    public InMemServiceLocator(String domain, VerticalServiceRegistry registry) {
+    public InMemServiceLocator(String domain, VerticalServiceRegistry ... registry) {
         this.registry = registry;
         this.servicesBlockedLocations = new ConcurrentHashMap<>();
         this.domain = domain;
         this.pool = new RoundRobinPool();
         //update keys in pool - if absent
-        this.pool.addServices(new HashSet<>(registry.getServices()));
+        Arrays.asList(registry).stream().forEach(reg -> {
+            this.pool.addServices(Sets.newHashSet(reg.getServices()));
+        });
     }
 
     @Override
@@ -31,9 +33,7 @@ public class InMemServiceLocator implements ServiceLocator {
         }
 
         //reload pool if services where removed/added
-        if (registry.size() != pool.size()) {
-            updateFromRegistry();
-        }
+        updateFromRegistry();
 
         ServiceVersion serviceVersion = new ServiceVersion(serviceName.get(), version);
 
@@ -61,9 +61,11 @@ public class InMemServiceLocator implements ServiceLocator {
 
     @Override
     public void updateFromRegistry() {
-        //update the pool services from services registry
-        pool.updateService(Sets.newHashSet(registry.getServices()));
+        Arrays.asList(registry).stream().forEach(registry -> {
+            this.pool.updateService(Sets.newHashSet(registry.getServices()));
+        });
     }
+
 
     public Collection<ServiceDescriptor> getAllProviders() {
         return Collections.unmodifiableCollection(pool.getAll());

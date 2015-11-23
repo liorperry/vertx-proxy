@@ -4,6 +4,8 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
+import io.vertx.ext.dropwizard.Match;
+import io.vertx.ext.dropwizard.MatchType;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -13,9 +15,15 @@ public interface VertxInitUtils {
     String ENABLE_METRICS_PUBLISH = "enable.metrics.publish";
 
     static VertxOptions initOptions() {
-        return new VertxOptions()
-                .setMetricsOptions(new DropwizardMetricsOptions().setEnabled(true))
-                .setClustered(false);
+       return new VertxOptions().setMetricsOptions(
+                new DropwizardMetricsOptions().
+                        setEnabled(true).
+                        addMonitoredHttpServerUri(
+                                new Match().setValue("/")).
+                        addMonitoredHttpServerUri(
+                                new Match().setValue("/.*").setType(MatchType.REGEX))
+
+        ).setClustered(false);
     }
 
     static DeploymentOptions initDeploymentOptions() {

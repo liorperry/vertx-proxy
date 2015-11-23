@@ -8,10 +8,13 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.example.web.proxy.ProxyServer;
 import io.vertx.example.web.proxy.RedisStarted;
 import io.vertx.example.web.proxy.SimpleREST;
+import io.vertx.example.web.proxy.VertxInitUtils;
+import io.vertx.example.web.proxy.events.Publisher;
 import io.vertx.example.web.proxy.filter.ProductFilter;
 import io.vertx.example.web.proxy.filter.ServiceFilter;
 import io.vertx.example.web.proxy.healthcheck.RedisHealthReporter;
 import io.vertx.example.web.proxy.locator.RedisServiceLocator;
+import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
 import io.vertx.example.web.proxy.repository.KeysRepository;
 import io.vertx.example.web.proxy.repository.RedisKeysRepository;
 import io.vertx.ext.unit.Async;
@@ -54,7 +57,7 @@ public class ProxyToRestRedisTest {
     public  void setUp(TestContext context) throws IOException, InterruptedException {
         Async async = context.async();
         //start verticals
-        vertx = Vertx.vertx();
+        vertx = Vertx.vertx(VertxInitUtils.initOptions());
         //start redis client
         pool = RedisStarted.getJedisPool("localhost");
         Jedis jedis = pool.getResource();
@@ -65,7 +68,7 @@ public class ProxyToRestRedisTest {
         //deploy redis server
 //        vertx.deployVerticle(new RedisStarted(client), context.asyncAssertSuccess());
         //deploy rest server
-        vertx.deployVerticle(new SimpleREST(new RedisHealthReporter(pool,100 )),
+        vertx.deployVerticle(new SimpleREST(new RedisHealthReporter(pool,100 ),Publisher.EMPTY, Publisher.EMPTY, new VerticalServiceRegistry()),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST_PORT)),
                 context.asyncAssertSuccess());
 
@@ -79,6 +82,8 @@ public class ProxyToRestRedisTest {
                                 .add(new ProductFilter())
                                 .build(),
                         new RedisHealthReporter(pool,100 ),
+                        Publisher.EMPTY,
+                        new VerticalServiceRegistry(),
                         new RedisServiceLocator(pool, SimpleREST.REST)),
                 new DeploymentOptions().setConfig(new JsonObject()
                         .put(HTTP_PORT, PROXY_PORT)

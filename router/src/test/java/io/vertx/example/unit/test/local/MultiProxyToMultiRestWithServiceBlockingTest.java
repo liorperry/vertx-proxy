@@ -7,6 +7,8 @@ import io.vertx.core.http.HttpClient;
 import io.vertx.core.json.JsonObject;
 import io.vertx.example.web.proxy.ProxyServer;
 import io.vertx.example.web.proxy.SimpleREST;
+import io.vertx.example.web.proxy.VertxInitUtils;
+import io.vertx.example.web.proxy.events.Publisher;
 import io.vertx.example.web.proxy.filter.ProductFilter;
 import io.vertx.example.web.proxy.filter.ServiceFilter;
 import io.vertx.example.web.proxy.healthcheck.InMemHealthReporter;
@@ -21,6 +23,7 @@ import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -66,19 +69,19 @@ public class MultiProxyToMultiRestWithServiceBlockingTest {
         hostAddress = Inet4Address.getLocalHost().getHostAddress();
 
         //start verticals
-        vertx = Vertx.vertx();
+        vertx = Vertx.vertx(VertxInitUtils.initOptions());
 
         serviceProvidersAddress = new HashSet<>();
         //deploy rest server
-        vertx.deployVerticle(new SimpleREST(new InMemHealthReporter(registry)),
+        vertx.deployVerticle(new SimpleREST(new InMemHealthReporter(registry),Publisher.EMPTY, Publisher.EMPTY,registry ),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST1_PORT)),
                 context.asyncAssertSuccess());
 
-        vertx.deployVerticle(new SimpleREST(new InMemHealthReporter(registry)),
+        vertx.deployVerticle(new SimpleREST(new InMemHealthReporter(registry),Publisher.EMPTY, Publisher.EMPTY,registry ),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST2_PORT)),
                 context.asyncAssertSuccess());
 
-        vertx.deployVerticle(new SimpleREST(new InMemHealthReporter(registry)),
+        vertx.deployVerticle(new SimpleREST(new InMemHealthReporter(registry),Publisher.EMPTY, Publisher.EMPTY,registry ),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST3_PORT)),
                 context.asyncAssertSuccess());
 
@@ -95,6 +98,8 @@ public class MultiProxyToMultiRestWithServiceBlockingTest {
                                 .add(new ProductFilter())
                                 .build(),
                         (result, domain, descriptor) -> HealthCheck.Result.healthy(),
+                        Publisher.EMPTY,
+                        new VerticalServiceRegistry(),
                         locator),
                 new DeploymentOptions().setConfig(new JsonObject()
                         .put(HTTP_PORT, PROXY_PORT)

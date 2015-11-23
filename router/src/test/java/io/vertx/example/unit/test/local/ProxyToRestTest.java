@@ -9,6 +9,7 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.example.web.proxy.ProxyServer;
 import io.vertx.example.web.proxy.SimpleREST;
 import io.vertx.example.web.proxy.VertxInitUtils;
+import io.vertx.example.web.proxy.events.Publisher;
 import io.vertx.example.web.proxy.filter.ProductFilter;
 import io.vertx.example.web.proxy.filter.ServiceFilter;
 import io.vertx.example.web.proxy.locator.InMemServiceLocator;
@@ -45,9 +46,9 @@ public class ProxyToRestTest {
 
     @BeforeClass
     public static void setUp(TestContext context) {
-        vertx = Vertx.vertx();
+        vertx = Vertx.vertx(VertxInitUtils.initOptions());
 
-        vertx.deployVerticle(new SimpleREST((result, domain, descriptor) -> HealthCheck.Result.healthy()),
+        vertx.deployVerticle(new SimpleREST((result, domain, descriptor) -> HealthCheck.Result.healthy(),Publisher.EMPTY, Publisher.EMPTY, new VerticalServiceRegistry()),
                 restOptions,
                 context.asyncAssertSuccess());
 
@@ -68,6 +69,8 @@ public class ProxyToRestTest {
                                 .add(new ProductFilter())
                                 .build(),
                         (result, domain, descriptor) -> HealthCheck.Result.healthy(),
+                        Publisher.EMPTY,
+                        new VerticalServiceRegistry(),
                         new InMemServiceLocator(ProxyServer.PROXY, registry)
                 ),
                 proxyOptions,

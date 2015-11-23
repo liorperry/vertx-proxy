@@ -2,6 +2,7 @@ package io.vertx.example.unit.test.redis;
 
 import io.vertx.core.Vertx;
 import io.vertx.example.web.proxy.RedisStarted;
+import io.vertx.example.web.proxy.VertxInitUtils;
 import io.vertx.example.web.proxy.repository.RedisKeysRepository;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -37,7 +38,7 @@ public class RedisKeysRepositoryTest {
 
     @BeforeClass
     public static void setUp(TestContext context) throws Exception {
-        vertx = Vertx.vertx();
+        vertx = Vertx.vertx(VertxInitUtils.initOptions());
         pool = RedisStarted.getJedisPool("localhost");
         Jedis jedis = pool.getResource();
         jedis.flushDB();

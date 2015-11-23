@@ -7,19 +7,17 @@ import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
-import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.example.web.proxy.events.MongoMessageProcessor;
 import io.vertx.example.web.proxy.events.Publisher;
 import io.vertx.example.web.proxy.events.Subscriber;
-import io.vertx.example.web.proxy.healthcheck.InMemHealthReporter;
 import io.vertx.example.web.proxy.healthcheck.HealthReporter;
-import io.vertx.example.web.proxy.locator.ServiceDescriptor;
+import io.vertx.example.web.proxy.healthcheck.InMemHealthReporter;
+import io.vertx.example.web.proxy.launchers.AbstractVerticalServer;
 import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.Router;
@@ -29,10 +27,7 @@ import redis.embedded.exceptions.EmbeddedRedisException;
 
 import java.io.IOException;
 
-import static io.vertx.example.web.proxy.VertxInitUtils.ENABLE_METRICS_PUBLISH;
-import static io.vertx.example.web.proxy.VertxInitUtils.HTTP_PORT;
-
-public class MongoStarted extends AbstractVerticle {
+public class MongoStarted extends AbstractVerticalServer {
     private static final String DWH_LOG = "DWH";
     private static final String MONGO_URI = "mongodb://localhost:27017";
     private static final String MONGO_DB = "mongo_db";
@@ -41,14 +36,10 @@ public class MongoStarted extends AbstractVerticle {
 
     static DeploymentOptions options = VertxInitUtils.initDeploymentOptions();
 
-    private int port;
-    private HealthReporter healthReporter;
-    private Publisher publisher;
     private Subscriber subscriber;
 
     private static MongodExecutable mongodExecutable = null;
     private static MongodProcess mongod;
-    private static VerticalServiceRegistry registry;
     private static JsonObject mongoconfig;
 
     private MongoClient mongoClient;
@@ -57,32 +48,16 @@ public class MongoStarted extends AbstractVerticle {
         MongodStarter starter = MongodStarter.getDefaultInstance();
         initMongo(starter);
         Vertx vertx = Vertx.vertx(VertxInitUtils.initOptions());
-//        vertx.deployVerticle(new MongoStarted(new InMemHealthReporter(new VerticalServiceRegistry()), EventBus.EMPTY, Subscriber.EMPTY ),options);
-        vertx.deployVerticle(new MongoStarted(new InMemHealthReporter(new VerticalServiceRegistry()), Publisher.EMPTY, Subscriber.EMPTY ),options);
+        VerticalServiceRegistry registry = new VerticalServiceRegistry();
+        vertx.deployVerticle(new MongoStarted(new InMemHealthReporter(registry), Publisher.EMPTY, Subscriber.EMPTY ,registry),options);
     }
 
-    public MongoStarted(HealthReporter healthReporter, Publisher publisher,Subscriber subscriber) {
-        this.healthReporter = healthReporter;
-        this.publisher = publisher;
+    public MongoStarted(HealthReporter healthReporter, Publisher publisher,Subscriber subscriber,VerticalServiceRegistry registry) {
+        super(DWH_LOG, healthReporter, publisher, registry);
         this.subscriber = subscriber;
     }
 
-    public void start(Future<Void> fut) throws IOException {
-        registry = new VerticalServiceRegistry();
-        port = vertx.getOrCreateContext().config().getInteger(HTTP_PORT);
-
-        //http server
-        HttpServer httpServer = vertx.createHttpServer();
-
-        //set services health checks
-        HealthReporter.setUpHealthCheck(getVertx(), DWH_LOG, registry, healthReporter, 2000);
-
-        // Send a metrics events every second
-        if (getVertx().getOrCreateContext().config().containsKey(ENABLE_METRICS_PUBLISH) &&
-                getVertx().getOrCreateContext().config().getBoolean(ENABLE_METRICS_PUBLISH)) {
-            HealthReporter.setUpStatisticsReporter(ServiceDescriptor.create(DWH_LOG, port), vertx, publisher, httpServer, 3000);
-        }
-
+    public void doInStart(Future<Void> fut)  {
         JsonObject mongoconfig = new JsonObject()
                 .put("connection_string", MONGO_URI)
                 .put("db_name", MONGO_DB);
@@ -98,7 +73,7 @@ public class MongoStarted extends AbstractVerticle {
 
         subscriber.subscribe(DWH_LOG, new MongoMessageProcessor(mongoClient));
 
-        httpServer.requestHandler(router::accept).listen(port, result -> {
+        getHttpServer().requestHandler(router::accept).listen(getPort(), result -> {
             if (result.succeeded()) {
                 fut.complete();
             } else {

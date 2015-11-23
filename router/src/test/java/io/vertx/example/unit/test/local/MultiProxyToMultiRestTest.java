@@ -7,6 +7,8 @@ import io.vertx.core.http.HttpClient;
 import io.vertx.core.json.JsonObject;
 import io.vertx.example.web.proxy.ProxyServer;
 import io.vertx.example.web.proxy.SimpleREST;
+import io.vertx.example.web.proxy.VertxInitUtils;
+import io.vertx.example.web.proxy.events.Publisher;
 import io.vertx.example.web.proxy.filter.ProductFilter;
 import io.vertx.example.web.proxy.filter.ServiceFilter;
 import io.vertx.example.web.proxy.healthcheck.InMemHealthReporter;
@@ -19,6 +21,7 @@ import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -50,21 +53,22 @@ public class MultiProxyToMultiRestTest {
     private static InMemServiceLocator locator;
 
     //realtime set of available services
-    private static VerticalServiceRegistry registry = new VerticalServiceRegistry();
+    private static VerticalServiceRegistry registry1 = new VerticalServiceRegistry();
+    private static VerticalServiceRegistry registry2 = new VerticalServiceRegistry();
 
 
     @BeforeClass
     public static void setUp(TestContext context) throws IOException, InterruptedException {
         //start verticals
-        vertx = Vertx.vertx();
+        vertx = Vertx.vertx(VertxInitUtils.initOptions());
 
         serviceProvidersAddress = new HashSet<>();
         //deploy rest server
-        vertx.deployVerticle(new SimpleREST(new InMemHealthReporter(registry)),
+        vertx.deployVerticle(new SimpleREST(new InMemHealthReporter(registry1),Publisher.EMPTY, Publisher.EMPTY, registry1),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST1_PORT)),
                 context.asyncAssertSuccess());
 
-        vertx.deployVerticle(new SimpleREST(new InMemHealthReporter(registry)),
+        vertx.deployVerticle(new SimpleREST(new InMemHealthReporter(registry2),Publisher.EMPTY, Publisher.EMPTY, registry2),
                 new DeploymentOptions().setConfig(new JsonObject().put(HTTP_PORT, REST2_PORT)),
                 context.asyncAssertSuccess());
 
@@ -74,13 +78,15 @@ public class MultiProxyToMultiRestTest {
         keysRepository.addService(WHO_AM_I, true);
 
         //proxy vertical deployment
-        locator = new InMemServiceLocator(ProxyServer.PROXY,registry);
+        locator = new InMemServiceLocator(ProxyServer.PROXY, registry1,registry2);
         vertx.deployVerticle(new ProxyServer(
                         filterBuilder(keysRepository)
                                 .add(new ServiceFilter())
                                 .add(new ProductFilter())
                                 .build(),
                         (result, domain, descriptor) -> HealthCheck.Result.healthy(),
+                        Publisher.EMPTY,
+                        new VerticalServiceRegistry(),
                         locator),
                 new DeploymentOptions().setConfig(new JsonObject()
                         .put(HTTP_PORT, PROXY_PORT)

@@ -1,53 +1,39 @@
 package io.vertx.example.web.proxy;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
-import io.vertx.core.*;
+import io.vertx.core.Future;
+import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
 import io.vertx.core.http.*;
 import io.vertx.example.web.proxy.events.Publisher;
 import io.vertx.example.web.proxy.filter.Filter;
 import io.vertx.example.web.proxy.healthcheck.HealthReporter;
+import io.vertx.example.web.proxy.launchers.AbstractVerticalServer;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 import io.vertx.example.web.proxy.locator.ServiceLocator;
 import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
 import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
 import io.vertx.ext.dropwizard.Match;
 import io.vertx.ext.dropwizard.MatchType;
-import redis.clients.jedis.JedisPool;
 
 import java.util.Optional;
 
-import static io.vertx.example.web.proxy.VertxInitUtils.ENABLE_METRICS_PUBLISH;
-import static io.vertx.example.web.proxy.VertxInitUtils.HTTP_PORT;
 import static io.vertx.example.web.proxy.locator.ServiceLocator.DEFAULT_VERSION;
 
 
-public class ProxyServer extends AbstractVerticle {
+public class ProxyServer extends AbstractVerticalServer {
 
     public static final String PROXY = "PROXY";
     public static final String VERSION = "version";
 
-    private JedisPool pool;
     private Filter filter;
-    private HealthReporter healthReporter;
-    private Publisher publisher;
     private ServiceLocator locator;
-    private VerticalServiceRegistry verticalServiceRegistry;
-    private int port;
-    private long timer;
 
-    public ProxyServer(Filter filter, HealthReporter healthReporter,Publisher publisher, ServiceLocator locator) {
+    public ProxyServer(Filter filter, HealthReporter healthReporter,Publisher publisher, VerticalServiceRegistry verticalServiceRegistry, ServiceLocator locator) {
+        super(PROXY,healthReporter, publisher, verticalServiceRegistry);
         this.filter = filter;
-        this.healthReporter = healthReporter;
-        this.publisher = publisher;
         this.locator = locator;
     }
-
-    @Override
-    public void init(io.vertx.core.Vertx vertx, Context context) {
-        super.init(vertx, context);
-        verticalServiceRegistry = new VerticalServiceRegistry();
-    }
-
 
 /*
 // removed - causing error on stopping the testing junit vert.x threads
@@ -66,40 +52,10 @@ public class ProxyServer extends AbstractVerticle {
 */
 
     @Override
-    public void start(Future<Void> fut) throws Exception {
-        port = vertx.getOrCreateContext().config().getInteger(HTTP_PORT);
-        ServiceDescriptor descriptor = ServiceDescriptor.create(PROXY, port);
-        verticalServiceRegistry.register(descriptor);
-        //set services health checks
-        timer = HealthReporter.setUpHealthCheck(getVertx(), PROXY, verticalServiceRegistry, healthReporter, 2000);
-
+    public void doInStart(Future<Void> fut)  {
         // If a config file is set, read the host and port.
         HttpClient client = vertx.createHttpClient(new HttpClientOptions());
         HttpServer httpServer = vertx.createHttpServer();
-
-        // DropwizardMetricsOptions service matching
-        Vertx vertx = Vertx.vertx(new VertxOptions().setMetricsOptions(
-                new DropwizardMetricsOptions().
-                        setEnabled(true).
-                        addMonitoredHttpServerUri(
-                                new Match().setValue("/")).
-                        addMonitoredHttpServerUri(
-                                new Match().setValue("/.*").setType(MatchType.REGEX))
-        ));
-
-        // Send a metrics events every second
-        if (getVertx().getOrCreateContext().config().containsKey(ENABLE_METRICS_PUBLISH) &&
-                getVertx().getOrCreateContext().config().getBoolean(ENABLE_METRICS_PUBLISH)) {
-            HealthReporter.setUpStatisticsReporter(descriptor, vertx, publisher, httpServer, 3000);
-        }
-
-/*
-        locator.updateFromRegistry();
-        //setup serviceLocator pool periodic update policy
-        vertx.setPeriodic(3000, t -> {
-            locator.updateFromRegistry();
-        });
-*/
 
         //request handling
         httpServer.requestHandler(req -> {
@@ -115,7 +71,7 @@ public class ProxyServer extends AbstractVerticle {
                     proxyRequestOn(client, req, service.get());
                 }
             }
-        }).listen(this.port, result -> {
+        }).listen(getPort(), result -> {
             if (result.succeeded()) {
                 fut.complete();
             } else {

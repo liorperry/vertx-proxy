@@ -1,13 +1,12 @@
 package io.vertx.example.web.proxy;
 
-import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
-import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.example.web.proxy.events.Publisher;
 import io.vertx.example.web.proxy.healthcheck.HealthReporter;
+import io.vertx.example.web.proxy.launchers.AbstractVerticalServer;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
 import io.vertx.ext.web.Router;
@@ -17,64 +16,29 @@ import io.vertx.ext.web.handler.BodyHandler;
 import java.util.HashMap;
 import java.util.Map;
 
-import static io.vertx.example.web.proxy.VertxInitUtils.ENABLE_METRICS_PUBLISH;
-import static io.vertx.example.web.proxy.VertxInitUtils.HTTP_PORT;
-
-public class SimpleREST extends AbstractVerticle {
+public class SimpleREST extends AbstractVerticalServer {
 
 
     public static final String REST = "REST";
-    private VerticalServiceRegistry verticalServiceRegistry;
-    private HealthReporter healthReporter;
-    private Publisher healthPublisher;
-    private int port;
-    private long timer;
-    private Publisher logPublisher;
+    private final Publisher logPublisher;
 
-    public SimpleREST(HealthReporter healthReporter) {
-        this(healthReporter, Publisher.EMPTY , Publisher.EMPTY );
-    }
 
-    public SimpleREST(HealthReporter healthReporter, Publisher healthPublisher, Publisher logPublisher) {
-        this.healthReporter = healthReporter;
-        this.healthPublisher = healthPublisher;
+    public SimpleREST(HealthReporter healthReporter, Publisher healthPublisher, Publisher logPublisher,VerticalServiceRegistry registry) {
+        super(REST,healthReporter,healthPublisher,registry);
         this.logPublisher = logPublisher;
     }
 
     private Map<String, JsonObject> products = new HashMap<>();
 
-/*
-// removed - causing error on stoping the testing junit vert.x threads
-    @Override
-    public void stop(Future<Void> stopFuture) throws Exception {
-        super.stop();
-        verticalServiceRegistry.close(event -> {stopFuture.complete();});
-        healthReporter.close(event -> {stopFuture.complete();});
-    }
-*/
 
-    @Override
-    public void start(Future<Void> fut) {
-        verticalServiceRegistry = new VerticalServiceRegistry();
-        port = vertx.getOrCreateContext().config().getInteger(HTTP_PORT);
+    public void doInStart(Future<Void> fut) {
         //register services
-        verticalServiceRegistry.register(ServiceDescriptor.create("serviceA", port));
-        verticalServiceRegistry.register(ServiceDescriptor.create("serviceB", port));
-        verticalServiceRegistry.register(ServiceDescriptor.create("whoAmI", port));
-
-        //http server
-        HttpServer httpServer = vertx.createHttpServer();
-
-        //set services health checks
-        timer = HealthReporter.setUpHealthCheck(getVertx(), REST, verticalServiceRegistry, healthReporter, 2000);
-
-        // Send a metrics events every second
-        if (getVertx().getOrCreateContext().config().containsKey(ENABLE_METRICS_PUBLISH) &&
-                getVertx().getOrCreateContext().config().getBoolean(ENABLE_METRICS_PUBLISH)) {
-            HealthReporter.setUpStatisticsReporter(ServiceDescriptor.create(REST, port), vertx, healthPublisher, httpServer, 3000);
-        }
+        registerService(ServiceDescriptor.create("serviceA", getPort()));
+        registerService(ServiceDescriptor.create("serviceB", getPort()));
+        registerService(ServiceDescriptor.create("whoAmI", getPort()));
 
         setUpInitialData();
+
         Router router = Router.router(vertx);
 
         router.route().handler(BodyHandler.create());
@@ -87,7 +51,7 @@ public class SimpleREST extends AbstractVerticle {
         router.put("/serviceB/:productID").handler(this::handleAddProduct);
         router.get("/serviceB").handler(this::handleListProducts);
 
-        httpServer.requestHandler(router::accept).listen(port, result -> {
+        getHttpServer().requestHandler(router::accept).listen(getPort(), result -> {
             if (result.succeeded()) {
                 fut.complete();
             } else {
@@ -100,12 +64,12 @@ public class SimpleREST extends AbstractVerticle {
         logRequest(routingContext);
         HttpServerResponse response = routingContext.response();
         JsonObject entries = new JsonObject();
-        entries.put(routingContext.request().uri(), port);
+        entries.put(routingContext.request().uri(), getPort());
         response.putHeader("content-type", "application/json").end(entries.encodePrettily());
     }
 
     private void logRequest(RoutingContext routingContext) {
-        String msg = "Rest:" + routingContext.request().uri() + " : " + port;
+        String msg = "Rest:" + routingContext.request().uri() + " : " + getPort();
         System.out.println(msg);
         vertx.runOnContext(event -> logPublisher.publish("DWH", msg));
     }
