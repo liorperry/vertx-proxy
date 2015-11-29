@@ -2,12 +2,32 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="12126ac5-1aaf-4d1a-b68c-de5fc225952c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/EmptyEventBus.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/dashboard/Dashboard.java" afterPath="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/dashboard/Dashboard.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/InMemServiceLocator.java" afterPath="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/InMemServiceLocator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/InMemServiceLocatorTest.java" afterPath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/InMemServiceLocatorTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/Subscriber.java" afterPath="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/Subscriber.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/VerticalServiceRegistry.java" afterPath="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/VerticalServiceRegistry.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/CouchbaseHealthReporter.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/repository/CouchbaseKeysRepository.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/CouchbasePublisher.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/CouchbaseServiceLocator.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/CouchbaseSubscriber.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/InMemPublisher.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/InMemSubscriber.java" />
+      <change type="DELETED" beforePath="C:\projects\vertx\vertx-proxy\.idea\libraries\Maven__de_flapdoodle_embed_de_flapdoodle_embed_mongo_1_48_2.xml" afterPath="" />
+      <change type="DELETED" beforePath="C:\projects\vertx\vertx-proxy\.idea\libraries\Maven__de_flapdoodle_embed_de_flapdoodle_embed_process_1_41_1.xml" afterPath="" />
+      <change type="MOVED" beforePath="C:\projects\vertx\vertx-proxy\router\src\main\java\io\vertx\example\web\proxy\MongoStarted.java" afterPath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/integration/MongoStarted.java" />
+      <change type="MOVED" beforePath="C:\projects\vertx\vertx-proxy\router\src\main\java\io\vertx\example\web\proxy\RedisStarted.java" afterPath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/integration/RedisStarted.java" />
+      <change type="MOVED" beforePath="C:\projects\vertx\vertx-proxy\router\src\main\java\io\vertx\example\web\proxy\SimpleREST.java" afterPath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/integration/SimpleREST.java" />
+      <change type="MOVED" beforePath="C:\projects\vertx\vertx-proxy\router\src\main\java\io\vertx\example\web\proxy\launchers\LauncherProxy.java" afterPath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/integration/launchers/LauncherProxy.java" />
+      <change type="MOVED" beforePath="C:\projects\vertx\vertx-proxy\router\src\main\java\io\vertx\example\web\proxy\launchers\LauncherRestServer.java" afterPath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/integration/launchers/LauncherRestServer.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/redis/MultiProxyToMultiRestRedisTest.java" afterPath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/redis/MultiProxyToMultiRestRedisTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/MultiProxyToMultiRestTest.java" afterPath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/MultiProxyToMultiRestTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/MultiProxyToMultiRestWithServiceBlockingTest.java" afterPath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/MultiProxyToMultiRestWithServiceBlockingTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/ProxyServer.java" afterPath="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/ProxyServer.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/redis/ProxyToRestRedisTest.java" afterPath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/redis/ProxyToRestRedisTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/ProxyToRestTest.java" afterPath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/ProxyToRestTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/redis/RedisKeysRepositoryTest.java" afterPath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/redis/RedisKeysRepositoryTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/redis/RedisServiceLocatorTest.java" afterPath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/redis/RedisServiceLocatorTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/SimpleRestTest.java" afterPath="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/SimpleRestTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/router/pom.xml" afterPath="$PROJECT_DIR$/router/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/router/router.iml" afterPath="$PROJECT_DIR$/router/router.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="3439be00-0dbf-4c70-85be-2e5057ae40f9" name="Failed commit: Default" comment="init vert.x proxy" />
@@ -24,6 +44,11 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/vertx-proxy$MultiProxyToMultiRestTest.coverage" NAME="MultiProxyToMultiRestTest Coverage Results" MODIFIED="1448280654059" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>io.vertx.example.unit.test.local.*</FILTER>
+    </SUITE>
+  </component>
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
   </component>
@@ -33,27 +58,48 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="InMemServiceLocator.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/InMemServiceLocator.java">
+      <file leaf-file-name="AbstractVerticalServer.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/launchers/AbstractVerticalServer.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="12" column="26" selection-start-line="12" selection-start-column="26" selection-end-line="12" selection-end-column="26" />
-              <folding>
-                <element signature="method#InMemServiceLocator#0;class#InMemServiceLocator#0" expanded="false" />
-                <element signature="method#getService#0;class#InMemServiceLocator#0" expanded="false" />
-                <element signature="e#2531#2532#0" expanded="true" />
-                <element signature="e#2603#2604#0" expanded="true" />
-                <element signature="e#2673#2674#0" expanded="true" />
-                <element signature="e#2729#2730#0" expanded="true" />
-                <element signature="e#2801#2802#0" expanded="true" />
-                <element signature="e#2860#2861#0" expanded="true" />
-              </folding>
+              <caret line="28" column="83" selection-start-line="28" selection-start-column="83" selection-end-line="28" selection-end-column="83" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ServiceDescriptor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/ServiceDescriptor.java">
+      <file leaf-file-name="InMemPublisher.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/InMemPublisher.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CouchbasePublisher.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/CouchbasePublisher.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="2" column="31" selection-start-line="2" selection-start-column="31" selection-end-line="2" selection-end-column="31" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Subscriber.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/Subscriber.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CouchbaseHealthReporter.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/CouchbaseHealthReporter.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
               <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
@@ -62,89 +108,57 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MultiProxyToMultiRestWithServiceBlockingTest.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/MultiProxyToMultiRestWithServiceBlockingTest.java">
+      <file leaf-file-name="ReportHealthCheck.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/ReportHealthCheck.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="118" column="24" selection-start-line="118" selection-start-column="24" selection-end-line="118" selection-end-column="24" />
+              <caret line="5" column="22" selection-start-line="5" selection-start-column="22" selection-end-line="5" selection-end-column="22" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="LocalCacheKeysRepositoryTest.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/LocalCacheKeysRepositoryTest.java">
+      <file leaf-file-name="RedisHealthReporter.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/RedisHealthReporter.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="8" column="48" selection-start-line="8" selection-start-column="48" selection-end-line="8" selection-end-column="48" />
+              <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="VerticalServiceRegistry.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/VerticalServiceRegistry.java">
+      <file leaf-file-name="InMemHealthReporter.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/InMemHealthReporter.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="23" column="40" selection-start-line="23" selection-start-column="40" selection-end-line="23" selection-end-column="40" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="InMemReporter.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/InMemReporter.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="11" column="39" selection-start-line="11" selection-start-column="39" selection-end-line="11" selection-end-column="39" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ProxyToRestTest.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/ProxyToRestTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="54" column="31" selection-start-line="54" selection-start-column="31" selection-end-line="54" selection-end-column="31" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="InMemServiceLocatorTest.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/InMemServiceLocatorTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="18" column="27" selection-start-line="18" selection-start-column="27" selection-end-line="18" selection-end-column="27" />
+              <caret line="24" column="40" selection-start-line="24" selection-start-column="40" selection-end-line="24" selection-end-column="40" />
               <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="method#serviceLocatorSingleHostTest#0;class#InMemServiceLocatorTest#0" expanded="false" />
-                <element signature="method#serviceLocatorSingleHostBlockTest#0;class#InMemServiceLocatorTest#0" expanded="false" />
-                <element signature="method#serviceLocatorSingleHostUnBlockTest#0;class#InMemServiceLocatorTest#0" expanded="false" />
-                <element signature="method#serviceLocatorMultiHostsTest#0;class#InMemServiceLocatorTest#0" expanded="false" />
+                <element signature="e#770#771#0" expanded="true" />
+                <element signature="e#832#833#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Dashboard.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/dashboard/Dashboard.java">
+      <file leaf-file-name="CouchbaseKeysRepository.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/repository/CouchbaseKeysRepository.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.0888889">
-              <caret line="94" column="42" selection-start-line="94" selection-start-column="42" selection-end-line="94" selection-end-column="42" />
+            <state vertical-scroll-proportion="3.1564791">
+              <caret line="251" column="0" selection-start-line="251" selection-start-column="0" selection-end-line="251" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="e#2988#2996#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SimpleREST.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/SimpleREST.java">
+      <file leaf-file-name="InMemSubscriber.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/InMemSubscriber.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="120" column="31" selection-start-line="120" selection-start-column="31" selection-end-line="120" selection-end-column="31" />
+              <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -155,6 +169,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -177,57 +192,57 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/util/Runner.java" />
-        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/VertxUnitTest.java" />
-        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/MyJUnitTest.java" />
-        <option value="$PROJECT_DIR$/router/pom.xml" />
-        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/ServiceDescriptor.java" />
-        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/RestServiceHealthCheck.java" />
-        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/RedisReportHealthCheck.java" />
-        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/RedisStarted.java" />
-        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/RedisRepositoryTest.java" />
-        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/repository/RedisRepository.java" />
-        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/ServiceRegistry.java" />
-        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/SimpleREST.java" />
-        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/repository/LocalCacheRepository.java" />
-        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/repository/Repository.java" />
-        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/repository/KeysRepository.java" />
-        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/InMemServiceLocatorTest.java" />
-        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/repository/LocalCacheKeysRepository.java" />
-        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/MultiProxyToMultiRestRedisTest.java" />
-        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/ProxyToRestRedisTest.java" />
-        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/ProxyToRestTest.java" />
-        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/SimpleRestTest.java" />
         <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/ReportHealthCheck.java" />
         <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/RedisReporter.java" />
         <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/RoundRobinTest.java" />
         <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/MultiProxyToMultiRestTest.java" />
         <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/MultiProxyToMultiRestWithServiceBlockingTest.java" />
-        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/redis/ProxyToRestRedisTest.java" />
         <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/ServiceVersion.java" />
-        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/redis/RedisServiceLocatorTest.java" />
         <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/RedisServiceLocator.java" />
         <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/RoundRobinTest.java" />
         <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/ServiceLocator.java" />
         <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/util/Runner.java" />
-        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/ProxyServer.java" />
         <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/InMemReporterTest.java" />
         <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/InMemReporter.java" />
-        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/MultiProxyToMultiRestTest.java" />
         <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/ServiceDescriptor.java" />
         <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/filter/Filter.java" />
-        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/Reporter.java" />
         <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/RoundRobinPool.java" />
-        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/ProxyToRestTest.java" />
         <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/Subscriber.java" />
         <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/EventBus.java" />
         <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/EmptyEventBut.java" />
         <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/EmptyEventBus.java" />
+        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/InMemServiceLocatorTest.java" />
+        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/dashboard/Dashboard.java" />
+        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/filter/ChannelFilter.java" />
+        <option value="$PROJECT_DIR$/../vertx-examples/vertx-examples/mongo-examples/src/main/java/io/vertx/examples/mongo/MongoClientVerticle.java" />
+        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/Reporter.java" />
+        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/launchers/LauncherMongoReporter.java" />
+        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/RedisPubSubSubscriber.java" />
+        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/MetricsStatisticsReporter.java" />
+        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/MongoStarted.java" />
+        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/SimpleREST.java" />
+        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/ProxyServer.java" />
+        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/VertxInitUtils.java" />
+        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/redis/RedisServiceLocatorTest.java" />
+        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/redis/RedisKeysRepositoryTest.java" />
+        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/redis/ProxyToRestRedisTest.java" />
+        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/redis/MultiProxyToMultiRestRedisTest.java" />
+        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/SimpleRestTest.java" />
+        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/ProxyToRestTest.java" />
+        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/VerticalServiceRegistry.java" />
         <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/InMemServiceLocator.java" />
         <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/MultiProxyToMultiRestWithServiceBlockingTest.java" />
-        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/InMemServiceLocatorTest.java" />
-        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/VerticalServiceRegistry.java" />
-        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/dashboard/Dashboard.java" />
+        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/MultiProxyToMultiRestTest.java" />
+        <option value="$PROJECT_DIR$/router/pom.xml" />
+        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/repository/CouchbaseKeysRepository.java" />
+        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/CouchbaseServiceLocator.java" />
+        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/CouchbaseHealthReporter.java" />
+        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/InMemSubscriber.java" />
+        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/InMemPublisher.java" />
+        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/CouchbasePublisher.java" />
+        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/CouchbaseSubscriber.java" />
+        <option value="$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/integration/SimpleREST.java" />
+        <option value="$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/launchers/AbstractVerticalServer.java" />
       </list>
     </option>
   </component>
@@ -274,7 +289,7 @@
     <OptionsSetting value="true" id="Update" />
     <OptionsSetting value="true" id="Status" />
     <OptionsSetting value="true" id="Edit" />
-    <ConfirmationsSetting value="0" id="Add" />
+    <ConfirmationsSetting value="1" id="Add" />
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
   <component name="ProjectView">
@@ -290,8 +305,7 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scratches" />
-      <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -389,6 +403,78 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="local" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="vertx-proxy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="vertx-proxy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="router" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="integration" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="vertx-proxy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="vertx-proxy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="router" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="integration" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="launchers" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -792,7 +878,8 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -801,69 +888,27 @@
     <property name="HbShouldOpenHtmlAsHb" value="" />
     <property name="recentsLimit" value="5" />
     <property name="dynamic.classpath" value="false" />
-    <property name="extract.method.default.visibility" value="private" />
+    <property name="extract.method.default.visibility" value="public" />
     <property name="OverrideImplement.combined" value="true" />
     <property name="OverrideImplement.overriding.sorted" value="false" />
     <property name="FullScreen" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../vertx-examples/vertx-examples/mongo-examples/mongo-examples.iml" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+    <property name="settings.editor.splitter.proportion" value="0.2" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="io.vertx.example.unit.test" />
+      <recent name="io.vertx.example.web.proxy.healthcheck" />
+      <recent name="io.vertx.example.web.proxy.locator" />
+      <recent name="io.vertx.example.web.proxy.repository" />
+      <recent name="io.vertx.example.web.proxy.launchers" />
+      <recent name="io.vertx.example.web.proxy.filter" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.InMemServiceLocatorTest">
-    <configuration default="false" name="InMemServiceLocatorTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
-        <pattern>
-          <option name="PATTERN" value="io.vertx.example.unit.test.local.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <module name="router" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="io.vertx.example.unit.test.local" />
-      <option name="MAIN_CLASS_NAME" value="io.vertx.example.unit.test.local.InMemServiceLocatorTest" />
-      <option name="METHOD_NAME" />
-      <option name="TEST_OBJECT" value="class" />
-      <option name="VM_PARAMETERS" value="-ea" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="singleModule" />
-      </option>
-      <envs />
-      <patterns />
-      <method />
-    </configuration>
-    <configuration default="false" name="CompoundFilterTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
-        <pattern>
-          <option name="PATTERN" value="io.vertx.example.unit.test.local.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <module name="router" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="io.vertx.example.unit.test.local" />
-      <option name="MAIN_CLASS_NAME" value="io.vertx.example.unit.test.local.CompoundFilterTest" />
-      <option name="METHOD_NAME" />
-      <option name="TEST_OBJECT" value="class" />
-      <option name="VM_PARAMETERS" value="-ea" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="singleModule" />
-      </option>
-      <envs />
-      <patterns />
-      <method />
-    </configuration>
+  <component name="RunManager" selected="JUnit.io.vertx.example.unit.test.local in router">
     <configuration default="false" name="io.vertx.example.unit.test.local in router" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
@@ -890,44 +935,116 @@
       <patterns />
       <method />
     </configuration>
-    <configuration default="false" name="Dashboard" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+    <configuration default="false" name="MultiProxyToMultiRestTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
-          <option name="PATTERN" value="io.vertx.example.web.proxy.dashboard.*" />
+          <option name="PATTERN" value="io.vertx.example.unit.test.local.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="MAIN_CLASS_NAME" value="io.vertx.example.web.proxy.dashboard.Dashboard" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <module name="router" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="PACKAGE_NAME" value="io.vertx.example.unit.test.local" />
+      <option name="MAIN_CLASS_NAME" value="io.vertx.example.unit.test.local.MultiProxyToMultiRestTest" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
       <option name="ENV_VARIABLES" />
       <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="router" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
       <envs />
+      <patterns />
       <method />
     </configuration>
-    <configuration default="false" name="RedisStarted" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+    <configuration default="false" name="InMemServiceLocatorTest and 11 more" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="router" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="pattern" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns>
+        <pattern testClass="io.vertx.example.unit.test.local.InMemServiceLocatorTest" />
+        <pattern testClass="io.vertx.example.unit.test.local.ServiceLocatorUtilityTest" />
+        <pattern testClass="io.vertx.example.unit.test.local.ProxyToRestTest" />
+        <pattern testClass="io.vertx.example.unit.test.local.CompoundFilterTest" />
+        <pattern testClass="io.vertx.example.unit.test.local.ServiceFilterTest" />
+        <pattern testClass="io.vertx.example.unit.test.local.InMemHealthReporterTest" />
+        <pattern testClass="io.vertx.example.unit.test.local.ProductFilterTest" />
+        <pattern testClass="io.vertx.example.unit.test.local.SimpleRestTest" />
+        <pattern testClass="io.vertx.example.unit.test.local.ChannelServiceFilterTest" />
+        <pattern testClass="io.vertx.example.unit.test.local.RoundRobinTest" />
+        <pattern testClass="io.vertx.example.unit.test.local.VerticalServiceRegistryTest" />
+        <pattern testClass="io.vertx.example.unit.test.local.LocalCacheKeysRepositoryTest" />
+      </patterns>
+      <method />
+    </configuration>
+    <configuration default="false" name="MultiProxyToMultiRestWithServiceBlockingTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
-          <option name="PATTERN" value="io.vertx.example.web.proxy.*" />
+          <option name="PATTERN" value="io.vertx.example.unit.test.local.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="MAIN_CLASS_NAME" value="io.vertx.example.web.proxy.RedisStarted" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <module name="router" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="PACKAGE_NAME" value="io.vertx.example.unit.test.local" />
+      <option name="MAIN_CLASS_NAME" value="io.vertx.example.unit.test.local.MultiProxyToMultiRestWithServiceBlockingTest" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
       <option name="ENV_VARIABLES" />
       <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="router" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
       <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration default="false" name="ProxyToRestTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="io.vertx.example.unit.test.local.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <module name="router" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="io.vertx.example.unit.test.local" />
+      <option name="MAIN_CLASS_NAME" value="io.vertx.example.unit.test.local.ProxyToRestTest" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
       <method />
     </configuration>
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
@@ -1242,19 +1359,19 @@
       <method />
     </configuration>
     <list size="5">
-      <item index="0" class="java.lang.String" itemvalue="JUnit.InMemServiceLocatorTest" />
-      <item index="1" class="java.lang.String" itemvalue="JUnit.CompoundFilterTest" />
-      <item index="2" class="java.lang.String" itemvalue="JUnit.io.vertx.example.unit.test.local in router" />
-      <item index="3" class="java.lang.String" itemvalue="Application.Dashboard" />
-      <item index="4" class="java.lang.String" itemvalue="Application.RedisStarted" />
+      <item index="0" class="java.lang.String" itemvalue="JUnit.io.vertx.example.unit.test.local in router" />
+      <item index="1" class="java.lang.String" itemvalue="JUnit.MultiProxyToMultiRestTest" />
+      <item index="2" class="java.lang.String" itemvalue="JUnit.InMemServiceLocatorTest and 11 more" />
+      <item index="3" class="java.lang.String" itemvalue="JUnit.MultiProxyToMultiRestWithServiceBlockingTest" />
+      <item index="4" class="java.lang.String" itemvalue="JUnit.ProxyToRestTest" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="JUnit.InMemServiceLocatorTest" />
-        <item index="1" class="java.lang.String" itemvalue="Application.Dashboard" />
-        <item index="2" class="java.lang.String" itemvalue="Application.RedisStarted" />
-        <item index="3" class="java.lang.String" itemvalue="JUnit.io.vertx.example.unit.test.local in router" />
-        <item index="4" class="java.lang.String" itemvalue="JUnit.CompoundFilterTest" />
+        <item index="0" class="java.lang.String" itemvalue="JUnit.io.vertx.example.unit.test.local in router" />
+        <item index="1" class="java.lang.String" itemvalue="JUnit.MultiProxyToMultiRestTest" />
+        <item index="2" class="java.lang.String" itemvalue="JUnit.ProxyToRestTest" />
+        <item index="3" class="java.lang.String" itemvalue="JUnit.MultiProxyToMultiRestWithServiceBlockingTest" />
+        <item index="4" class="java.lang.String" itemvalue="JUnit.InMemServiceLocatorTest and 11 more" />
       </list>
     </recent_temporary>
   </component>
@@ -1270,7 +1387,9 @@
       <updated>1446466838194</updated>
       <workItem from="1446466839645" duration="218000" />
       <workItem from="1447317306180" duration="15777000" />
-      <workItem from="1447663881857" duration="12116000" />
+      <workItem from="1447663881857" duration="25276000" />
+      <workItem from="1448276575542" duration="8709000" />
+      <workItem from="1448798393652" duration="5478000" />
     </task>
     <task id="LOCAL-00001" summary="add tests for multi rest servers">
       <created>1446998270207</created>
@@ -1314,11 +1433,29 @@
       <option name="project" value="LOCAL" />
       <updated>1447673939291</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="update strings into serviceVersion &amp; serviceDescriptors">
+      <created>1447683922006</created>
+      <option name="number" value="00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1447683922006</updated>
+    </task>
+    <task id="LOCAL-00009" summary="add mongo support">
+      <created>1447860628136</created>
+      <option name="number" value="00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1447860628136</updated>
+    </task>
+    <task id="LOCAL-00010" summary="add base vertical server">
+      <created>1448284062933</created>
+      <option name="number" value="00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1448284062933</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="59716000" />
+    <option name="totallyTimeSpent" value="87063000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1296" height="1000" extended-state="6" />
@@ -1331,24 +1468,25 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32928804" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.29537368" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.48873073" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3440095" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977462" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.34061489" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.34061489" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.48635826" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.7259787" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.53736657" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.48161328" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" x="92" y="92" width="1096" height="800" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32928804" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1364,17 +1502,18 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.53736657" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.48161328" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.38434163" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" x="92" y="92" width="1096" height="800" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.29537368" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.48873073" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3440095" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32928804" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977462" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.34061489" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.48635826" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.7259787" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
     </layout-to-restore>
   </component>
@@ -1395,11 +1534,13 @@
     <MESSAGE value="add tests" />
     <MESSAGE value=" add tests &amp; service locator blocking API" />
     <MESSAGE value="update strings into serviceVersion &amp; serviceDescriptors" />
-    <option name="LAST_COMMIT_MESSAGE" value="update strings into serviceVersion &amp; serviceDescriptors" />
+    <MESSAGE value="add mongo support" />
+    <MESSAGE value="add base vertical server" />
+    <option name="LAST_COMMIT_MESSAGE" value="add base vertical server" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="65" />
+      <option name="time" value="79" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -1408,18 +1549,10 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_60/src.zip!/java/util/concurrent/ConcurrentSkipListSet.java">
+    <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/ChannelServiceFilterTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="93" column="13" selection-start-line="93" selection-start-column="13" selection-end-line="93" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/com/google/guava/guava/18.0/guava-18.0-sources.jar!/com/google/common/collect/Sets.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="180" column="31" selection-start-line="180" selection-start-column="31" selection-end-line="180" selection-end-column="31" />
+          <caret line="22" column="13" selection-start-line="22" selection-start-column="13" selection-end-line="22" selection-end-column="13" />
           <folding />
         </state>
       </provider>
@@ -1427,343 +1560,31 @@
     <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/redis/RedisServiceLocatorTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="34" column="0" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
+          <caret line="50" column="0" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_60/src.zip!/java/util/stream/ReferencePipeline.java">
+    <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/redis/RedisKeysRepositoryTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="447" column="25" selection-start-line="447" selection-start-column="25" selection-end-line="447" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_60/src.zip!/java/util/stream/Stream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="874" column="12" selection-start-line="874" selection-start-column="12" selection-end-line="874" selection-end-column="12" />
+          <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/RedisServiceLocator.java">
+    <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/redis/ProxyToRestRedisTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="30" column="9" selection-start-line="30" selection-start-column="9" selection-end-line="30" selection-end-column="9" />
-          <folding>
-            <element signature="e#1185#1186#0" expanded="false" />
-            <element signature="e#1214#1215#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/io/vertx/vertx-unit/3.1.0/vertx-unit-3.1.0.jar!/io/vertx/ext/unit/junit/VertxUnitRunner.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_60/src.zip!/java/util/Map.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="164" column="12" selection-start-line="164" selection-start-column="12" selection-end-line="164" selection-end-column="12" />
+          <caret line="60" column="0" selection-start-line="60" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_60/src.zip!/java/util/concurrent/ConcurrentSkipListMap.java">
+    <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/redis/MultiProxyToMultiRestRedisTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="1282" column="11" selection-start-line="1282" selection-start-column="11" selection-end-line="1282" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/com/googlecode/concurrentlinkedhashmap/concurrentlinkedhashmap-lru/1.3.1/concurrentlinkedhashmap-lru-1.3.1.jar!/com/googlecode/concurrentlinkedhashmap/ConcurrentLinkedHashMap.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-4.5925927">
-          <caret line="616" column="15" selection-start-line="616" selection-start-column="15" selection-end-line="616" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_60/src.zip!/java/lang/Comparable.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="95" column="17" selection-start-line="95" selection-start-column="17" selection-end-line="95" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/io/vertx/vertx-core/3.1.0/vertx-core-3.1.0-sources.jar!/io/vertx/core/http/HttpClient.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="214" column="13" selection-start-line="214" selection-start-column="13" selection-end-line="214" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/io/vertx/vertx-core/3.1.0/vertx-core-3.1.0-sources.jar!/io/vertx/core/http/impl/HttpClientImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="386" column="4" selection-start-line="386" selection-start-column="4" selection-end-line="386" selection-end-column="4" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/repository/LocalCacheKeysRepository.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="19" column="11" selection-start-line="19" selection-start-column="11" selection-end-line="19" selection-end-column="11" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/io/vertx/vertx-core/3.1.0/vertx-core-3.1.0-sources.jar!/io/vertx/core/http/impl/HttpServerRequestImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="167" column="0" selection-start-line="167" selection-start-column="0" selection-end-line="167" selection-end-column="0" />
-          <folding>
-            <element signature="e#5294#5295#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/RoundRobinTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="15" column="19" selection-start-line="15" selection-start-column="19" selection-end-line="15" selection-end-column="19" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="method#roundRobinPoolSimpleTest#0;class#RoundRobinTest#0" expanded="false" />
-            <element signature="e#1654#1680#0" expanded="false" />
-            <element signature="e#1777#1803#0" expanded="false" />
-            <element signature="e#4063#4089#0" expanded="false" />
-            <element signature="e#5237#5263#0" expanded="false" />
-            <element signature="e#7591#7617#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/io/vertx/vertx-web/3.1.0/vertx-web-3.1.0.jar!/io/vertx/ext/web/handler/StaticHandler.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.0">
-          <caret line="31" column="33" selection-start-line="31" selection-start-column="33" selection-end-line="31" selection-end-column="33" />
-          <folding>
-            <element signature="e#1170#1171#0" expanded="true" />
-            <element signature="e#1216#1217#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/io/vertx/vertx-web/3.1.0/vertx-web-3.1.0-sources.jar!/io/vertx/ext/web/handler/StaticHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="108" column="23" selection-start-line="108" selection-start-column="23" selection-end-line="108" selection-end-column="23" />
-          <folding>
-            <element signature="e#2766#2767#0" expanded="false" />
-            <element signature="e#2806#2807#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/ServiceVersion.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="48" column="0" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/ServiceLocator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/InMemReporterTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="18" column="62" selection-start-line="18" selection-start-column="62" selection-end-line="18" selection-end-column="62" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/RedisStarted.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="24" column="29" selection-start-line="24" selection-start-column="8" selection-end-line="24" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/VertxInitUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="14" column="24" selection-start-line="14" selection-start-column="24" selection-end-line="14" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/launchers/LauncherRestServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="12" column="58" selection-start-line="12" selection-start-column="58" selection-end-line="12" selection-end-column="58" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/filter/FilterPhase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="8" column="17" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/filter/Filter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="40" column="5" selection-start-line="40" selection-start-column="5" selection-end-line="40" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/Reporter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="34" column="0" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/filter/ServiceFilter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="17" column="27" selection-start-line="17" selection-start-column="27" selection-end-line="17" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/RoundRobinPool.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="65" column="16" selection-start-line="65" selection-start-column="16" selection-end-line="65" selection-end-column="16" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#467#468#0" expanded="true" />
-            <element signature="e#521#522#0" expanded="true" />
-            <element signature="e#1269#1270#0" expanded="true" />
-            <element signature="e#1304#1305#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/RedisSubscriber.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="14" column="20" selection-start-line="14" selection-start-column="20" selection-end-line="14" selection-end-column="20" />
-          <folding>
-            <element signature="e#311#312#0" expanded="true" />
-            <element signature="e#369#370#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_60/src.zip!/java/util/Optional.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="49" column="19" selection-start-line="49" selection-start-column="19" selection-end-line="49" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/ProxyServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="94" column="20" selection-start-line="94" selection-start-column="20" selection-end-line="94" selection-end-column="20" />
-          <folding>
-            <element signature="method#returnForbiddenResponse#0;class#ProxyServer#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/io/vertx/vertx-web/3.1.0/vertx-web-3.1.0-sources.jar!/io/vertx/ext/web/impl/RouteImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="138" column="28" selection-start-line="138" selection-start-column="28" selection-end-line="138" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/io/vertx/vertx-web/3.1.0/vertx-web-3.1.0-sources.jar!/io/vertx/ext/web/Route.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="105" column="8" selection-start-line="105" selection-start-column="8" selection-end-line="105" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/RedisEventBus.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="20" column="25" selection-start-line="20" selection-start-column="25" selection-end-line="20" selection-end-column="25" />
-          <folding>
-            <element signature="e#532#533#0" expanded="true" />
-            <element signature="e#584#585#0" expanded="true" />
-            <element signature="e#643#644#0" expanded="true" />
-            <element signature="e#691#692#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/dashboard/webroot/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="33.346153">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/EventBus.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="3" column="1" selection-start-line="3" selection-start-column="1" selection-end-line="3" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/Subscriber.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="5" column="4" selection-start-line="5" selection-start-column="4" selection-end-line="5" selection-end-column="4" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/EmptyEventBus.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-          <folding>
-            <element signature="e#275#276#0" expanded="true" />
-            <element signature="e#302#303#0" expanded="true" />
-            <element signature="e#361#362#0" expanded="true" />
-            <element signature="e#400#401#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/MultiProxyToMultiRestTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="100" column="0" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
+          <caret line="55" column="0" selection-start-line="55" selection-start-column="0" selection-end-line="55" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1772,14 +1593,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/LocalCacheKeysRepositoryTest.java">
+    <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/SimpleRestTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="8" column="48" selection-start-line="8" selection-start-column="48" selection-end-line="8" selection-end-column="48" />
+          <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1787,62 +1607,64 @@
     <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/ProxyToRestTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="54" column="31" selection-start-line="54" selection-start-column="31" selection-end-line="54" selection-end-column="31" />
+          <caret line="50" column="0" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/io/vertx/vertx-core/3.1.0/vertx-core-3.1.0-sources.jar!/io/vertx/core/http/impl/HttpServerRequestImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="133" column="0" selection-start-line="133" selection-start-column="0" selection-end-line="133" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/RoundRobinPool.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="21" column="16" selection-start-line="21" selection-start-column="16" selection-end-line="21" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/ProxyServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="66" column="66" selection-start-line="66" selection-start-column="66" selection-end-line="66" selection-end-column="66" />
+          <folding>
+            <element signature="method#returnForbiddenResponse#0;class#ProxyServer#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/ServiceDescriptor.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/SimpleREST.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="120" column="31" selection-start-line="120" selection-start-column="31" selection-end-line="120" selection-end-column="31" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/MultiProxyToMultiRestWithServiceBlockingTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="118" column="24" selection-start-line="118" selection-start-column="24" selection-end-line="118" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/InMemServiceLocatorTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="18" column="27" selection-start-line="18" selection-start-column="27" selection-end-line="18" selection-end-column="27" />
+          <caret line="82" column="0" selection-start-line="82" selection-start-column="0" selection-end-line="82" selection-end-column="0" />
           <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="method#serviceLocatorSingleHostTest#0;class#InMemServiceLocatorTest#0" expanded="false" />
-            <element signature="method#serviceLocatorSingleHostBlockTest#0;class#InMemServiceLocatorTest#0" expanded="false" />
-            <element signature="method#serviceLocatorSingleHostUnBlockTest#0;class#InMemServiceLocatorTest#0" expanded="false" />
-            <element signature="method#serviceLocatorMultiHostsTest#0;class#InMemServiceLocatorTest#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#964#965#0" expanded="false" />
+            <element signature="e#1001#1002#0" expanded="false" />
+            <element signature="e#1032#1033#0" expanded="false" />
+            <element signature="e#1059#1060#0" expanded="false" />
+            <element signature="e#1087#1088#0" expanded="false" />
+            <element signature="e#1114#1115#0" expanded="false" />
+            <element signature="e#2113#2114#0" expanded="false" />
+            <element signature="e#2160#2161#0" expanded="false" />
+            <element signature="e#3338#3339#0" expanded="false" />
+            <element signature="e#3391#3392#0" expanded="false" />
+            <element signature="e#3421#3422#0" expanded="false" />
+            <element signature="e#3502#3503#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/InMemServiceLocator.java">
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/HealthReporter.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="12" column="26" selection-start-line="12" selection-start-column="26" selection-end-line="12" selection-end-column="26" />
+          <caret line="35" column="0" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
           <folding>
-            <element signature="method#InMemServiceLocator#0;class#InMemServiceLocator#0" expanded="false" />
-            <element signature="method#getService#0;class#InMemServiceLocator#0" expanded="false" />
-            <element signature="e#2531#2532#0" expanded="true" />
-            <element signature="e#2603#2604#0" expanded="true" />
-            <element signature="e#2673#2674#0" expanded="true" />
-            <element signature="e#2729#2730#0" expanded="true" />
-            <element signature="e#2801#2802#0" expanded="true" />
-            <element signature="e#2860#2861#0" expanded="true" />
+            <element signature="imports" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1850,28 +1672,428 @@
     <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/VerticalServiceRegistry.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="23" column="40" selection-start-line="23" selection-start-column="40" selection-end-line="23" selection-end-column="40" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/InMemReporter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="11" column="39" selection-start-line="11" selection-start-column="39" selection-end-line="11" selection-end-column="39" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/dashboard/Dashboard.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.0888889">
-          <caret line="94" column="42" selection-start-line="94" selection-start-column="42" selection-end-line="94" selection-end-column="42" />
+          <caret line="17" column="11" selection-start-line="17" selection-start-column="11" selection-end-line="17" selection-end-column="11" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#1052#1053#0" expanded="false" />
+            <element signature="e#1090#1091#0" expanded="false" />
+            <element signature="e#1300#1301#0" expanded="false" />
+            <element signature="e#1337#1338#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/InMemServiceLocator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="28" column="0" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#2299#2300#0" expanded="false" />
+            <element signature="e#2328#2329#0" expanded="false" />
+            <element signature="e#2781#2782#0" expanded="false" />
+            <element signature="e#2853#2854#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/MultiProxyToMultiRestTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="37" column="8" selection-start-line="37" selection-start-column="8" selection-end-line="37" selection-end-column="8" />
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/local/MultiProxyToMultiRestWithServiceBlockingTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="94" column="0" selection-start-line="94" selection-start-column="0" selection-end-line="94" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="167" column="0" selection-start-line="167" selection-start-column="0" selection-end-line="167" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/repository/RedisKeysRepository.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/com/couchbase/client/java-client/2.2.2/java-client-2.2.2.jar!/com/couchbase/client/java/CouchbaseCluster.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-10.037037">
+          <caret line="88" column="18" selection-start-line="88" selection-start-column="18" selection-end-line="88" selection-end-column="18" />
+          <folding>
+            <element signature="e#3726#3727#0" expanded="true" />
+            <element signature="e#3784#3785#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/com/couchbase/client/java-client/2.2.2/java-client-2.2.2-sources.jar!/com/couchbase/client/java/Cluster.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="89" column="11" selection-start-line="89" selection-start-column="11" selection-end-line="89" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/com/couchbase/client/java-client/2.2.2/java-client-2.2.2-sources.jar!/com/couchbase/client/java/CouchbaseCluster.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="254" column="18" selection-start-line="254" selection-start-column="18" selection-end-line="254" selection-end-column="18" />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#10620#10621#0" expanded="false" />
+            <element signature="e#10665#10666#0" expanded="false" />
+            <element signature="e#10897#10898#0" expanded="false" />
+            <element signature="e#10952#10953#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_60/src.zip!/java/util/stream/Stream.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="606" column="6" selection-start-line="606" selection-start-column="6" selection-end-line="606" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_60/src.zip!/java/util/Map.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="374" column="14" selection-start-line="374" selection-start-column="14" selection-end-line="374" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_60/src.zip!/java/util/HashMap.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-10.206897">
+          <caret line="277" column="43" selection-start-line="277" selection-start-column="43" selection-end-line="277" selection-end-column="43" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/com/couchbase/client/java-client/2.2.2/java-client-2.2.2-sources.jar!/com/couchbase/client/java/document/json/JsonObject.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="405" column="20" selection-start-line="405" selection-start-column="20" selection-end-line="405" selection-end-column="20" />
+          <folding>
+            <element signature="e#14288#14289#0" expanded="false" />
+            <element signature="e#14340#14341#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/repository/KeysRepository.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="15" column="24" selection-start-line="15" selection-start-column="24" selection-end-line="15" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_60/src.zip!/java/util/stream/Collectors.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="1209" column="30" selection-start-line="1209" selection-start-column="30" selection-end-line="1209" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/com/couchbase/client/java-client/2.2.2/java-client-2.2.2-sources.jar!/com/couchbase/client/java/document/json/JsonArray.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="440" column="24" selection-start-line="440" selection-start-column="24" selection-end-line="440" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/com/couchbase/client/java-client/2.2.2/java-client-2.2.2-sources.jar!/com/couchbase/client/java/Bucket.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="1105" column="30" selection-start-line="1105" selection-start-column="30" selection-end-line="1105" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/RedisServiceLocator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="16" column="13" selection-start-line="16" selection-start-column="13" selection-end-line="16" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/locator/CouchbaseServiceLocator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="16" column="13" selection-start-line="16" selection-start-column="13" selection-end-line="16" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/RedisPubSubAdaptor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/RedisPubSubPublisher.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="5" column="6" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/MessageProcessor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="2" column="17" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/MongoMessageProcessor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/Publisher.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="4" column="17" selection-start-line="4" selection-start-column="17" selection-end-line="4" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/CouchbaseSubscriber.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/integration/MongoStarted.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="49" column="27" selection-start-line="49" selection-start-column="27" selection-end-line="49" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/integration/RedisStarted.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/test/java/io/vertx/example/unit/test/integration/SimpleREST.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/launchers/AbstractVerticalServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="28" column="83" selection-start-line="28" selection-start-column="83" selection-end-line="28" selection-end-column="83" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/CouchbasePublisher.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="2" column="31" selection-start-line="2" selection-start-column="31" selection-end-line="2" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/InMemSubscriber.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/InMemPublisher.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/events/Subscriber.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/CouchbaseHealthReporter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/ReportHealthCheck.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="5" column="22" selection-start-line="5" selection-start-column="22" selection-end-line="5" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/RedisHealthReporter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/healthcheck/InMemHealthReporter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="24" column="40" selection-start-line="24" selection-start-column="40" selection-end-line="24" selection-end-column="40" />
+          <folding>
+            <element signature="e#770#771#0" expanded="true" />
+            <element signature="e#832#833#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/router/src/main/java/io/vertx/example/web/proxy/repository/CouchbaseKeysRepository.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="3.1564791">
+          <caret line="251" column="0" selection-start-line="251" selection-start-column="0" selection-end-line="251" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2988#2996#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <last-edited>No facets are configured</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>1.7</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>mongo-examples</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+                <option value="0.6" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectJDKs.UI">
+        <settings>
+          <last-edited>1.8</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>Maven: asm:asm-analysis:3.3.1</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
   </component>
 </project>

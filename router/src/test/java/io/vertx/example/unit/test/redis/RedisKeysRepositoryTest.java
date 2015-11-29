@@ -1,7 +1,7 @@
 package io.vertx.example.unit.test.redis;
 
 import io.vertx.core.Vertx;
-import io.vertx.example.web.proxy.RedisStarted;
+import io.vertx.example.unit.test.integration.RedisStarted;
 import io.vertx.example.web.proxy.VertxInitUtils;
 import io.vertx.example.web.proxy.repository.RedisKeysRepository;
 import io.vertx.ext.unit.TestContext;
@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import static io.vertx.example.web.proxy.RedisStarted.*;
+import static io.vertx.example.unit.test.integration.RedisStarted.*;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 

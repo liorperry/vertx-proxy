@@ -3,7 +3,7 @@ package io.vertx.example.unit.test.local;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
-import io.vertx.example.web.proxy.SimpleREST;
+import io.vertx.example.unit.test.integration.SimpleREST;
 import io.vertx.example.web.proxy.VertxInitUtils;
 import io.vertx.example.web.proxy.events.Publisher;
 import io.vertx.example.web.proxy.healthcheck.InMemHealthReporter;

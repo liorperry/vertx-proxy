@@ -1,4 +1,4 @@
-package io.vertx.example.web.proxy;
+package io.vertx.example.unit.test.integration;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;

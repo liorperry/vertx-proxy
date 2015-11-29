@@ -7,7 +7,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.example.web.proxy.ProxyServer;
-import io.vertx.example.web.proxy.SimpleREST;
+import io.vertx.example.unit.test.integration.SimpleREST;
 import io.vertx.example.web.proxy.VertxInitUtils;
 import io.vertx.example.web.proxy.events.Publisher;
 import io.vertx.example.web.proxy.filter.ProductFilter;

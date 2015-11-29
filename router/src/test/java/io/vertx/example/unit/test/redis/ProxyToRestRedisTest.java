@@ -6,8 +6,8 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.json.JsonObject;
 import io.vertx.example.web.proxy.ProxyServer;
-import io.vertx.example.web.proxy.RedisStarted;
-import io.vertx.example.web.proxy.SimpleREST;
+import io.vertx.example.unit.test.integration.RedisStarted;
+import io.vertx.example.unit.test.integration.SimpleREST;
 import io.vertx.example.web.proxy.VertxInitUtils;
 import io.vertx.example.web.proxy.events.Publisher;
 import io.vertx.example.web.proxy.filter.ProductFilter;
@@ -29,7 +29,7 @@ import redis.clients.jedis.JedisPool;
 
 import java.io.IOException;
 
-import static io.vertx.example.web.proxy.RedisStarted.populate;
+import static io.vertx.example.unit.test.integration.RedisStarted.populate;
 import static io.vertx.example.web.proxy.VertxInitUtils.ENABLE_METRICS_PUBLISH;
 import static io.vertx.example.web.proxy.VertxInitUtils.HTTP_PORT;
 import static io.vertx.example.web.proxy.filter.Filter.FilterBuilder.filterBuilder;

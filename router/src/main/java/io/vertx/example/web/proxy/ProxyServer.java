@@ -2,8 +2,6 @@ package io.vertx.example.web.proxy;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Future;
-import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
 import io.vertx.core.http.*;
 import io.vertx.example.web.proxy.events.Publisher;
 import io.vertx.example.web.proxy.filter.Filter;
@@ -12,9 +10,6 @@ import io.vertx.example.web.proxy.launchers.AbstractVerticalServer;
 import io.vertx.example.web.proxy.locator.ServiceDescriptor;
 import io.vertx.example.web.proxy.locator.ServiceLocator;
 import io.vertx.example.web.proxy.locator.VerticalServiceRegistry;
-import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
-import io.vertx.ext.dropwizard.Match;
-import io.vertx.ext.dropwizard.MatchType;
 
 import java.util.Optional;
 

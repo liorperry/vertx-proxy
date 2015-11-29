@@ -1,4 +1,4 @@
-package io.vertx.example.web.proxy;
+package io.vertx.example.unit.test.integration;
 
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
@@ -12,6 +12,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
+import io.vertx.example.web.proxy.VertxInitUtils;
 import io.vertx.example.web.proxy.events.MongoMessageProcessor;
 import io.vertx.example.web.proxy.events.Publisher;
 import io.vertx.example.web.proxy.events.Subscriber;

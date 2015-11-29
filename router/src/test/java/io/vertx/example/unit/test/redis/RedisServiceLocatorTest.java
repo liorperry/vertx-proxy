@@ -1,7 +1,7 @@
 package io.vertx.example.unit.test.redis;
 
 import io.vertx.core.Vertx;
-import io.vertx.example.web.proxy.RedisStarted;
+import io.vertx.example.unit.test.integration.RedisStarted;
 import io.vertx.example.web.proxy.VertxInitUtils;
 import io.vertx.example.web.proxy.healthcheck.RedisHealthReporter;
 import io.vertx.example.web.proxy.healthcheck.HealthReporter;
@@ -21,7 +21,7 @@ import redis.clients.jedis.JedisPool;
 import java.net.Inet4Address;
 import java.util.Optional;
 
-import static io.vertx.example.web.proxy.RedisStarted.populate;
+import static io.vertx.example.unit.test.integration.RedisStarted.populate;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
