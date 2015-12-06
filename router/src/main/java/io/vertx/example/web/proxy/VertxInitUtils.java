@@ -52,6 +52,10 @@ public interface VertxInitUtils {
     }
 
     static int getPort(DeploymentOptions options) {
-        return options.getConfig().getInteger(HTTP_PORT);
+        return getPort(options,HTTP_PORT);
+    }
+
+    static int getPort(DeploymentOptions options,String constant) {
+        return options.getConfig().getInteger(constant);
     }
 }

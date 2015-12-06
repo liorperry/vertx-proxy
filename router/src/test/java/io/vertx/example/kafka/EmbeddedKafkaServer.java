@@ -1,8 +1,5 @@
 package io.vertx.example.kafka;
 
-/**
- * Created by lior on 05/12/2015.
- */
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,23 +23,25 @@ public class EmbeddedKafkaServer {
     private final ZookeeperLocal zookeeperLocal;
     private final Producer producer;
     private final Map<String, Consumer> consumers = new HashMap<>();
+    private final Integer zookeeperPort;
+    private final Integer kafkaPort;
 
     public static void main(String[] args) {
-        EmbeddedKafkaServer server = new EmbeddedKafkaServer();
+        EmbeddedKafkaServer server = new EmbeddedKafkaServer(2181,9090);
         server.start();
+/*
         Optional<String> test = server.read("test");
         System.out.println("reading before value set : " + test);
         Future<RecordMetadata> send = server.send("test", "key", "value");
         test = server.read("test");
         System.out.println("reading after value set : " + test);
         server.stop();
-    }
-
-    public EmbeddedKafkaServer(){
-        this(2181, 9090);
+*/
     }
 
     public EmbeddedKafkaServer(Integer zookeeperPort, Integer kafkaPort){
+        this.zookeeperPort = zookeeperPort;
+        this.kafkaPort = kafkaPort;
         try {
             zookeeperProperties.load(getClass().getClassLoader().getResourceAsStream("zookeeper.properties"));
             zookeeperProperties.setProperty("clientPort", zookeeperPort.toString());
@@ -67,7 +66,9 @@ public class EmbeddedKafkaServer {
     }
 
     public void start(){
+        System.out.println("Starting local zookeeper:"+zookeeperPort);
         zookeeperLocal.start();
+        System.out.println("Starting local kafka:"+kafkaPort);
         kafkaLocal.start();
     }
 

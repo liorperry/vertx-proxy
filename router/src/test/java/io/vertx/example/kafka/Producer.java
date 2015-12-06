@@ -20,7 +20,7 @@ public class Producer {
     }
 
     public Future<RecordMetadata> send(String topic, String key, String value){
-        logger.debug("sending message {} for key {} on topic {}", value, key, topic);
+        System.out.println("sending message "+value+" for key "+key+" on topic "+ topic);
         ProducerRecord<String,String> producerRecord = new ProducerRecord<>(topic, key, value);
         return producer.send(producerRecord);
     }
