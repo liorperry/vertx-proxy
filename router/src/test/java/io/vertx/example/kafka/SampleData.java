@@ -1,6 +1,10 @@
 package io.vertx.example.kafka;
 
 public final class SampleData {
+    public static final String PUBLISHER = "publisher";
+    public static final String TIME = "time";
+    public static final String READINGS = "readings";
+
 
     private final String publishId;
     private final String time;
