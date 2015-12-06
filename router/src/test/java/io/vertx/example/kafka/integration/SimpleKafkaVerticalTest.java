@@ -1,11 +1,14 @@
-package io.vertx.example.kafka;
+package io.vertx.example.kafka.integration;
 
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
+import io.vertx.example.util.kafka.BasicSampleExtractor;
+import io.vertx.example.util.kafka.InMemSamplePersister;
 import io.vertx.example.web.proxy.VertxInitUtils;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +24,7 @@ public class SimpleKafkaVerticalTest {
     public static final String LOCALHOST = "localhost";
     static DeploymentOptions options = VertxInitUtils.initDeploymentOptions();
     static Vertx vertx;
+    static InMemSamplePersister persister = new InMemSamplePersister();
 
     @BeforeClass
     public static void setUp(TestContext context) throws IOException {
@@ -31,15 +35,18 @@ public class SimpleKafkaVerticalTest {
 
         vertx = Vertx.vertx(initOptions());
 
-        vertx.deployVerticle(new KafkaServerVertical(kafkaPort,zkPort),
+        vertx.deployVerticle(new KafkaServerVertical(zkPort,kafkaPort),
                             options,
                             context.asyncAssertSuccess());
 
-        vertx.deployVerticle(new SimpleKafkaConsumer("topic",zkPort),
+        vertx.deployVerticle(new SimpleKafkaConsumer(
+                        persister,
+                        new BasicSampleExtractor(),
+                        "test", zkPort,1000),
                 options,
                 context.asyncAssertSuccess());
 
-        vertx.deployVerticle(new SimpleKafkaProducer("topic",kafkaPort),
+        vertx.deployVerticle(new SimpleKafkaProducer("topic",kafkaPort,1000),
                 options,
                 context.asyncAssertSuccess());
     }
@@ -51,8 +58,9 @@ public class SimpleKafkaVerticalTest {
 
 
     @Test
-    public void testKafkaMessageProduction(TestContext context) {
-
+    public void testKafkaMessageProduction(TestContext context) throws InterruptedException {
+        Thread.sleep(10000);
+        Assert.assertTrue(persister.fetchAll().size()>0 );
 
     }
 

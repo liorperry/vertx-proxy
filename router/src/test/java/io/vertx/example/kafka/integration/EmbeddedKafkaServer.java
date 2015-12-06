@@ -1,5 +1,9 @@
-package io.vertx.example.kafka;
+package io.vertx.example.kafka.integration;
 
+import io.vertx.example.util.kafka.Consumer;
+import io.vertx.example.util.kafka.KafkaLocal;
+import io.vertx.example.util.kafka.Producer;
+import io.vertx.example.kafka.ZookeeperLocal;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +72,7 @@ public class EmbeddedKafkaServer {
     public void start(){
         System.out.println("Starting local zookeeper:"+zookeeperPort);
         zookeeperLocal.start();
-        System.out.println("Starting local kafka:"+kafkaPort);
+        System.out.println("Starting local kafka:" + kafkaPort);
         kafkaLocal.start();
     }
 

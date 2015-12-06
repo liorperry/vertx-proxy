@@ -1,4 +1,4 @@
-package io.vertx.example.kafka;
+package io.vertx.example.util.kafka;
 
 
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -20,7 +20,7 @@ public class Producer {
     }
 
     public Future<RecordMetadata> send(String topic, String key, String value){
-        System.out.println("sending message "+value+" for key "+key+" on topic "+ topic);
+        System.out.println("sending message " + value + " for key " + key + " on topic " + topic);
         ProducerRecord<String,String> producerRecord = new ProducerRecord<>(topic, key, value);
         return producer.send(producerRecord);
     }

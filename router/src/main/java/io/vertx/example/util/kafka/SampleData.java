@@ -1,4 +1,4 @@
-package io.vertx.example.kafka;
+package io.vertx.example.util.kafka;
 
 public final class SampleData {
     public static final String PUBLISHER = "publisher";

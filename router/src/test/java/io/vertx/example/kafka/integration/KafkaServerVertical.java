@@ -1,4 +1,4 @@
-package io.vertx.example.kafka;
+package io.vertx.example.kafka.integration;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
@@ -12,6 +12,7 @@ import java.util.Optional;
 public class KafkaServerVertical extends AbstractVerticle {
     public static final String KAFKA_PORT = "KAFKA.PORT";
     public static final String ZK_PORT = "ZOOKEEPER.PORT";
+
     private int kafkaPort;
     private int zkPort;
 
@@ -30,7 +31,7 @@ public class KafkaServerVertical extends AbstractVerticle {
         launchKafka();
     }
 
-    public KafkaServerVertical(int kafkaPort ,int zkPort ) {
+    public KafkaServerVertical(int zkPort , int kafkaPort) {
         this.kafkaPort = kafkaPort;
         this.zkPort = zkPort;
         launchKafka();
@@ -42,7 +43,7 @@ public class KafkaServerVertical extends AbstractVerticle {
 
     private void launchKafka() {
         if(!kafkaServer.isPresent()) {
-            kafkaServer = Optional.of(new EmbeddedKafkaServer(kafkaPort, zkPort));
+            kafkaServer = Optional.of(new EmbeddedKafkaServer(zkPort,kafkaPort));
         }
         System.out.println("starting kafka embedded server");
         kafkaServer.get().start();

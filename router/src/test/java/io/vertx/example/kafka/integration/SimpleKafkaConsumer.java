@@ -1,10 +1,11 @@
-package io.vertx.example.kafka;
+package io.vertx.example.kafka.integration;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
+import io.vertx.example.util.kafka.*;
 import io.vertx.example.web.proxy.VertxInitUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,8 @@ import java.util.Properties;
 
 public class SimpleKafkaConsumer extends AbstractVerticle {
     private static final Logger logger = LoggerFactory.getLogger(SimpleKafkaConsumer.class);
+
+    private int sampleFrequence = 3000;
 
     private Consumer consumer;
     private SamplePersister persister;
@@ -27,17 +30,19 @@ public class SimpleKafkaConsumer extends AbstractVerticle {
         Vertx vertx = Vertx.vertx();
         DeploymentOptions options = VertxInitUtils.initDeploymentOptions();
         vertx.deployVerticle(new SimpleKafkaConsumer(
-                data -> System.out.println(data),
+                new InMemSamplePersister(),
                 new BasicSampleExtractor(),
-                "test", 2181), options);
+                "test", 2181, 3000), options);
     }
 
     public SimpleKafkaConsumer(SamplePersister persister,
                                SampleExtractor extractor,
-                               String topic, int zkPort) {
+                               String topic, int zkPort,
+                               int sampleFrequence) {
         this.persister = persister;
         this.extractor = extractor;
         this.zkPort = zkPort;
+        this.sampleFrequence = sampleFrequence;
         try {
             this.topic = topic;
             consumerProperties = new Properties();
@@ -54,7 +59,7 @@ public class SimpleKafkaConsumer extends AbstractVerticle {
 
     public void start(Future<Void> fut) throws Exception {
         super.start();
-        vertx.setPeriodic(5000, event -> {
+        vertx.setPeriodic(sampleFrequence, event -> {
             System.out.println("reading message from kafka vis Zookeeper:" + zkPort + " consumer on topic:" + topic);
             Optional<String> value = consumer.read();
             System.out.println(value);

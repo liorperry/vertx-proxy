@@ -1,4 +1,4 @@
-package io.vertx.example.kafka;
+package io.vertx.example.util.kafka;
 
 /**
  * Created by lior on 05/12/2015.
