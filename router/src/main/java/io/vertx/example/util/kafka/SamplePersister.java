@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface SamplePersister {
     void persist(SampleData data);
-    List<SampleData> fetch(int latestNSamples);
-    List<SampleData> fetchAll();
+    List<SampleData> fetch(String publisherId, int latestNSamples);
+    List<SampleData> fetchAll(String publisherId);
 }

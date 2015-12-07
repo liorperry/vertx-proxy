@@ -6,4 +6,7 @@ import java.util.Optional;
 
 public interface SampleExtractor {
     Optional<SampleData> extractSample(JsonObject data);
+
+    double[] extractReadings(String samples);
+
 }

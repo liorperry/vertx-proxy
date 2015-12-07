@@ -60,7 +60,7 @@ public class SimpleKafkaVerticalTest {
     @Test
     public void testKafkaMessageProduction(TestContext context) throws InterruptedException {
         Thread.sleep(10000);
-        Assert.assertTrue(persister.fetchAll().size()>0 );
+        Assert.assertTrue(persister.fetchAll("NORBERT").size()>0 );
 
     }
 

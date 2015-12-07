@@ -18,7 +18,7 @@ public class BasicSampleExtractor implements SampleExtractor{
                 String time = result.getString(TIME);
                 String samples = result.getString(READINGS);
                 if (samples != null && samples.length()>0) {
-                    values = Arrays.asList(samples.replace("{", "").replace("}", "").split("\\,")).stream().mapToDouble(Double::valueOf).toArray();
+                    values = extractReadings(samples);
                 }
                 if (publisher != null && time != null && values.length > 0) {
 
@@ -29,5 +29,9 @@ public class BasicSampleExtractor implements SampleExtractor{
                 }
             }
         return Optional.empty();
+    }
+
+    public double[] extractReadings(String samples) {
+        return Arrays.asList(samples.replace("{", "").replace("}", "").split("\\,")).stream().mapToDouble(Double::valueOf).toArray();
     }
 }

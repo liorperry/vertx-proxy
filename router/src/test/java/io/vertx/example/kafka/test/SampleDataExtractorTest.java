@@ -21,8 +21,15 @@ public class SampleDataExtractorTest {
 
 
     public static final String NOW = GregorianCalendar.getInstance().getTime().toLocaleString();
+    public static final String READINGS = "{1,13,192,7,8,99,1014,4}";
 
     @Test
+    public void testDataReadingsExtractor() throws Exception {
+        BasicSampleExtractor extractor = new BasicSampleExtractor();
+        double[] readings = extractor.extractReadings(READINGS);
+        assertEquals(readings.length,8);
+    }
+
     public void testDataExtractor() throws Exception {
         BasicSampleExtractor extractor = new BasicSampleExtractor();
         Optional<SampleData> sampleData = extractor.extractSample(new JsonObject(buildMessage()));
@@ -36,7 +43,7 @@ public class SampleDataExtractorTest {
         Map<String, Object> map = new HashMap<>();
         map.put("publisher", "norbert");
         map.put("time", NOW);
-        map.put("readings", "{1,13,192,7,8,99,1014,4}");
+        map.put("readings", READINGS);
         return map;
     }
 
