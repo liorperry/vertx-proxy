@@ -1,5 +1,6 @@
 package io.vertx.example.kafka.integration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
@@ -12,32 +13,34 @@ import io.vertx.example.web.proxy.VertxInitUtils;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.ZooKeeper;
 import redis.clients.jedis.JedisPool;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 
 public class OutlierWebServer extends AbstractVerticle {
     private OutlierDetector detector;
     private SamplePersister persister;
-    private int port;
+    private int httpPort;
+    private ZooKeeper zk;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Vertx vertx = Vertx.vertx();
         DeploymentOptions options = VertxInitUtils.initDeploymentOptions();
         SamplePersister persister = new RedisSamplePersister(new JedisPool(),new BasicSampleExtractor());
         SimpleDistanceOutlierDetector detector = new SimpleDistanceOutlierDetector(persister);
         persister.persist(KafkaTestUtils.create("norbert", 100, 15));
         persister.persist(KafkaTestUtils.create("ginzburg", 300, 10));
-        vertx.deployVerticle(new OutlierWebServer(detector,persister, 8081), options);
+        vertx.deployVerticle(new OutlierWebServer(detector,persister, 8081,2181), options);
     }
 
-    public OutlierWebServer(OutlierDetector detector,SamplePersister persister, int port) {
+    public OutlierWebServer(OutlierDetector detector,SamplePersister persister, int httpPort,int zkPort) throws IOException {
         this.detector = detector;
         this.persister = persister;
-        this.port = port;
+        this.httpPort = httpPort;
+        this.zk = new ZooKeeper("localhost:"+zkPort, 10000, null);
     }
 
     @Override
@@ -49,9 +52,12 @@ public class OutlierWebServer extends AbstractVerticle {
         router.route().handler(BodyHandler.create());
         router.get("/outlier/:publisherId").handler(this::outlier);
         router.get("/outlier").handler(this::outlierList);
-        System.out.println("Listening for http://{hostname}:"+port+"/outlier/:{publisherId}?windowSize=10;outlierFactor=2");
+        router.get("/brokers").handler(this::brokersList);
+        System.out.println("Listening for http://{hostname}:" + httpPort + "/brokers");
+        System.out.println("Listening for http://{hostname}:" + httpPort + "/outlier");
+        System.out.println("Listening for http://{hostname}:"+ httpPort +"/outlier/:{publisherId}?windowSize=10;outlierFactor=2");
 
-        httpServer.requestHandler(router::accept).listen(port, result -> {
+        httpServer.requestHandler(router::accept).listen(httpPort, result -> {
             if (result.succeeded()) {
                 startFuture.complete();
             } else {
@@ -59,6 +65,32 @@ public class OutlierWebServer extends AbstractVerticle {
             }
         });
     }
+
+    private void brokersList(RoutingContext routingContext) {
+        HttpServerResponse response = routingContext.response();
+        try {
+            List<String> ids = zk.getChildren("/brokers/ids", false);
+            List<Map> brokerList = new ArrayList<>();
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            for (String id : ids) {
+                Map map = objectMapper.readValue(zk.getData("/brokers/ids/" + id, false, null), Map.class);
+                brokerList.add(map);
+            }
+            JsonArray array = new JsonArray(brokerList);
+            response.putHeader("content-type", "application/json").end(array.encodePrettily());
+        } catch (KeeperException e) {
+            e.printStackTrace();
+            sendError(500,response);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            sendError(500, response);
+        } catch (IOException e) {
+            e.printStackTrace();
+            sendError(500, response);
+        }
+    }
+
 
     private void outlierList(RoutingContext routingContext) {
         HttpServerResponse response = routingContext.response();
