@@ -56,10 +56,10 @@ public class SimpleDistanceOutlierDetectorTest {
         DescriptiveStatistics stats = new DescriptiveStatistics(readings);
         double deviation = stats.getStandardDeviation();
         double mean = stats.getMean();
-        boolean outlier = detector.isOutlier(deviation, mean, sampleData);
+        boolean outlier = detector.isOutlier(deviation, mean, sampleData, 2);
         assertFalse(outlier);
 
-        outlier = detector.isOutlier(0.01, mean, sampleData);
+        outlier = detector.isOutlier(deviation, mean, sampleData, 0.01);
         assertTrue(outlier);
     }
 

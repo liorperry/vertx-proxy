@@ -13,6 +13,11 @@ public class InMemSamplePersister implements SamplePersister {
     private Map<String,List<SampleData>> samples = new ConcurrentHashMap<>();
 
     @Override
+    public void persist(List<SampleData> data) {
+        data.stream().forEach(this::persist);
+    }
+
+    @Override
     public void persist(SampleData data) {
         if(!samples.containsKey(data.getPublishId())) {
             samples.put(data.getPublishId(),new ArrayList<>());
