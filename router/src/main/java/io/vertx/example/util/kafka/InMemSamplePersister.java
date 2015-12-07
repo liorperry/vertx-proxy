@@ -1,9 +1,6 @@
 package io.vertx.example.util.kafka;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -41,5 +38,10 @@ public class InMemSamplePersister implements SamplePersister {
         if(!samples.containsKey(publisherId))
             return Collections.emptyList();
         return Collections.unmodifiableList(samples.get(publisherId));
+    }
+
+    @Override
+    public Set<String> getPublishers() {
+        return samples.keySet();
     }
 }

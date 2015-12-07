@@ -9,6 +9,7 @@ import io.vertx.example.util.kafka.*;
 import io.vertx.example.web.proxy.VertxInitUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import redis.clients.jedis.JedisPool;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -29,9 +30,10 @@ public class SimpleKafkaConsumer extends AbstractVerticle {
     public static void main(String[] args) {
         Vertx vertx = Vertx.vertx();
         DeploymentOptions options = VertxInitUtils.initDeploymentOptions();
+        BasicSampleExtractor extractor = new BasicSampleExtractor();
         vertx.deployVerticle(new SimpleKafkaConsumer(
-                new InMemSamplePersister(),
-                new BasicSampleExtractor(),
+                new RedisSamplePersister(new JedisPool(), extractor),
+                extractor,
                 "test", 2181, 3000), options);
     }
 

@@ -17,16 +17,17 @@ public class BasicSampleExtractor implements SampleExtractor{
                 String publisher = result.getString(PUBLISHER);
                 String time = result.getString(TIME);
                 String samples = result.getString(READINGS);
+                double median = result.getDouble(MEDIAN,0.0);
                 if (samples != null && samples.length()>0) {
                     values = extractReadings(samples);
                 }
                 if (publisher != null && time != null && values.length > 0) {
 
                     DescriptiveStatistics stats = new DescriptiveStatistics(values);
-                    double quantile = stats.getPercentile(50);
+                    median = stats.getPercentile(50);
                     //persist sample data
-                    return Optional.of(new SampleData(publisher,time,quantile));
                 }
+                return Optional.of(new SampleData(publisher,time,median));
             }
         return Optional.empty();
     }

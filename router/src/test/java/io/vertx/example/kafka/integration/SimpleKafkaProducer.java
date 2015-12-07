@@ -4,16 +4,12 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
 import io.vertx.example.util.kafka.Producer;
 import io.vertx.example.web.proxy.VertxInitUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,21 +50,14 @@ public class SimpleKafkaProducer extends AbstractVerticle {
 
     public void start(Future<Void> fut) {
         vertx.setPeriodic(sampleFrequence, event -> {
-            System.out.println("sending message to kafka:"+ kafkaPort);
+            System.out.println("sending message to kafka:" + kafkaPort);
             executor.submit(() -> {
-                producer.send(topic, "message", new JsonObject(buildMessage()).encode());
+                producer.send(topic, "message", KafkaTestUtils.create("norbert",1,15).get(0).toJson().encode());
             });
         });
         fut.complete();
     }
 
-    public Map<String, Object> buildMessage() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("publisher", "norbert");
-        map.put("time", GregorianCalendar.getInstance().getTime().toLocaleString());
-        map.put("readings", "{1,13,192,7,8,99,1014,4,13}");
-        return map;
-    }
 
 
     @Override
