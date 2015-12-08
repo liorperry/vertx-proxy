@@ -14,6 +14,8 @@ import io.vertx.example.web.proxy.VertxInitUtils;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
+import kafka.javaapi.TopicMetadataRequest;
+import kafka.javaapi.consumer.SimpleConsumer;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooKeeper;
 import redis.clients.jedis.JedisPool;
@@ -26,6 +28,7 @@ public class OutlierWebServer extends AbstractVerticle {
     private SamplePersister persister;
     private int httpPort;
     private ZooKeeper zk;
+    private SimpleConsumer consumer;
 
     public static void main(String[] args) throws IOException {
         Vertx vertx = Vertx.vertx();
@@ -36,14 +39,15 @@ public class OutlierWebServer extends AbstractVerticle {
         persister.persist(KafkaTestUtils.create("norbert", 100, 15));
         persister.persist(KafkaTestUtils.create("ginzburg", 300, 10));
 */
-        vertx.deployVerticle(new OutlierWebServer(detector,persister, 8081,2181), options);
+        vertx.deployVerticle(new OutlierWebServer(detector,persister, 8081,2181,9090), options);
     }
 
-    public OutlierWebServer(OutlierDetector detector,SamplePersister persister, int httpPort,int zkPort) throws IOException {
+    public OutlierWebServer(OutlierDetector detector,SamplePersister persister, int httpPort,int zkPort,int kafkaPort) throws IOException {
         this.detector = detector;
         this.persister = persister;
         this.httpPort = httpPort;
         this.zk = new ZooKeeper("localhost:"+zkPort, 10000, null);
+        consumer = new SimpleConsumer("localhost",kafkaPort,100000,64 * 1024, "test");
     }
 
     @Override
@@ -56,8 +60,10 @@ public class OutlierWebServer extends AbstractVerticle {
         router.get("/publisher").handler(this::publishersList);
         router.get("/publisher/:publisherId").handler(this::publisherInfo);
         router.get("/publisher/outlier/:publisherId").handler(this::outlier);
-        router.get("/brokers").handler(this::brokersList);
-        System.out.println("Listening for http://{hostname}:" + httpPort + "/brokers");
+        router.get("/kafka/all").handler(this::kafkaInfo);
+        router.get("/kafka/brokers").handler(this::brokersList);
+        System.out.println("Listening for http://{hostname}:" + httpPort + "/kafka/brokers");
+        System.out.println("Listening for http://{hostname}:" + httpPort + "/kafka/all");
         System.out.println("Listening for http://{hostname}:" + httpPort + "/publisher");
         System.out.println("Listening for http://{hostname}:" + httpPort + "/publisher/:{publisherId}");
         System.out.println("Listening for http://{hostname}:" + httpPort + "/publisher/outlier/:{publisherId}?windowSize=10;outlierFactor=2");
@@ -69,6 +75,31 @@ public class OutlierWebServer extends AbstractVerticle {
                 startFuture.fail(result.cause());
             }
         });
+    }
+
+    private void kafkaInfo(RoutingContext routingContext) {
+        HttpServerResponse response = routingContext.response();
+        List<String> topics2 = new ArrayList<>();
+        TopicMetadataRequest req = new TopicMetadataRequest(topics2);
+        kafka.javaapi.TopicMetadataResponse resp = consumer.send(req);
+        List<kafka.javaapi.TopicMetadata> data3 =  resp.topicsMetadata();
+        StringBuilder builder = new StringBuilder();
+        for (kafka.javaapi.TopicMetadata item : data3) {
+            System.out.println("Topic: " + item.topic());
+            builder.append("Topic: ").append(item.topic());
+            for (kafka.javaapi.PartitionMetadata part: item.partitionsMetadata() ) {
+                String replicas = ""; String isr = "";
+                for (kafka.cluster.Broker replica: part.replicas() ) {
+                    replicas += " " + replica.host();
+                }
+                for (kafka.cluster.Broker replica: part.isr() ) {
+                    isr += " " + replica.host();
+                }
+                System.out.println( "    Partition: " +   part.partitionId()  + ": Leader: " + part.leader().host() + " Replicas:[" + replicas + "] ISR:[" + isr + "]");
+                builder.append("    Partition: ").append(part.partitionId()).append(": Leader: ").append(part.leader().host()).append(" Replicas:[").append(replicas).append("] ISR:[").append(isr).append("]");
+            }
+        }
+        response.putHeader("content-type", "application/json").end(builder.toString());
     }
 
     private void brokersList(RoutingContext routingContext) {
