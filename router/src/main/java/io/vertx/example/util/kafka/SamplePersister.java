@@ -11,4 +11,6 @@ public interface SamplePersister {
     List<SampleData> fetchAll(String publisherId);
 
     Set<String> getPublishers();
+
+    long fetchLength(String publisherId);
 }

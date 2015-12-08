@@ -44,4 +44,9 @@ public class InMemSamplePersister implements SamplePersister {
     public Set<String> getPublishers() {
         return samples.keySet();
     }
+
+    @Override
+    public long fetchLength(String publisherId) {
+        return samples.containsKey(publisherId) ? samples.get(publisherId).size() : 0;
+    }
 }

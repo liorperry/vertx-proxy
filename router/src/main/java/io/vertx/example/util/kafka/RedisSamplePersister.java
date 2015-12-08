@@ -80,4 +80,14 @@ public class RedisSamplePersister implements SamplePersister {
             resource.close();
         }
     }
+
+    @Override
+    public long fetchLength(String publisherId) {
+        Jedis resource = pool.getResource();
+        try {
+            return resource.llen(publisherId);
+        } finally {
+            resource.close();
+        }
+    }
 }

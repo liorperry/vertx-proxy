@@ -18,14 +18,16 @@ public class RedisStarted extends AbstractVerticle {
     private static RedisServer redisServer;
 
     private final Jedis jedis;
+    private boolean populate;
 
-    public RedisStarted(Jedis client) {
+    public RedisStarted(Jedis client,boolean populate) {
         jedis = client;
+        this.populate = populate;
     }
 
     public static void main(String[] args) throws Exception {
         Vertx vertx = Vertx.vertx();
-        vertx.deployVerticle(new RedisStarted(new Jedis()));
+        vertx.deployVerticle(new RedisStarted(new Jedis(),false));
     }
 
     public void start(Future<Void> fut) {
@@ -50,7 +52,10 @@ public class RedisStarted extends AbstractVerticle {
 
     private void launchRedis() throws IOException {
         startRedis();
-        populate(jedis);
+        if(populate) {
+            System.out.println("populating redis");
+            populate(jedis);
+        }
 
     }
 

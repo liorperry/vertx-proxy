@@ -19,9 +19,7 @@ public class KafkaServerVertical extends AbstractVerticle {
     public static void main(String[] args) {
         Vertx vertx = Vertx.vertx();
         DeploymentOptions options = VertxInitUtils.initDeploymentOptions();
-        vertx.deployVerticle(new KafkaServerVertical(2181,9090),
-                options);
-
+        vertx.deployVerticle(new KafkaServerVertical(2181,9090),options);
     }
 
     private Optional<EmbeddedKafkaServer> kafkaServer = Optional.empty();

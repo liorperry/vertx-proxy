@@ -8,6 +8,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import io.vertx.example.util.kafka.*;
 import io.vertx.example.web.proxy.VertxInitUtils;
 import io.vertx.ext.web.Router;
@@ -31,8 +32,10 @@ public class OutlierWebServer extends AbstractVerticle {
         DeploymentOptions options = VertxInitUtils.initDeploymentOptions();
         SamplePersister persister = new RedisSamplePersister(new JedisPool(),new BasicSampleExtractor());
         SimpleDistanceOutlierDetector detector = new SimpleDistanceOutlierDetector(persister);
+/*
         persister.persist(KafkaTestUtils.create("norbert", 100, 15));
         persister.persist(KafkaTestUtils.create("ginzburg", 300, 10));
+*/
         vertx.deployVerticle(new OutlierWebServer(detector,persister, 8081,2181), options);
     }
 
@@ -50,12 +53,14 @@ public class OutlierWebServer extends AbstractVerticle {
         HttpServer httpServer = vertx.createHttpServer();
 
         router.route().handler(BodyHandler.create());
-        router.get("/outlier/:publisherId").handler(this::outlier);
-        router.get("/outlier").handler(this::outlierList);
+        router.get("/publisher").handler(this::publishersList);
+        router.get("/publisher/:publisherId").handler(this::publisherInfo);
+        router.get("/publisher/outlier/:publisherId").handler(this::outlier);
         router.get("/brokers").handler(this::brokersList);
         System.out.println("Listening for http://{hostname}:" + httpPort + "/brokers");
-        System.out.println("Listening for http://{hostname}:" + httpPort + "/outlier");
-        System.out.println("Listening for http://{hostname}:"+ httpPort +"/outlier/:{publisherId}?windowSize=10;outlierFactor=2");
+        System.out.println("Listening for http://{hostname}:" + httpPort + "/publisher");
+        System.out.println("Listening for http://{hostname}:" + httpPort + "/publisher/:{publisherId}");
+        System.out.println("Listening for http://{hostname}:" + httpPort + "/publisher/outlier/:{publisherId}?windowSize=10;outlierFactor=2");
 
         httpServer.requestHandler(router::accept).listen(httpPort, result -> {
             if (result.succeeded()) {
@@ -91,8 +96,26 @@ public class OutlierWebServer extends AbstractVerticle {
         }
     }
 
+    private void publisherInfo(RoutingContext routingContext) {
+        HttpServerResponse response = routingContext.response();
+        String publisherId = routingContext.request().getParam("publisherId");
+        if (publisherId == null) {
+            sendError(400, response);
+        }
+        Set<String> publishers = persister.getPublishers();
+        if(!publishers.contains(publisherId)){
+            sendError(400, response);
+        }
+        long size = persister.fetchLength(publisherId);
 
-    private void outlierList(RoutingContext routingContext) {
+        Map<String,Object> data = new HashMap<>();
+        data.put("publisher",publisherId);
+        data.put("sampleSize",Long.toString(size));
+        response.putHeader("content-type", "application/json").end(new JsonObject(data).encodePrettily());
+    }
+
+
+    private void publishersList(RoutingContext routingContext) {
         HttpServerResponse response = routingContext.response();
         Set<String> publishers = persister.getPublishers();
         JsonArray array = new JsonArray(new ArrayList<>(publishers));
@@ -100,8 +123,8 @@ public class OutlierWebServer extends AbstractVerticle {
     }
 
     private void outlier(RoutingContext routingContext) {
-        String publisherId = routingContext.request().getParam("publisherId");
         HttpServerResponse response = routingContext.response();
+        String publisherId = routingContext.request().getParam("publisherId");
         if (publisherId == null) {
             sendError(400, response);
         }

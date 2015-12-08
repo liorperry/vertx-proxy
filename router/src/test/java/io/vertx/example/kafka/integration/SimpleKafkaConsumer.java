@@ -66,7 +66,13 @@ public class SimpleKafkaConsumer extends AbstractVerticle {
             Optional<String> value = consumer.read();
             System.out.println(value);
             if (value.isPresent()) {
-                Optional<SampleData> sampleData = extractor.extractSample(new JsonObject(value.get()));
+                Optional<SampleData> sampleData = Optional.empty();
+                try {
+                    sampleData = extractor.extractSample(new JsonObject(value.get()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("Extractor could not extract data from sample["+value.get()+"]");
+                }
                 if (sampleData.isPresent())
                     persister.persist(sampleData.get());
             }
